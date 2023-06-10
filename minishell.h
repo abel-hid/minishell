@@ -7,6 +7,14 @@
 # include <string.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+
+enum state
+{
+	IN_DQUOTE,
+	IN_QUOTE,
+	GENERAL,
+};
+
 enum token
 {
 	WORD = -1,
@@ -24,6 +32,7 @@ typedef struct s_list
 {
     char			*content;
     enum token        token;
+	enum state		state;
     struct s_list	*next;
 }					t_list;
 
