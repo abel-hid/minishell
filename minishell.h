@@ -28,8 +28,10 @@ enum token
 	REDIR_IN ,
 	REDIR_OUT,
 	AND ,
-	HEARDOC ,	
-	APPEND ,	
+	HEARDOC ,
+	APPEND ,
+	LEFT_PR,// (
+	RIGHT_PR,// )
 } ;
 
 typedef struct s_list

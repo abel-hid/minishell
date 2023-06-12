@@ -1,3 +1,5 @@
+#include "minishell.h"
+
 void get_token(t_list **list, char *line);
 
 
@@ -10,7 +12,7 @@ char *ftft(const char *s, unsigned int start, size_t len)
 }
 int ft_islogical(char c)
 {
-	if (c == '|' || c == '>' || c == '<' || c == '$' || c == '&' || c == '\n'
+	if (c == '|' || c == '>' || c == '<' || c== '(' || c == ')' || c == '$' || c == '&' || c == '\n'
 		|| c == '\'' || c == '\"' || c == ' ' || c == '\t' || c == '\0')
 		return (1);
 	return (0);
@@ -35,7 +37,7 @@ void get_token(t_list **list,char *line)
 			if(!ft_islogical(line[i]))
 			{
 				j = i;
-				while(!ft_islogical(line[i]) && line[i] != '\0') 
+				while(!ft_islogical(line[i]) && line[i] != '\0')
 					i++;
 
 				p = ftft(line, j, i - j);
@@ -54,6 +56,11 @@ void get_token(t_list **list,char *line)
 					else
 						add_token(list, ">", REDIR_OUT, GENERAL);
 				}
+
+				if(line[i] == '(')
+					add_token(list, "(", LEFT_PR, GENERAL);
+				if(line[i] == ')')
+					add_token(list, ")", RIGHT_PR, GENERAL);
 				if(line[i] == '<')
 				{
 					p = ft_substr(line, i, ft_strlen(line));
@@ -67,7 +74,7 @@ void get_token(t_list **list,char *line)
 				}
 				if(line[i] == '$')
 					add_token(list, "$", ENV, GENERAL);
-			
+
 				if(line[i] == '\'')
 				{
 					add_token(list, "\'", QUOTE, IN_SQUOTE);
@@ -83,8 +90,8 @@ void get_token(t_list **list,char *line)
 					add_token(list, "\n", NEW_LINE, GENERAL);
 				if(line[i] == '&')
 					add_token(list, "&", AND, GENERAL);
-				if(line[i] == ' ')
-					add_token(list, " ", WHITE_SPACE, GENERAL);
+				// if(line[i] == ' ')
+				// 	add_token(list, " ", WHITE_SPACE, GENERAL);
 				if(line[i] == '\"')
 				{
 					add_token(list, "\"", DOUBLE_QUOTE, IN_DQUOTE);
@@ -105,9 +112,9 @@ void get_token(t_list **list,char *line)
 						add_token(list, p, WORD, IN_DQUOTE);
 					}
 					if(line[i] == '\"')
-						add_token(list, "\"", DOUBLE_QUOTE, IN_DQUOTE);				
+						add_token(list, "\"", DOUBLE_QUOTE, IN_DQUOTE);
 				}
-					
+
 		i++;
 	}
 }
@@ -146,9 +153,9 @@ int main(int ac, char **av)
 
 	int i = 0;
 	(void)ac;
-	const char *token[] = 
-	{"WORD", "WHITE_SPACE", "NEW_LINE", "QUOTE", "DOUBLE_QUOTE", "ENV", "PIPE_LINE", "REDIR_IN", "REDIR_OUT", "AND", "HEARDOC", "APPEND"};
-	const char *state[] = {"IN_DQUOTE", "IN_SQUOTE", "GENERAL"};
+	const char *token[] =
+	{"WORD", "WHITE_SPACE", "NEW_LINE", "QUOTE", "DOUBLE_QUOTE", "ENV", "PIPE_LINE", "REDIR_IN", "REDIR_OUT", "AND", "HEARDOC", "APPEND", "LEFT_PR", "RIGHT_PR",};
+	const char *state[] = {"IN_DQUOTE", "IN_SQUOTE", "GENERAL",};
 	while (1)
 	{
 		line = readline("minishell-> ");
@@ -162,7 +169,6 @@ int main(int ac, char **av)
 				printf("content: '%s'\n", list->content);
 				printf("token: %s\n", token[list->token]);
 				printf("state: %s\n", state[list->state]);
-				printf("----------------------\n");
 				list = list->next;
 			}
 	}

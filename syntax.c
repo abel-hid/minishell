@@ -22,7 +22,7 @@ int ft_isnological(char *str)
     i = 0;
     while (str[i] != '\0')
     {
-    if (str[i] == '|' || str[i] == '>' || str[i] == '<'  || str[i] == '&' 
+    if (str[i] == '|' || str[i] == '>' || str[i] == '<'  || str[i] == '&'
     || str[i] == '$' || str[i] == '\'' || str[i] == '\"')
             return (1);
         i++;
@@ -31,17 +31,24 @@ int ft_isnological(char *str)
 }
 void syntax_check(t_list **list)
 {
-  
+
     t_list *tmp;
     tmp = *list;
     while (tmp != NULL)
     {
-        if (ft_isnological(tmp->content) == 1)
+        if(ft_isnological(tmp->content) == 1 && tmp->next == NULL)
         {
             printf("syntax error near unexpected token `%s'\n", tmp->content);
             exit(1);
         }
+
+        if(ft_isnological(tmp->content) == 1 && ft_isnological(tmp->next->content) == 1)
+        {
+            printf("syntax error near unexpected token `%s'\n", tmp->next->content);
+            exit(1);
+        }
+
         tmp = tmp->next;
     }
-    
+
 }
