@@ -1,0 +1,13 @@
+Makefile
+README.md
+list.c
+list.o
+ls
+main.c
+main.o
+minishell
+minishell.h
+syntax.c
+syntax.o
+test.c
+test.o

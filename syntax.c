@@ -15,18 +15,23 @@ int	ft_strncmp(const char *s1, const char *s2, size_t n)
 	}
 	return (0);
 }
-int ft_isnological(char *str)
+int ft_isnological(char *content)
 {
-    int i;
+    if(ft_strncmp(content, "|", 1) == 0)
+        return (1);
+    if(ft_strncmp(content, ">", 1) == 0)
+        return (1);
+    if(ft_strncmp(content, "<", 1) == 0)
+        return (1);
+    if(ft_strncmp(content, "$", 1) == 0)
+        return (1);
+    if(ft_strncmp(content, "&", 1) == 0)
+        return (1);
+    if(ft_strncmp(content, "<<", 1) == 0)
+        return (1);
+    if(ft_strncmp(content, ">>", 1) == 0)
+        return (1);
 
-    i = 0;
-    while (str[i] != '\0')
-    {
-    if (str[i] == '|' || str[i] == '>' || str[i] == '<' || str[i] == '&'
-    || str[i] == '$' || str[i] == '\'' || str[i] == '\"')
-            return (1);
-        i++;
-    }
     return (0);
 }
 
@@ -77,22 +82,23 @@ void syntax_check(t_list **list)
     check_parentheses(list);
     while (tmp != NULL)
     {
-        if(ft_isnological(tmp->content) == 1 && tmp->next == NULL)
+        if(ft_isnological(tmp->content) == 1 && tmp->next ==NULL)
         {
-            printf("syntax error near unexpected token `%s'\n", tmp->content);
-            exit(1);
+                printf("syntax error near unexpected token `%s'\n", tmp->content);
+                exit(1);
         }
-
         if(ft_isnological(tmp->content) == 1 && ft_isnological(tmp->next->content) == 1)
         {
+            puts("2");
             printf("syntax error near unexpected token `%s'\n", tmp->next->content);
             exit(1);
         }
-        if(ft_isnological(tmp->content) == 1 && ft_isnological(tmp->next->content) == 0)
-        {
-            printf("syntax error near unexpected token `%s'\n", tmp->content);
-            exit(1);
-        }
+        // if(ft_isnological(tmp->content) == 1 && ft_isnological(tmp->next->content) == 0)
+        // {
+        //     puts("2");
+        //     printf("syntax error near unexpected token `%s'\n", tmp->next->content);
+        //     exit(1);
+        // }
 
         tmp = tmp->next;
     }
