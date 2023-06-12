@@ -145,7 +145,6 @@ void add_token(t_list **list, char *token, enum token type, enum state state)
 int main(int ac, char **av)
 {
 	char *line;
-
 	t_list *list;
 
 	list = NULL;
