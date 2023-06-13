@@ -30,8 +30,6 @@ enum token
 	AND ,
 	HEARDOC ,
 	APPEND ,
-	LEFT_PR,// (
-	RIGHT_PR,// )
 } ;
 
 typedef struct s_list

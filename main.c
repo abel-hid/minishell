@@ -1,6 +1,7 @@
 #include "minishell.h"
 
 void get_token(t_list **list, char *line);
+void add_double_quote(t_list **list, char *line, int *i);
 
 
 char *ftft(const char *s, unsigned int start, size_t len)
@@ -12,16 +13,35 @@ char *ftft(const char *s, unsigned int start, size_t len)
 }
 int ft_islogical(char c)
 {
-	if (c == '|' || c == '>' || c == '<' || c== '(' || c == ')' || c == '$' || c == '&' || c == '\n'
+	if (c == '|' || c == '>' || c == '<' || c == '&' || c == '\n'
 		|| c == '\'' || c == '\"' || c == ' ' || c == '\t' || c == '\0')
 		return (1);
+	if(c == '$' )
+		return (3);
 	return (0);
 }
+
 int ft_isalpha(int c)
 {
 	if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
 		return (c);
 	return (0);
+}
+
+void add_ENV(t_list **list, char *line, int *i)
+{
+	int j;
+	char *p;
+
+	j = *i;
+	*i = *i + 1;
+	while(ft_isalpha(line[*i]))
+		*i = *i + 1;
+	if(*i > j)
+	{
+		p = ftft(line, j, *i - j);
+		add_token(list, p, ENV, GENERAL);
+	}
 }
 
 void get_token(t_list **list,char *line)
@@ -34,6 +54,14 @@ void get_token(t_list **list,char *line)
 
 	while(line[i])
 	{
+		if(ft_islogical(line[i]) == 3 )
+		{
+			if(!ft_islogical(line[i + 1]))
+				add_ENV(list, line, &i);
+			else
+				add_token(list, "$", WORD, GENERAL);
+
+		}
 			if(!ft_islogical(line[i]))
 			{
 				j = i;
@@ -43,11 +71,11 @@ void get_token(t_list **list,char *line)
 				p = ftft(line, j, i - j);
 				add_token(list, p, WORD, GENERAL);
 			}
+
 				if(line[i] == '|')
 					add_token(list, "|", PIPE_LINE, GENERAL);
 				if(line[i] == '>')
 				{
-					p = ft_substr(line, i, ft_strlen(line));
 					if(line[i + 1] == '>')
 					{
 						add_token(list, ">>", APPEND, GENERAL);
@@ -57,13 +85,8 @@ void get_token(t_list **list,char *line)
 						add_token(list, ">", REDIR_OUT, GENERAL);
 				}
 
-				if(line[i] == '(')
-					add_token(list, "(", LEFT_PR, GENERAL);
-				if(line[i] == ')')
-					add_token(list, ")", RIGHT_PR, GENERAL);
 				if(line[i] == '<')
 				{
-					p = ft_substr(line, i, ft_strlen(line));
 					if(line[i + 1] == '<')
 					{
 						add_token(list, "<<", HEARDOC, GENERAL);
@@ -72,9 +95,6 @@ void get_token(t_list **list,char *line)
 					else
 						add_token(list, "<", REDIR_IN, GENERAL);
 				}
-				if(line[i] == '$')
-					add_token(list, "$", ENV, GENERAL);
-
 				if(line[i] == '\'')
 				{
 					add_token(list, "\'", QUOTE, IN_SQUOTE);
@@ -90,34 +110,50 @@ void get_token(t_list **list,char *line)
 					add_token(list, "\n", NEW_LINE, GENERAL);
 				if(line[i] == '&')
 					add_token(list, "&", AND, GENERAL);
-				// if(line[i] == ' ')
-				// 	add_token(list, " ", WHITE_SPACE, GENERAL);
+					if(line[i] == ' ')
+					{
+						while(line[i] == ' ')
+							i++;
+						add_token(list, " ", WHITE_SPACE, GENERAL);
+						i--;
+					}
 				if(line[i] == '\"')
 				{
-					add_token(list, "\"", DOUBLE_QUOTE, IN_DQUOTE);
-					i++;
-					j = i;
-					while(line[i] != '\"' && line[i] != '\0')
-					{
-						i++;
-					}
-					if(line[i] == '\0')
-					{
-						printf("Error: unclosed double quote\n");
-						exit(1);
-					}
-					if(i > j)
-					{
-						p = ftft(line, j, i - j);
-						add_token(list, p, WORD, IN_DQUOTE);
-					}
-					if(line[i] == '\"')
-						add_token(list, "\"", DOUBLE_QUOTE, IN_DQUOTE);
+					add_double_quote(list, line, &i);
 				}
 
 		i++;
 	}
 }
+
+void add_double_quote(t_list **list, char *line, int *i)
+{
+	int j;
+	char *p;
+
+	j = *i;
+	while(line[*i] != '\"' && line[*i] != '\0' && line[*i] != '$')
+		*i = *i + 1;
+
+	// if(line[*i] == '\0')
+	// {
+	// 	printf("Error: unclosed double quote\n");
+	// 	exit(1);
+	// }
+
+	if(line[*i] == '$')
+	{
+	}
+
+	if(*i > j)
+	{
+		p = ftft(line, j, *i - j);
+		add_token(list, p, WORD, IN_DQUOTE);
+	}
+	if(line[*i] == '\"')
+		add_token(list, "\"", DOUBLE_QUOTE, GENERAL);
+}
+
 
 t_list *ft_lstnew(char *content, enum token type, enum state state)
 {
@@ -153,7 +189,7 @@ int main(int ac, char **av)
 	int i = 0;
 	(void)ac;
 	const char *token[] =
-	{"WORD", "WHITE_SPACE", "NEW_LINE", "QUOTE", "DOUBLE_QUOTE", "ENV", "PIPE_LINE", "REDIR_IN", "REDIR_OUT", "AND", "HEARDOC", "APPEND", "LEFT_PR", "RIGHT_PR",};
+	{"WORD", "WHITE_SPACE", "NEW_LINE", "QUOTE", "DOUBLE_QUOTE", "ENV", "PIPE_LINE", "REDIR_IN", "REDIR_OUT", "AND", "HEARDOC", "APPEND",};
 	const char *state[] = {"IN_DQUOTE", "IN_SQUOTE", "GENERAL",};
 	while (1)
 	{
@@ -161,7 +197,7 @@ int main(int ac, char **av)
 			if (line == NULL)
 				break ;
 			get_token(&list, line);
-			syntax_check(&list);
+			// syntax_check(&list);
 			while (list)
 			{
 				printf("----------------------\n");
