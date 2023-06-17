@@ -196,6 +196,7 @@ int main(int ac, char **av)
 		line = readline("minishell-> ");
 			if (line == NULL)
 				break ;
+			valid_line(line);
 			get_token(&list, line);
 			// syntax_check(&list);
 			while (list)

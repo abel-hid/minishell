@@ -16,6 +16,35 @@ int	ft_strncmp(const char *s1, const char *s2, size_t n)
 	return (0);
 }
 
+void valid_line(char *line)
+{
+	int i;
+	int j;
+	int k;
+
+	i = 0;
+	j = 0;
+	k = 0;
+	while(line[i])
+	{
+		if(line[i] == '\"')
+			j++;
+		if(line[i] == '\'')
+			k++;
+		i++;
+	}
+	if(j % 2 != 0)
+	{
+		printf("syntax error near unexpected token `\"'\n");
+		exit(1);
+	}
+	if(k % 2 != 0)
+	{
+		printf("syntax error near unexpected token `'\''\n");
+		exit(1);
+	}
+}
+
 void check_pipe(t_list **list)
 {
 	 t_list *tmp;

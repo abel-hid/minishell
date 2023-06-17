@@ -50,4 +50,5 @@ t_list	*ft_lstnew(char *content, enum token type, enum state state);
 void add_token(t_list **list, char *token, enum token type, enum state state);
 void syntax_check(t_list **list);
 int	ft_strncmp(const char *s1, const char *s2, size_t n);
+void valid_line(char *line);
 # endif
