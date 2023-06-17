@@ -199,37 +199,38 @@ void add_token(t_list **list, char *token, enum token type)
 	if(new != NULL)
 		ft_lstadd_back(list, new);
 }
-void check_status(t_list **lst,char *line)
+
+void check_status(t_list **lst, char *line)
 {
+    get_token(lst, line);
+    
+    
+	t_list *tmp = *lst;
 
-	get_token(lst, line);
-	const char *token[] =
-	{"WORD", "WHITE_SPACE", "NEW_LINE", "QUOTE", "DOUBLE_QUOTE", "ENV", "PIPE_LINE", "REDIR_IN", "REDIR_OUT", "AND", "HEARDOC", "APPEND",};
-	const char *state[] =
-	{"IN_DQUOTE", "IN_SQUOTE", "GENERAL",};
-	while(*lst  )
-	{
-		if((*lst)->token == QUOTE)
+    while (tmp)
+    {
+        if ((tmp)->token == QUOTE && ((tmp)->next && (tmp)->next->token == WORD))
+        {
+			(tmp)->state = GENERAL;
+            (tmp)->next->state = IN_SQUOTE;
+        }
+		else if ((tmp)->token == DOUBLE_QUOTE && ((tmp)->next && (tmp)->next->token == WORD))
 		{
-			if((*lst)->next->token == WORD)
-			{
-				(*lst)->state = GENERAL;
-				(*lst)->next->state = IN_SQUOTE;
-			}
-			if((*lst)->token == QUOTE)
-			{
-				(*lst)->state = GENERAL;
-			}
+			(tmp)->state = GENERAL;
+			(tmp)->next->state = IN_DQUOTE;
 		}
-		printf("----------------------\n");
-		printf("content: %s\n", (*lst)->content);
-		printf("token: %s\n", token[(*lst)->token]);
-		printf("state: %s\n", state[(*lst)->state]);
-		printf("----------------------\n");
-		(*lst) = (*lst)->next;
-	}
-
+		else if ((tmp)->token == WORD && (tmp)->state == IN_DQUOTE)
+			(tmp)->state = IN_DQUOTE;
+		
+		else if ((tmp)->token == WORD && (tmp)->state == IN_SQUOTE)
+			(tmp)->state = IN_SQUOTE;
+		else
+			(tmp)->state = GENERAL;
+       tmp = tmp->next;
+    }
+	tmp = *lst;
 }
+
 
 int main(int ac, char **av)
 {
@@ -241,6 +242,8 @@ int main(int ac, char **av)
 
 	int i = 0;
 	(void)ac;
+	const char *token[] = {"WORD", "WHITE_SPACE", "NEW_LINE", "QUOTE", "DOUBLE_QUOTE", "ENV", "PIPE_LINE", "REDIR_IN", "REDIR_OUT", "AND", "HEARDOC", "APPEND"};
+    const char *state[] = {"GENERAL", "IN_DQUOTE", "IN_SQUOTE"};
 
 	while (1)
 	{
@@ -251,7 +254,17 @@ int main(int ac, char **av)
 			valid_line(line);
 			// get_token(&list, line);
 			check_status(&list,line);
-			// syntax_check(&list);
+			while(list)
+			{
+				printf("====================================\n");
+				printf("token : '%s'\n", list->content);
+				printf("type : %s\n", token[list->token]);
+				printf("state : %s\n", state[list->state]);
+				printf("====================================\n");
+
+				list = list->next;	
+			}
+
 	}
 
 	return 0;
