@@ -12,7 +12,6 @@ enum state
 {
 	IN_DQUOTE,
 	IN_SQUOTE,
-
 	GENERAL,
 };
 
@@ -32,10 +31,23 @@ enum token
 	APPEND ,
 } ;
 
+enum command_type
+{
+	ls,
+	pwd,
+	cd,
+	echo,
+	env,
+	export,
+	unset,
+	exit1,
+};
+
 typedef struct s_list
 {
     char			*content;
     enum token        token;
+	enum state		state;
     struct s_list	*next;
 }					t_list;
 

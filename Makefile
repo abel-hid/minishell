@@ -13,7 +13,6 @@ all: $(NAME)
 
 $(NAME):$(OBJS)
 	$(CC) $(OBJS) -o $(NAME) -lreadline
-
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
