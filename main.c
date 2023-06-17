@@ -11,6 +11,24 @@ char *ftft(const char *s, unsigned int start, size_t len)
 	substr[len] = '\0';
 	return substr;
 }
+
+void	is_space(char *line)
+{
+	int	i;
+	int	j;
+
+	i = 0;
+	j = 0;
+	while (line[i])
+	{
+		if (line[i] == ' ')
+			j++;
+		i++;
+	}
+	if ((int)ft_strlen(line) == j)
+		exit(1);
+}
+
 int ft_islogical(char c)
 {
 	if (c == '|' || c == '>' || c == '<' || c == '&' || c == '\n'
@@ -18,6 +36,13 @@ int ft_islogical(char c)
 		return (1);
 	if(c == '$' )
 		return (3);
+	return (0);
+}
+int help(char c)
+{
+	if (c == '|' || c == '>' || c == '<' || c == '\n'
+		|| c == '\'' || c == '\"' || c == ' ' || c == '\t' || c == '\0')
+		return (1);
 	return (0);
 }
 
@@ -40,7 +65,7 @@ void add_ENV(t_list **list, char *line, int *i)
 	if(*i > j)
 	{
 		p = ftft(line, j, *i - j);
-		add_token(list, p, ENV, GENERAL);
+		add_token(list, p, ENV);
 	}
 }
 
@@ -58,8 +83,16 @@ void get_token(t_list **list,char *line)
 		{
 			if(!ft_islogical(line[i + 1]))
 				add_ENV(list, line, &i);
+			else if(line[i + 1] == '$')
+			{
+				j = i;
+				while(!help(line[i]))
+					i++;
+				p = ftft(line, j, i - j);
+				add_token(list, p, WORD);
+			}
 			else
-				add_token(list, "$", WORD, GENERAL);
+				add_token(list, "$", WORD);
 
 		}
 			if(!ft_islogical(line[i]))
@@ -69,52 +102,52 @@ void get_token(t_list **list,char *line)
 					i++;
 
 				p = ftft(line, j, i - j);
-				add_token(list, p, WORD, GENERAL);
+				add_token(list, p, WORD);
 			}
 
 				if(line[i] == '|')
-					add_token(list, "|", PIPE_LINE, GENERAL);
+					add_token(list, "|", PIPE_LINE);
 				if(line[i] == '>')
 				{
 					if(line[i + 1] == '>')
 					{
-						add_token(list, ">>", APPEND, GENERAL);
+						add_token(list, ">>", APPEND);
 						i++;
 					}
 					else
-						add_token(list, ">", REDIR_OUT, GENERAL);
+						add_token(list, ">", REDIR_OUT);
 				}
 
 				if(line[i] == '<')
 				{
 					if(line[i + 1] == '<')
 					{
-						add_token(list, "<<", HEARDOC, GENERAL);
+						add_token(list, "<<", HEARDOC);
 						i++;
 					}
 					else
-						add_token(list, "<", REDIR_IN, GENERAL);
+						add_token(list, "<", REDIR_IN);
 				}
 				if(line[i] == '\'')
 				{
-					add_token(list, "\'", QUOTE, IN_SQUOTE);
+					add_token(list, "\'", QUOTE);
 					i++;
 					j = i;
 					while(line[i] != '\'')
 						i++;
 					p = ftft(line, j, i - j);
-					add_token(list, p, WORD, IN_SQUOTE);
-					add_token(list, "\'", QUOTE, IN_SQUOTE);
+					add_token(list, p, WORD);
+					add_token(list, "\'", QUOTE);
 				}
 				if(line[i] == '\n')
-					add_token(list, "\n", NEW_LINE, GENERAL);
+					add_token(list, "\n", NEW_LINE);
 				if(line[i] == '&')
-					add_token(list, "&", AND, GENERAL);
+					add_token(list, "&", AND);
 					if(line[i] == ' ')
 					{
 						while(line[i] == ' ')
 							i++;
-						add_token(list, " ", WHITE_SPACE, GENERAL);
+						add_token(list, " ", WHITE_SPACE);
 						i--;
 					}
 				if(line[i] == '\"')
@@ -135,27 +168,17 @@ void add_double_quote(t_list **list, char *line, int *i)
 	while(line[*i] != '\"' && line[*i] != '\0' && line[*i] != '$')
 		*i = *i + 1;
 
-	// if(line[*i] == '\0')
-	// {
-	// 	printf("Error: unclosed double quote\n");
-	// 	exit(1);
-	// }
-
-	if(line[*i] == '$')
-	{
-	}
-
 	if(*i > j)
 	{
 		p = ftft(line, j, *i - j);
-		add_token(list, p, WORD, IN_DQUOTE);
+		add_token(list, p, WORD);
 	}
 	if(line[*i] == '\"')
-		add_token(list, "\"", DOUBLE_QUOTE, GENERAL);
+		add_token(list, "\"", DOUBLE_QUOTE);
 }
 
 
-t_list *ft_lstnew(char *content, enum token type, enum state state)
+t_list *ft_lstnew(char *content, enum token type)
 {
 	t_list *list;
 
@@ -164,16 +187,15 @@ t_list *ft_lstnew(char *content, enum token type, enum state state)
 		return (NULL);
 	list->content = content;
 	list->token = type;
-	list->state = state;
 	list->next = NULL;
 	return (list);
 }
 
-void add_token(t_list **list, char *token, enum token type, enum state state)
+void add_token(t_list **list, char *token, enum token type)
 {
 	t_list *new;
 
-	new = ft_lstnew(token, type, state);
+	new = ft_lstnew(token, type);
 	if(new != NULL)
 		ft_lstadd_back(list, new);
 }
@@ -190,12 +212,12 @@ int main(int ac, char **av)
 	(void)ac;
 	const char *token[] =
 	{"WORD", "WHITE_SPACE", "NEW_LINE", "QUOTE", "DOUBLE_QUOTE", "ENV", "PIPE_LINE", "REDIR_IN", "REDIR_OUT", "AND", "HEARDOC", "APPEND",};
-	const char *state[] = {"IN_DQUOTE", "IN_SQUOTE", "GENERAL",};
 	while (1)
 	{
 		line = readline("minishell-> ");
 			if (line == NULL)
 				break ;
+			is_space(line);
 			valid_line(line);
 			get_token(&list, line);
 			// syntax_check(&list);
@@ -204,7 +226,6 @@ int main(int ac, char **av)
 				printf("----------------------\n");
 				printf("content: '%s'\n", list->content);
 				printf("token: %s\n", token[list->token]);
-				printf("state: %s\n", state[list->state]);
 				list = list->next;
 			}
 	}

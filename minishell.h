@@ -36,7 +36,6 @@ typedef struct s_list
 {
     char			*content;
     enum token        token;
-	enum state		state;
     struct s_list	*next;
 }					t_list;
 
@@ -46,8 +45,8 @@ void	ft_lstadd_back(t_list **lst, t_list *new);
 char	*ft_strdup(const char *s1);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
 size_t	ft_strlen(const char *s);
-t_list	*ft_lstnew(char *content, enum token type, enum state state);
-void add_token(t_list **list, char *token, enum token type, enum state state);
+t_list	*ft_lstnew(char *content, enum token type);
+void add_token(t_list **list, char *token, enum token type);
 void syntax_check(t_list **list);
 int	ft_strncmp(const char *s1, const char *s2, size_t n);
 void valid_line(char *line);
