@@ -78,13 +78,15 @@ void check_all(t_list **list )
 
 	while (tmp)
 	{
-		if(!help_token(&tmp) && (tmp->next == NULL ||tmp->prev == NULL))
+		if(!help_token(&tmp) && (tmp->next == NULL ||tmp->prev ==NULL))
 		{
 			printf("syntax error");
 			exit(1);
 		}
 		tmp = tmp->next;
 	}
+	
+
 }
 // void check_redirection_syntax(t_list **list)
 

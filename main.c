@@ -251,15 +251,17 @@ int main(int ac, char **av)
 			get_token(&list, line);
 			syntax_check(&list);
 			// check_status(&list);
+
 			while (list)
 			{
 				printf("----------------------\n");
 				printf("content: '%s'\n", list->content);
 				printf("token: %s\n", token[list->token]);
-				// printf("state: %s\n", state[list->state]);
 				list = list->next;
+				// printf("state: %s\n", state[list->state]);
 			}
-	}
+			
 
+}
 	return 0;
 }
