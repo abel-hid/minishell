@@ -45,38 +45,52 @@ void valid_line(char *line)
 	}
 }
 
-void check_pipe(t_list **list)
+
+// int help(char c)
+// {
+// 	if (c == '|' || c == '>' || c == '<' || c == '\n'
+// 		|| c == '\'' || c == '\"' || c == ' ' || c == '\t' || c == '\0')
+// 		return (1);
+// 	return (0);
+// }
+int help_token(t_list **list)
 {
-	 t_list *tmp;
-	 tmp = *list;
+	t_list *tmp;
+	tmp = *list;
 
-	 printf("%s\n", tmp->next->content);
-
-	 while (tmp != NULL)
-	 {
-		  if(ft_strncmp(tmp->content, "|", 1) == 0 && tmp->next == NULL)
-		  {
-				printf("syntax error near unexpected token `|'\n");
-				exit(1);
-		  }
-		  if(ft_strncmp(tmp->content, "|", 1) == 0 && ft_strncmp(tmp->next->content, "|", 1) == 0)
-		  {
-				printf("syntax error near unexpected token `|'\n");
-				exit(1);
-		  }
-
-		  if(ft_strncmp(tmp->content, "|", 1) == 1 && ft_strncmp(tmp->next->content, "|",1) == 0)
-		  {
-				printf("syntax error near unexpected token `|'\n");
-				exit(1);
-		  }
-		  tmp = tmp->next;
-	 }
+		if(tmp->token == WORD || tmp->token == REDIR_IN ||
+		tmp->token == REDIR_OUT || tmp->token == APPEND || tmp->token == HEARDOC)
+			return (1);
+	
+	return (0);
 }
+int isalpha(int c)
+{
+	if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
+		return (c);
+	return (0);
+}
+void check_all(t_list **list )
+{
 
+	t_list *tmp;
+	tmp = *list;
+
+	while (tmp)
+	{
+		if(!help_token(&tmp) && (tmp->next == NULL ||tmp->prev ==NULL))
+		{
+			printf("syntax error");
+			exit(1);
+		}
+		tmp = tmp->next;
+	}
+}
+// void check_redirection_syntax(t_list **list)
 
 void syntax_check(t_list **list)
 {
-	check_pipe(list);
-
+	// check_pipe(list);
+	check_all(list);
+	// check_redirection_syntax(list);
 }

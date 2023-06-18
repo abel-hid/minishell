@@ -49,6 +49,7 @@ typedef struct s_list
     enum token        token;
 	enum state		state;
     struct s_list	*next;
+	struct s_list	*prev;
 }					t_list;
 
 char **ft_split(char const *s, char c);
