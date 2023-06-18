@@ -141,15 +141,7 @@ void get_token(t_list **list,char *line)
 				}
 				if(line[i] == '\n')
 					add_token(list, "\n", NEW_LINE);
-				if(line[i] == '&')
-					add_token(list, "&", AND);
-					if(line[i] == ' ')
-					{
-						while(line[i] == ' ')
-							i++;
-						add_token(list, " ", WHITE_SPACE);
-						i--;
-					}
+
 				if(line[i] == '\"')
 				{
 					add_double_quote(list, line, &i);
@@ -164,17 +156,14 @@ void add_double_quote(t_list **list, char *line, int *i)
 	int j;
 	char *p;
 
+	add_token(list, "\"", DOUBLE_QUOTE);
+	*i = *i + 1;
 	j = *i;
-	while(line[*i] != '\"' && line[*i] != '\0' && line[*i] != '$')
+	while(line[*i] != '\"')
 		*i = *i + 1;
-
-	if(*i > j)
-	{
-		p = ftft(line, j, *i - j);
-		add_token(list, p, WORD);
-	}
-	if(line[*i] == '\"')
-		add_token(list, "\"", DOUBLE_QUOTE);
+	p = ftft(line, j, *i - j);
+	add_token(list, p, WORD);
+	add_token(list, "\"", DOUBLE_QUOTE);
 }
 
 
@@ -188,6 +177,7 @@ t_list *ft_lstnew(char *content, enum token type)
 	list->content = content;
 	list->token = type;
 	list->next = NULL;
+	list->prev = NULL;
 	return (list);
 }
 
@@ -199,37 +189,7 @@ void add_token(t_list **list, char *token, enum token type)
 	if(new != NULL)
 		ft_lstadd_back(list, new);
 }
-void check_status(t_list **lst,char *line)
-{
 
-	get_token(lst, line);
-	const char *token[] =
-	{"WORD", "WHITE_SPACE", "NEW_LINE", "QUOTE", "DOUBLE_QUOTE", "ENV", "PIPE_LINE", "REDIR_IN", "REDIR_OUT", "AND", "HEARDOC", "APPEND",};
-	const char *state[] =
-	{"IN_DQUOTE", "IN_SQUOTE", "GENERAL",};
-	while(*lst  )
-	{
-		if((*lst)->token == QUOTE)
-		{
-			if((*lst)->next->token == WORD)
-			{
-				(*lst)->state = GENERAL;
-				(*lst)->next->state = IN_SQUOTE;
-			}
-			if((*lst)->token == QUOTE)
-			{
-				(*lst)->state = GENERAL;
-			}
-		}
-		printf("----------------------\n");
-		printf("content: %s\n", (*lst)->content);
-		printf("token: %s\n", token[(*lst)->token]);
-		printf("state: %s\n", state[(*lst)->state]);
-		printf("----------------------\n");
-		(*lst) = (*lst)->next;
-	}
-
-}
 
 int main(int ac, char **av)
 {
@@ -241,7 +201,10 @@ int main(int ac, char **av)
 
 	int i = 0;
 	(void)ac;
-
+	const char *token[] =
+	{"WORD", "WHITE_SPACE", "NEW_LINE", "QUOTE", "DOUBLE_QUOTE", "ENV", "PIPE_LINE", "REDIR_IN", "REDIR_OUT", "AND", "HEARDOC", "APPEND",};
+	const char *state[] =
+	{"IN_DQUOTE", "IN_SQUOTE", "GENERAL",};
 	while (1)
 	{
 		line = readline("minishell-> ");
@@ -249,9 +212,23 @@ int main(int ac, char **av)
 				break ;
 			is_space(line);
 			valid_line(line);
-			// get_token(&list, line);
-			check_status(&list,line);
-			// syntax_check(&list);
+			get_token(&list, line);
+			syntax_check(&list);
+			// check_status(&list);
+
+			while (av[i])
+			{
+				printf("%s\n", av[i]);
+				i++;
+			}
+			while (list)
+			{
+				printf("----------------------\n");
+				printf("content: '%s'\n", list->content);
+				printf("token: %s\n", token[list->token]);
+				// printf("state: %s\n", state[list->state]);
+				list = list->next;
+			}
 	}
 
 	return 0;
