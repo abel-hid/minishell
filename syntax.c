@@ -45,34 +45,6 @@ void valid_line(char *line)
 	}
 }
 
-// void check_pipe(t_list **list)
-// {
-// 	 t_list *tmp;
-// 	 tmp = *list;
-
-// 	 printf("%s\n", tmp->next->content);
-
-// 	 while (tmp != NULL)
-// 	 {
-// 		  if(ft_strncmp(tmp->content, "|", 1) == 0 && tmp->next == NULL)
-// 		  {
-// 				printf("syntax error near unexpected token `|'\n");
-// 				exit(1);
-// 		  }
-// 		  if(ft_strncmp(tmp->content, "|", 1) == 0 && ft_strncmp(tmp->next->content, "|", 1) == 0)
-// 		  {
-// 				printf("syntax error near unexpected token `|'\n");
-// 				exit(1);
-// 		  }
-
-// 		  if(ft_strncmp(tmp->content, "|", 1) == 1 && ft_strncmp(tmp->next->content, "|",1) == 0)
-// 		  {
-// 				printf("syntax error near unexpected token `|'\n");
-// 				exit(1);
-// 		  }
-// 		  tmp = tmp->next;
-// 	 }
-// }
 
 // int help(char c)
 // {
@@ -125,65 +97,7 @@ void check_pipe(t_list **list)
 }
 
 
-void check_redirection_syntax(char *line)
-{
-	int i = 0;
-
-	while(line[i])
-	{
-		if(line[i] == '>')
-		{
-			i++;
-			while(line[i] == ' ')
-				i++;
-			if(line[i] == '|' || line[i] == '<' || line[i] == '>')
-			{
-				printf("syntax error\n");
-				exit(1);
-			}
-		}
-		if(line[i] == '<')
-		{
-			i++;
-			while(line[i] == ' ')
-				i++;
-			if(line[i] == '|' || line[i] == '<' || line[i] == '>')
-			{
-				printf("syntax error\n");
-				exit(1);
-			}
-		}
-
-		//<<
-		if(line[i] == '<' && line[i + 1] == '<')
-		{
-			i += 2;
-			while(line[i] == ' ')
-				i++;
-			if(line[i] == '|' || line[i] == '<' || line[i] == '>')
-			{
-				printf("syntax error\n");
-				exit(1);
-			}
-		}
-
-		//>>
-		if(line[i] == '>' && line[i + 1] == '>')
-		{
-			i += 2;
-			while(line[i] == ' ')
-				i++;
-			if(line[i] == '|' || line[i] == '<' || line[i] == '>')
-			{
-				printf("syntax error\n");
-				exit(1);
-			}
-		}
-
-		i++;
-
-	}
-}
+// void check_redirection_syntax(t_list **list)
 
 void syntax_check(t_list **list)
 {

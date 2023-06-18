@@ -190,13 +190,12 @@ void add_token(t_list **list, char *token, enum token type)
 		ft_lstadd_back(list, new);
 }
 
-<<<<<<< HEAD
-=======
+
 void check_status(t_list **lst, char *line)
 {
     get_token(lst, line);
-    
-    
+
+
 	t_list *tmp = *lst;
 
     while (tmp)
@@ -213,7 +212,7 @@ void check_status(t_list **lst, char *line)
 		}
 		else if ((tmp)->token == WORD && (tmp)->state == IN_DQUOTE)
 			(tmp)->state = IN_DQUOTE;
-		
+
 		else if ((tmp)->token == WORD && (tmp)->state == IN_SQUOTE)
 			(tmp)->state = IN_SQUOTE;
 		else
@@ -222,7 +221,6 @@ void check_status(t_list **lst, char *line)
     }
 	tmp = *lst;
 }
->>>>>>> f267f1f2567939c11c529bc51dfed1b64bc68b91
 
 
 int main(int ac, char **av)
@@ -235,16 +233,14 @@ int main(int ac, char **av)
 
 	int i = 0;
 	(void)ac;
-<<<<<<< HEAD
+
 	const char *token[] =
 	{"WORD", "WHITE_SPACE", "NEW_LINE", "QUOTE", "DOUBLE_QUOTE", "ENV", "PIPE_LINE", "REDIR_IN", "REDIR_OUT", "AND", "HEARDOC", "APPEND",};
 	const char *state[] =
 	{"IN_DQUOTE", "IN_SQUOTE", "GENERAL",};
-=======
-	const char *token[] = {"WORD", "WHITE_SPACE", "NEW_LINE", "QUOTE", "DOUBLE_QUOTE", "ENV", "PIPE_LINE", "REDIR_IN", "REDIR_OUT", "AND", "HEARDOC", "APPEND"};
-    const char *state[] = {"GENERAL", "IN_DQUOTE", "IN_SQUOTE"};
 
->>>>>>> f267f1f2567939c11c529bc51dfed1b64bc68b91
+
+
 	while (1)
 	{
 		line = readline("minishell-> ");
@@ -252,7 +248,6 @@ int main(int ac, char **av)
 				break ;
 			is_space(line);
 			valid_line(line);
-<<<<<<< HEAD
 			get_token(&list, line);
 			syntax_check(&list);
 			// check_status(&list);
@@ -270,7 +265,7 @@ int main(int ac, char **av)
 				// printf("state: %s\n", state[list->state]);
 				list = list->next;
 			}
-=======
+
 			// get_token(&list, line);
 			check_status(&list,line);
 			while(list)
@@ -281,10 +276,9 @@ int main(int ac, char **av)
 				printf("state : %s\n", state[list->state]);
 				printf("====================================\n");
 
-				list = list->next;	
+				list = list->next;
 			}
 
->>>>>>> f267f1f2567939c11c529bc51dfed1b64bc68b91
 	}
 
 	return 0;
