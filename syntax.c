@@ -78,7 +78,7 @@ void check_all(t_list **list )
 
 	while (tmp)
 	{
-		if(!help_token(&tmp) && (tmp->next == NULL ||tmp->prev ==NULL))
+		if(!help_token(&tmp) && (tmp->next == NULL ||tmp->prev == NULL))
 		{
 			printf("syntax error");
 			exit(1);
