@@ -247,12 +247,13 @@ int main(int ac, char **av)
 			if (line == NULL)
 				break ;
 			is_space(line);
-			valid_line(line);
+			if(valid_line(line))
+				continue ;
 			get_token(&list, line);
 			syntax_check(&list);
 			// check_status(&list);
 
-			while (list)
+			while (list != NULL)
 			{
 				printf("----------------------\n");
 				printf("content: '%s'\n", list->content);
@@ -260,7 +261,7 @@ int main(int ac, char **av)
 				list = list->next;
 				// printf("state: %s\n", state[list->state]);
 			}
-			
+
 
 }
 	return 0;

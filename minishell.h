@@ -62,6 +62,6 @@ t_list	*ft_lstnew(char *content, enum token type);
 void add_token(t_list **list, char *token, enum token type);
 void syntax_check(t_list **list);
 int	ft_strncmp(const char *s1, const char *s2, size_t n);
-void valid_line(char *line);
+int valid_line(char *line);
 # endif
 

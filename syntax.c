@@ -16,7 +16,7 @@ int	ft_strncmp(const char *s1, const char *s2, size_t n)
 	return (0);
 }
 
-void valid_line(char *line)
+int valid_line(char *line)
 {
 	int i;
 	int j;
@@ -36,13 +36,14 @@ void valid_line(char *line)
 	if(j % 2 != 0)
 	{
 		printf("syntax error near unexpected token `\"'\n");
-		exit(1);
+		return(1);
 	}
 	if(k % 2 != 0)
 	{
 		printf("syntax error near unexpected token `'\''\n");
-		exit(1);
+		return(1);
 	}
+	return(0);
 }
 
 
@@ -61,7 +62,7 @@ int help_token(t_list **list)
 		if(tmp->token == WORD || tmp->token == REDIR_IN ||
 		tmp->token == REDIR_OUT || tmp->token == APPEND || tmp->token == HEARDOC)
 			return (1);
-	
+
 	return (0);
 }
 int isalpha(int c)
@@ -70,6 +71,9 @@ int isalpha(int c)
 		return (c);
 	return (0);
 }
+
+
+
 void check_all(t_list **list )
 {
 
@@ -80,12 +84,12 @@ void check_all(t_list **list )
 	{
 		if(!help_token(&tmp) && (tmp->next == NULL ||tmp->prev ==NULL))
 		{
-			printf("syntax error");
-			exit(1);
+			printf("syntax error\n");
+			*list = NULL;
 		}
 		tmp = tmp->next;
 	}
-	
+
 
 }
 // void check_redirection_syntax(t_list **list)
