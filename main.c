@@ -266,7 +266,6 @@ int main(int ac, char **av)
 			}
 
 	}
-	printf("====================================\n");
 
 	return 0;
 }
