@@ -119,7 +119,7 @@ void redir_syntax(t_list **list)
 				if(tmp->next != NULL && tmp->next->token == REDIR_OUT)
 					tmp = tmp->next;
 			}
-			
+
 			if(tmp->next == NULL || tmp->next->token != WORD)
 			{
 				printf("syntax error\n");

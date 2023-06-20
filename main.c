@@ -180,20 +180,35 @@ void add_token(t_list **list, char *token, enum token type)
 		ft_lstadd_back(list, new);
 }
 
+int ggg(char *line)
+{
+	int i = 0;
+
+	while(line[i])
+	{
+		if(line[i] == '|')
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
 
 int main(int ac, char **av)
 {
 	char *line;
 	t_list *list;
+	t_list *lst;
 
 	list = NULL;
+	lst = NULL;
 	enum token type;
 
 	int i = 0;
 	(void)ac;
 
 	const char *token[] =
-	{"WORD", "WHITE_SPACE", "NEW_LINE", "QUOTE", "DOUBLE_QUOTE", "ENV", "PIPE_LINE", "REDIR_IN", "REDIR_OUT", "AND", "HEARDOC", "APPEND",};
+	{"WORD","CMD", "WHITE_SPACE", "NEW_LINE", "QUOTE", "DOUBLE_QUOTE", "ENV", "PIPE_LINE", "REDIR_IN", "REDIR_OUT", "AND", "HEARDOC", "APPEND",};
 	const char *state[] =
 	{"IN_DQUOTE", "IN_SQUOTE", "GENERAL",};
 
@@ -211,14 +226,29 @@ int main(int ac, char **av)
 				syntax_check(&list);
 			}
 
-			get_list_command(&list);
 
-			while (list)
+
+
+			if(list != NULL)
 			{
-				printf("----------------------\n");
-				printf("content: '%s'\n", list->content);
-				// printf("token: %s\n", token[list->token]);
-				list = list->next;
+			if(ggg(line))
+				av = ft_split(line, '|');
+			else
+				av[0] = line;
+
+			i = 0;
+			while(av[i])
+			{
+				ft_lstadd_back(&lst, ft_lstnew(av[i], CMD));
+				i++;
+			}
+
+			while(lst)
+			{
+				printf("list->content: %s\n", lst->content);
+				printf("list->token: %s\n", token[lst->token]);
+				lst = lst->next;
+			}
 			}
 	}
 	return 0;

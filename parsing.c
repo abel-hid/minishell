@@ -1,4 +1,24 @@
 #include "minishell.h"
+char	*ft_strjoin(char const *s1, char const *s2)
+{
+	int		len;
+	int		i;
+	char	*p;
+
+	i = 0;
+	if (!s1 || !s2)
+		return (NULL);
+	len = ft_strlen((char *)s1) + ft_strlen((char *)s2);
+	p = malloc(sizeof(char) * (len + 1));
+	if (!p)
+		return (NULL);
+	while (*s1)
+		p[i++] = *s1++;
+	while (*s2)
+		p[i++] = *s2++;
+	p[i] = '\0';
+	return (p);
+}
 
 int is_redir(t_list **list)
 {
@@ -11,42 +31,9 @@ int is_redir(t_list **list)
 
 	return (0);
 }
-void get_list_command(t_list **list)
+
+
+void parsing(char **av, char *env, t_list **list)
 {
-	t_list *tmp;
-	t_list *tmp2;
-	char *p;
-	char *p2;
-	int i;
-	int j;
-
-	tmp = *list;
-
-	while(tmp)
-	{
-		if(tmp->token == WORD)
-		{
-			i = 0;
-			j = 0;
-			p = tmp->content;
-			tmp2 = tmp->next;
-			while(tmp2 && tmp2->token == WORD)
-			{
-				p2 = tmp2->content;
-				while(p[i])
-					i++;
-				while(p2[j])
-				{
-					p[i] = p2[j];
-					i++;
-					j++;
-				}
-				p[i] = '\0';
-				tmp2 = tmp2->next;
-			}
-			tmp->next = tmp2;
-		}
-		tmp = tmp->next;
-	}
-
+	
 }

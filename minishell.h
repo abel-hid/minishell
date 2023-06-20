@@ -18,6 +18,7 @@ enum state
 enum token
 {
 	WORD,
+	CMD,
 	WHITE_SPACE ,
 	NEW_LINE,
 	QUOTE ,
@@ -66,5 +67,6 @@ int valid_line(char *line);
 void shell_syntax(char *line , t_list **list);
 char *ftft(const char *s, unsigned int start, size_t len);
 void get_list_command(t_list **list);
+t_list  *parse2(t_list **data);
 # endif
 
