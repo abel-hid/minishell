@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-void get_token(t_list **list, char *line);
+// void get_token(t_list **list, char *line);
 void add_double_quote(t_list **list, char *line, int *i);
 
 
@@ -12,7 +12,7 @@ char *ftft(const char *s, unsigned int start, size_t len)
 	return substr;
 }
 
-void	is_space(char *line)
+int	is_space(char *line)
 {
 	int	i;
 	int	j;
@@ -26,7 +26,8 @@ void	is_space(char *line)
 		i++;
 	}
 	if ((int)ft_strlen(line) == j)
-		exit(1);
+		return (1);
+	return (0);
 }
 
 int ft_islogical(char c)
@@ -69,7 +70,7 @@ void add_ENV(t_list **list, char *line, int *i)
 	}
 }
 
-void get_token(t_list **list,char *line)
+void	get_token(t_list **list,char *line)
 {
 	int i;
 	int j;
@@ -128,42 +129,31 @@ void get_token(t_list **list,char *line)
 					else
 						add_token(list, "<", REDIR_IN);
 				}
+
 				if(line[i] == '\'')
 				{
-					add_token(list, "\'", QUOTE);
-					i++;
 					j = i;
+					i++;
 					while(line[i] != '\'')
 						i++;
+					i++;
 					p = ftft(line, j, i - j);
 					add_token(list, p, WORD);
-					add_token(list, "\'", QUOTE);
 				}
-				if(line[i] == '\n')
-					add_token(list, "\n", NEW_LINE);
 
 				if(line[i] == '\"')
 				{
-					add_double_quote(list, line, &i);
+					j = i;
+					i++;
+					while(line[i] != '\"')
+						i++;
+					i++;
+					p = ftft(line, j, i - j);
+					add_token(list, p, WORD);
 				}
 
 		i++;
 	}
-}
-
-void add_double_quote(t_list **list, char *line, int *i)
-{
-	int j;
-	char *p;
-
-	add_token(list, "\"", DOUBLE_QUOTE);
-	*i = *i + 1;
-	j = *i;
-	while(line[*i] != '\"')
-		*i = *i + 1;
-	p = ftft(line, j, *i - j);
-	add_token(list, p, WORD);
-	add_token(list, "\"", DOUBLE_QUOTE);
 }
 
 
@@ -191,38 +181,6 @@ void add_token(t_list **list, char *token, enum token type)
 }
 
 
-void check_status(t_list **lst, char *line)
-{
-    get_token(lst, line);
-
-
-	t_list *tmp = *lst;
-
-    while (tmp)
-    {
-        if ((tmp)->token == QUOTE && ((tmp)->next && (tmp)->next->token == WORD))
-        {
-			(tmp)->state = GENERAL;
-            (tmp)->next->state = IN_SQUOTE;
-        }
-		else if ((tmp)->token == DOUBLE_QUOTE && ((tmp)->next && (tmp)->next->token == WORD))
-		{
-			(tmp)->state = GENERAL;
-			(tmp)->next->state = IN_DQUOTE;
-		}
-		else if ((tmp)->token == WORD && (tmp)->state == IN_DQUOTE)
-			(tmp)->state = IN_DQUOTE;
-
-		else if ((tmp)->token == WORD && (tmp)->state == IN_SQUOTE)
-			(tmp)->state = IN_SQUOTE;
-		else
-			(tmp)->state = GENERAL;
-       tmp = tmp->next;
-    }
-	tmp = *lst;
-}
-
-
 int main(int ac, char **av)
 {
 	char *line;
@@ -246,23 +204,22 @@ int main(int ac, char **av)
 		line = readline("minishell-> ");
 			if (line == NULL)
 				break ;
-			is_space(line);
-			if(valid_line(line))
-				continue ;
-			get_token(&list, line);
-			syntax_check(&list);
-			// check_status(&list);
 
-			while (list != NULL)
+			if(valid_line(line) == 0)
+			{
+				get_token(&list, line);
+				syntax_check(&list);
+			}
+
+			get_list_command(&list);
+
+			while (list)
 			{
 				printf("----------------------\n");
 				printf("content: '%s'\n", list->content);
-				printf("token: %s\n", token[list->token]);
+				// printf("token: %s\n", token[list->token]);
 				list = list->next;
-				// printf("state: %s\n", state[list->state]);
 			}
-
-
-}
+	}
 	return 0;
 }

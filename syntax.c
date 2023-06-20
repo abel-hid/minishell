@@ -36,24 +36,16 @@ int valid_line(char *line)
 	if(j % 2 != 0)
 	{
 		printf("syntax error near unexpected token `\"'\n");
-		return(1);
+		return (1) ;
 	}
 	if(k % 2 != 0)
 	{
 		printf("syntax error near unexpected token `'\''\n");
 		return(1);
 	}
-	return(0);
+	return (0);
 }
 
-
-// int help(char c)
-// {
-// 	if (c == '|' || c == '>' || c == '<' || c == '\n'
-// 		|| c == '\'' || c == '\"' || c == ' ' || c == '\t' || c == '\0')
-// 		return (1);
-// 	return (0);
-// }
 int help_token(t_list **list)
 {
 	t_list *tmp;
@@ -72,31 +64,75 @@ int isalpha(int c)
 	return (0);
 }
 
-
-
-void check_all(t_list **list )
+void free_list(t_list **list)
 {
-
 	t_list *tmp;
-	tmp = *list;
+	t_list *tmp2;
 
-	while (tmp)
+	tmp = *list;
+	while(tmp)
 	{
-		if(!help_token(&tmp) && (tmp->next == NULL ||tmp->prev ==NULL))
+		tmp2 = tmp->next;
+		free(tmp->content);
+		free(tmp);
+		tmp = tmp2;
+	}
+}
+
+void pipe_line_syntax(t_list **list)
+{
+	t_list *tmp;
+
+	tmp = *list;
+	while(tmp)
+	{
+		if(tmp->token == PIPE_LINE)
 		{
-			printf("syntax error\n");
-			*list = NULL;
+			if(tmp->prev == NULL || tmp->next == NULL)
+			{
+				printf("syntax error near unexpected token `|'\n");
+				*list = NULL;
+				return ;
+			}
+			if(help_token(&tmp->prev) == 0 || help_token(&tmp->next) == 0)
+			{
+				printf("syntax error near unexpected token `|'\n");
+				*list = NULL;
+				return ;
+			}
 		}
 		tmp = tmp->next;
 	}
-
-
 }
-// void check_redirection_syntax(t_list **list)
+void redir_syntax(t_list **list)
+{
+	t_list *tmp;
+
+	tmp = *list;
+
+	while(tmp)
+	{
+		if(tmp->token == REDIR_IN || tmp->token == REDIR_OUT || tmp->token == APPEND || tmp->token == HEARDOC)
+		{
+			if(tmp->token == REDIR_IN)
+			{
+				if(tmp->next != NULL && tmp->next->token == REDIR_OUT)
+					tmp = tmp->next;
+			}
+			
+			if(tmp->next == NULL || tmp->next->token != WORD)
+			{
+				printf("syntax error\n");
+				*list = NULL;
+				return ;
+			}
+		}
+		tmp = tmp->next;
+	}
+}
 
 void syntax_check(t_list **list)
 {
-	// check_pipe(list);
-	check_all(list);
-	// check_redirection_syntax(list);
+	pipe_line_syntax(list);
+	redir_syntax(list);
 }

@@ -63,5 +63,8 @@ void add_token(t_list **list, char *token, enum token type);
 void syntax_check(t_list **list);
 int	ft_strncmp(const char *s1, const char *s2, size_t n);
 int valid_line(char *line);
+void shell_syntax(char *line , t_list **list);
+char *ftft(const char *s, unsigned int start, size_t len);
+void get_list_command(t_list **list);
 # endif
 
