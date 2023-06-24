@@ -1,4 +1,3 @@
-
 #ifndef MINISHELL_H
 # define MINISHELL_H
 # include <stdio.h>
@@ -8,29 +7,33 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
-enum state
-{
-	GENERAL,
-	IN_DQUOTE,
-	IN_SQUOTE,
-};
-
-enum token
+typedef enum s_tokens
 {
 	WORD,
-	CMD,
-	WHITE_SPACE ,
-	NEW_LINE,
-	QUOTE ,
-	DOUBLE_QUOTE ,
-	ENV,
 	PIPE_LINE ,
 	REDIR_IN ,
 	REDIR_OUT,
-	AND ,
 	HEARDOC ,
 	APPEND ,
-} ;
+} 	t_tokens;
+
+
+typedef struct s_lexer
+{
+	char    	*content;
+	t_tokens        token;
+	int		i;
+	struct s_lexer	*next;
+	struct s_lexer	*prev;
+}	t_lexer;
+
+typedef struct s_env
+{
+	char	*key;
+	char	*value;
+	struct s_env	*next;
+	struct s_env	*prev;
+}	t_env;
 
 enum command_type
 {
@@ -44,29 +47,19 @@ enum command_type
 	exit1,
 };
 
-typedef struct s_list
-{
-    char			*content;
-    enum token        token;
-	enum state		state;
-    struct s_list	*next;
-	struct s_list	*prev;
-}					t_list;
-
+void craete_env(char **env_list, t_env **g_env);
 char **ft_split(char const *s, char c);
-t_list	*ft_lstlast(t_list *lst);
-void	ft_lstadd_back(t_list **lst, t_list *new);
 char	*ft_strdup(const char *s1);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
 size_t	ft_strlen(const char *s);
-t_list	*ft_lstnew(char *content, enum token type);
-void add_token(t_list **list, char *token, enum token type);
-void syntax_check(t_list **list);
-int	ft_strncmp(const char *s1, const char *s2, size_t n);
-int valid_line(char *line);
-void shell_syntax(char *line , t_list **list);
-char *ftft(const char *s, unsigned int start, size_t len);
-void get_list_command(t_list **list);
-t_list  *parse2(t_list **data);
-# endif
+int	ft_strncmp( char *s1, char *s2, size_t n);
+void ft_lstadd_back(t_lexer **lst, t_lexer *new);
+t_lexer *ft_lstnew(char *content, t_tokens type);
 
+
+char *expand_variables(t_lexer **list, t_env **p_env);
+void free_list(t_lexer *lst);
+void expand(t_lexer **list, t_env **g_env);
+
+
+#endif

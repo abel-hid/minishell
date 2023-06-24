@@ -3,6 +3,7 @@ NAME = minishell
 
 SRCS = $(wildcard *.c)
 
+
 OBJS = $(SRCS:.c=.o)
 
 CC = cc
