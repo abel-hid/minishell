@@ -151,6 +151,29 @@ char *delete_dpuote(char *str, char c)
 	free(str);
 	return (new);
 }
+int check_value(char *value, char *key)
+{
+	int i;
+	int j;
+
+	i = 0;
+	j = 0;
+	while(value[i] && key[j])
+	{
+		if(value[i] == key[j])
+		{
+			i++;
+			j++;
+		}
+		else
+			return (0);
+	}
+	if(key[j] == '\0')
+		return (1);
+	return (0);
+
+
+}
 
 int check_quote(char *line, int i , char c)
 {
@@ -175,6 +198,7 @@ char *expand_variables(t_lexer **list, t_env **g_env)
 	char *value;
 	char *new;
 	char *str;
+	char *space;
 	int index;
 
 	while (tmp)
@@ -187,10 +211,17 @@ char *expand_variables(t_lexer **list, t_env **g_env)
 			{
 				if (tmp->content[index] == '$')
 				{
-					// if(is_digit(tmp->content[index + 1]))
-					// {
-						
-					// }
+
+					if(is_digit(tmp->content[index + 1]))
+					{
+						index += 2;
+						str = ft_substr(tmp->content, index, ft_strlen(tmp->content));
+						new = ft_strjoin(str, "");
+						tmp->content = new;
+						free(tmp->content);
+					}
+					else
+					{
 
 					int i = index + 1;
 					int j = 0;
@@ -199,12 +230,18 @@ char *expand_variables(t_lexer **list, t_env **g_env)
 						j++;
 						i++;
 					}
+
+					while (tmp->content[i] && tmp->content[i] != ' ')
+						i++;
+
 					str = ft_substr(tmp->content, 0, index);
 					key = ft_substr(tmp->content, index + 1, j);
 					value = get_env_value(*g_env, key);
+					space = ft_substr(tmp->content, i, ft_strlen(tmp->content));
 					if (value)
 					{
 						new = ft_strjoin(str, value);
+						new = ft_strjoin(new, space);
 						free(tmp->content);
 						tmp->content = new;
 						index += ft_strlen(value);
@@ -212,11 +249,14 @@ char *expand_variables(t_lexer **list, t_env **g_env)
 					else
 					{
 						new = ft_strjoin(str, "");
+						new = ft_strjoin(new, space);
 						free(tmp->content);
 						tmp->content = new;
 
 					}
 					free(key);
+					}
+
 				}
 				index++;
 			}
