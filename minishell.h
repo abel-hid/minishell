@@ -6,6 +6,7 @@
 # include <string.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <fcntl.h>
 
 typedef enum s_tokens
 {

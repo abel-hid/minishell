@@ -1,4 +1,5 @@
 #include "minishell.h"
+void hh(t_lexer **list);
 
 int is_digit(char c)
 {
@@ -202,6 +203,7 @@ int my(char *line, char c)
 	}
 	return (0);
 }
+
 int if_dollar_out_quote(char *line)
 {
 	int i;
@@ -253,7 +255,6 @@ char *expand_variables(t_lexer **list, t_env **g_env)
 						j++;
 						i++;
 					}
-
 					while (tmp->content[i] && tmp->content[i] != ' ')
 						i++;
 
@@ -292,6 +293,8 @@ char *expand_variables(t_lexer **list, t_env **g_env)
 				index++;
 			}
 		}
+		else
+				hh(list);
 		tmp = tmp->next;
 	}
 	return NULL;
@@ -300,6 +303,20 @@ char *expand_variables(t_lexer **list, t_env **g_env)
 void expand(t_lexer **list, t_env **g_env)
 {
 	expand_variables(list, g_env);
+	t_lexer *tmp = *list;
+	while (tmp)
+	{
+		if(ft_strncmp(tmp->content, "\"", 4) == 0)
+		{
+			tmp->content = ft_strdup("");
+		}
+		tmp = tmp->next;
+	}
+
+}
+
+void hh(t_lexer **list)
+{
 
 	t_lexer *tmp = *list;
 	while (tmp)
