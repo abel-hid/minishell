@@ -65,10 +65,10 @@ int is_quote(char c)
 
 int skip_spaces(char *line, int i)
 {
-    int j = 0;
-    while (line[i + j] && is_space(line[i + j]))
-        j++;
-    return j;
+	int j = 0;
+	while (line[i + j] && is_space(line[i + j]))
+		j++;
+	return (j);
 }
 
 int is_token(char c)
@@ -78,11 +78,11 @@ int is_token(char c)
 
 int is_quote_end(char c, char quote_type)
 {
-    if (quote_type == '\'')
-        return (c == '\'');
-    if (quote_type == '\"')
-        return (c == '\"');
-    return 0;
+	if (quote_type == '\'')
+		return (c == '\'');
+	if (quote_type == '\"')
+		return (c == '\"');
+	return (0);
 }
 
 int  get_quote_length(char *line, int i, char quote_type)

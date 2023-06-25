@@ -190,6 +190,28 @@ int check_quote(char *line, int i , char c)
 	}
 	return (j);
 }
+int my(char *line, char c)
+{
+	int i;
+	 i = 0;
+
+	while(line[i])
+	{
+		if(line[i] == c)
+			return (1);
+		i++;
+	}
+	return (0);
+}
+int if_dollar_out_quote(char *line)
+{
+	int i;
+	if(line[i] == '$' && line[i + 1] == '\"')
+	{
+		return (1);
+	}
+	return (0);
+}
 
 char *expand_variables(t_lexer **list, t_env **g_env)
 {
@@ -201,17 +223,19 @@ char *expand_variables(t_lexer **list, t_env **g_env)
 	char *space;
 	int index;
 
+	int   x;
+
 	while (tmp)
 	{
 		index = 0;
 		if(check_quote(tmp->content, index, '\"') || !check_quote(tmp->content, index, '\''))
 		{
+			x = if_dollar_out_quote(tmp->content);
 			tmp->content = delete_dpuote(tmp->content, '\"');
 			while (tmp->content[index])
 			{
-				if (tmp->content[index] == '$')
+				if (tmp->content[index] == '$' && !x)
 				{
-
 					if(is_digit(tmp->content[index + 1]))
 					{
 						index += 2;
@@ -230,7 +254,7 @@ char *expand_variables(t_lexer **list, t_env **g_env)
 						j++;
 						i++;
 					}
-
+					
 					while (tmp->content[i] && tmp->content[i] != ' ')
 						i++;
 
@@ -249,6 +273,7 @@ char *expand_variables(t_lexer **list, t_env **g_env)
 					else
 					{
 						new = ft_strjoin(str, "");
+						if(space)
 						new = ft_strjoin(new, space);
 						free(tmp->content);
 						tmp->content = new;
@@ -256,8 +281,15 @@ char *expand_variables(t_lexer **list, t_env **g_env)
 					}
 					free(key);
 					}
-
 				}
+				else if(x)
+				{
+					x = 0;
+					new = ft_substr(tmp->content, index + 1, ft_strlen(tmp->content));
+					tmp->content = new;
+					free(tmp->content);
+				}
+
 				index++;
 			}
 		}
@@ -278,36 +310,3 @@ void expand(t_lexer **list, t_env **g_env)
 		tmp = tmp->next;
 	}
 }
-
-
-
-
-// char *expand_variables(t_lexer **list,t_env **g_env)
-// {
-// 	t_lexer *tmp;
-// 	tmp = *list;
-// 	char *env;
-
-// 	while(tmp)
-// 	{
-// 		if(tmp->token == WORD)
-// 		{
-// 			if(tmp->content[0] == '$')
-// 			{
-// 					env = getenv(tmp->content + 1);
-// 					if(env)
-// 					{
-// 						free(tmp->content);
-// 						tmp->content = ft_strdup(env);
-// 					}
-// 					else
-// 					{
-// 						free(tmp->content);
-// 						tmp->content = ft_strdup("");
-// 					}
-// 			}
-// 		}
-// 		tmp = tmp->next;
-// 	}
-// 	return (NULL);
-// }
