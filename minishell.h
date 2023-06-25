@@ -37,7 +37,6 @@ typedef struct s_command
 {
 	char	**args;
 	t_fd	fd;
-	t_redir_list	*redir_list;
 }	t_command;
 
 
@@ -84,6 +83,7 @@ t_lexer *ft_lstnew(char *content, t_tokens type);
 char *expand_variables(t_lexer **list, t_env **p_env);
 void free_list(t_lexer *lst);
 void expand(t_lexer **list, t_env **g_env);
+t_command **srfak_lban(t_lexer **list);
 
 
 int parsing(t_lexer **list, t_command **command);

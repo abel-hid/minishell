@@ -332,7 +332,15 @@ int main(int ac ,char **av , char **env)
 				break ;
 		lexing(&lexer, line);
 		expand(&lexer, &p_env);
-		parsing(&lexer,&cmd);
+		// parsing(&lexer,&cmd);
+		cmd = *(srfak_lban(&lexer));
+
+
+				printf("%s\n", cmd->args[0]);
+				// i++;
+
+
+
 
 		// while(lexer != NULL)
 		// {
@@ -341,11 +349,11 @@ int main(int ac ,char **av , char **env)
 		// 	lexer = lexer->next;
 		// }
 
-		while(cmd)
-		{
-			printf("%s\n", cmd->args[i]);
-			i++;
-		}
+		// while(cmd)
+		// {
+		// 	printf("%s\n", cmd->args[i]);
+		// 	i++;
+		// }
 		add_history(line);
 
 	}
