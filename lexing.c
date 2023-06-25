@@ -318,6 +318,7 @@ int main(int ac ,char **av , char **env)
 
 	t_lexer *lexer;
 	t_env *p_env;
+	t_command *cmd;
 	craete_env(env,	&p_env);
 
 	int i = 0;
@@ -331,12 +332,19 @@ int main(int ac ,char **av , char **env)
 				break ;
 		lexing(&lexer, line);
 		expand(&lexer, &p_env);
+		parsing(&lexer,&cmd);
 
-		while(lexer != NULL)
+		// while(lexer != NULL)
+		// {
+		// 	printf("%s\n", lexer->content);
+		// 	printf("%s\n", token[lexer->token]);
+		// 	lexer = lexer->next;
+		// }
+
+		while(cmd)
 		{
-			printf("%s\n", lexer->content);
-			printf("%s\n", token[lexer->token]);
-			lexer = lexer->next;
+			printf("%s\n", cmd->args[i]);
+			i++;
 		}
 		add_history(line);
 

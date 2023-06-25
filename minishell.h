@@ -86,4 +86,6 @@ void free_list(t_lexer *lst);
 void expand(t_lexer **list, t_env **g_env);
 
 
+int parsing(t_lexer **list, t_command **command);
+
 #endif
