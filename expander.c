@@ -148,7 +148,6 @@ char *delete_dpuote(char *str, char c)
 		j++;
 	}
 	new[j] = '\0';
-	free(str);
 	return (new);
 }
 int check_value(char *value, char *key)
@@ -254,7 +253,7 @@ char *expand_variables(t_lexer **list, t_env **g_env)
 						j++;
 						i++;
 					}
-					
+
 					while (tmp->content[i] && tmp->content[i] != ' ')
 						i++;
 
@@ -305,6 +304,10 @@ void expand(t_lexer **list, t_env **g_env)
 	t_lexer *tmp = *list;
 	while (tmp)
 	{
+		if(ft_strncmp(tmp->content, "''", 4) == 0)
+		{
+			tmp->content = ft_strdup("");
+		}
 		if(check_quote(tmp->content, 0, '\''))
 			tmp->content = delete_dpuote(tmp->content, '\'');
 		tmp = tmp->next;

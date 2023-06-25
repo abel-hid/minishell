@@ -17,6 +17,29 @@ typedef enum s_tokens
 	APPEND ,
 } 	t_tokens;
 
+typedef struct s_fd
+{
+	int		fd_in;
+	int		fd_out;
+}	t_fd;
+
+
+typedef struct s_redir_list
+{
+	char	*file_name;
+	t_tokens	type;
+	struct s_redir_list	*next;
+}	t_redir_list;
+
+
+typedef struct s_command
+{
+	char	**args;
+	t_fd	fd;
+	t_redir_list	*redir_list;
+}	t_command;
+
+
 
 typedef struct s_lexer
 {

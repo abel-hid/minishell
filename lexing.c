@@ -321,13 +321,6 @@ int main(int ac ,char **av , char **env)
 	craete_env(env,	&p_env);
 
 	int i = 0;
-	// while(p_env)
-	// {
-	// 	printf("key; %s\n", p_env->key);
-	// 	printf("value; %s\n", p_env->value);
-	// 	p_env = p_env->next;
-	// }
-	// exit(0);
 	lexer = NULL;
 	char *token[] = {"WORD", "PIPE_LINE", "REDIR_IN", "REDIR_OUT", "HEARDOC", "APPEND"};
 
@@ -337,7 +330,6 @@ int main(int ac ,char **av , char **env)
 			if (line == NULL)
 				break ;
 		lexing(&lexer, line);
-		// delete_dpuote(&lexer);
 		expand(&lexer, &p_env);
 
 		while(lexer != NULL)
