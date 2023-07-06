@@ -69,7 +69,7 @@ enum command_type
 	unset,
 	exit1,
 };
-
+void lexing(t_lexer **list, char *line);
 void craete_env(char **env_list, t_env **g_env);
 char **ft_split(char const *s, char c);
 char	*ft_strdup(const char *s1);
@@ -78,7 +78,7 @@ size_t	ft_strlen(const char *s);
 int	ft_strncmp( char *s1, char *s2, size_t n);
 void ft_lstadd_back(t_lexer **lst, t_lexer *new);
 t_lexer *ft_lstnew(char *content, t_tokens type);
-
+char *ft_strncpy(char *s1, char *s2, int n);
 
 char *expand_variables(t_lexer **list, t_env **p_env);
 void free_list(t_lexer *lst);

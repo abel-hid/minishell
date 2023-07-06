@@ -81,6 +81,11 @@ int	ft_strchr(char *s, int c)
 	return (0);
 }
 
+int is_alpha(char c)
+{
+	return ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'));
+}
+
 t_env *new_env(char *key, char *value)
 {
 	t_env *new;
@@ -129,27 +134,30 @@ char *get_env_value(t_env *env, const char *key)
 	}
 	return NULL;
 }
-char *delete_dpuote(char *str, char c)
+
+char *delete_dpuote(char* str, char c)
 {
-	int i;
-	int j;
+	int i = 0;
+	int j = 0;
 	char *new;
 
-	i = 0;
-	j = 0;
-	new = malloc(sizeof(char) * (ft_strlen(str) + 1));
-	if(!new)
-		return (NULL);
-	while(str[i])
+	size_t len = strlen(str);
+
+	 new = (char*)malloc(sizeof(char) * (len + 1));
+	if (new == NULL)
+		return NULL;
+
+	while (str[i])
 	{
-		if(str[i] == c)
-			i++;
-		new[j] = str[i];
+		if (str[i] != c)
+		{
+			new[j] = str[i];
+			j++;
+		}
 		i++;
-		j++;
 	}
 	new[j] = '\0';
-	return (new);
+	return new;
 }
 int check_value(char *value, char *key)
 {
@@ -190,6 +198,7 @@ int check_quote(char *line, int i , char c)
 	}
 	return (j);
 }
+
 int my(char *line, char c)
 {
 	int i;
@@ -207,6 +216,7 @@ int my(char *line, char c)
 int if_dollar_out_quote(char *line)
 {
 	int i;
+	i = 0;
 	if(line[i] == '$' && line[i + 1] == '\"')
 	{
 		return (1);
@@ -214,105 +224,95 @@ int if_dollar_out_quote(char *line)
 	return (0);
 }
 
+int my_ff(char *str)
+{
+	int i = 0;
+	while(str[i])
+	{
+		if(str[i] == '$')
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
+
 char *expand_variables(t_lexer **list, t_env **g_env)
 {
-	t_lexer *tmp = *list;
+	t_lexer *tmp;
+
+	tmp = *list;
 	char *key;
 	char *value;
-	char *new;
-	char *str;
-	char *space;
-	int index;
+	static char   *new;
+	int i;
 
-	int   x;
 
-	while (tmp)
+	while(tmp)
 	{
-		index = 0;
-		if(check_quote(tmp->content, index, '\"') || !check_quote(tmp->content, index, '\''))
-		{
-			x = if_dollar_out_quote(tmp->content);
-			tmp->content = delete_dpuote(tmp->content, '\"');
-			while (tmp->content[index])
-			{
-				if (tmp->content[index] == '$' && !x)
-				{
-					if(is_digit(tmp->content[index + 1]))
-					{
-						index += 2;
-						str = ft_substr(tmp->content, index, ft_strlen(tmp->content));
-						new = ft_strjoin(str, "");
-						tmp->content = new;
-						free(tmp->content);
-					}
-					else
-					{
+		i = 0;
 
-					int i = index + 1;
+		if(check_quote(tmp->content, i, '\"') || !check_quote(tmp->content, i, '\''))
+		{
+			tmp->content = delete_dpuote(tmp->content, '\"');
+
+		if(my_ff(tmp->content))
+		{
+			while(tmp->content[i])
+			{
+				if(tmp->content[i] == '$' && tmp->content[i + 1] != '\0')
+				{
+					if(is_digit(tmp->content[i + 1]))
+					{
+						i += 2;
+						while (tmp->content[i] != ' ' && tmp->content[i] != '$')
+							i++;
+					}
 					int j = 0;
-					while (tmp->content[i] && tmp->content[i] != ' ' && tmp->content[i] != '$')
+					int a = i + 1;
+					while (tmp->content[a] && is_alpha(tmp->content[a]))
 					{
 						j++;
-						i++;
+						a++;
 					}
-					while (tmp->content[i] && tmp->content[i] != ' ')
-						i++;
-
-					str = ft_substr(tmp->content, 0, index);
-					key = ft_substr(tmp->content, index + 1, j);
+					key = ft_substr(tmp->content, i + 1, j);
 					value = get_env_value(*g_env, key);
-					space = ft_substr(tmp->content, i, ft_strlen(tmp->content));
 					if (value)
 					{
-						new = ft_strjoin(str, value);
-						new = ft_strjoin(new, space);
+						new = ft_substr(tmp->content, 0, i);
+						new = ft_strjoin(new, value);
+						new = ft_strjoin(new, ft_substr(tmp->content, i + j + 1, ft_strlen(tmp->content)));
 						free(tmp->content);
 						tmp->content = new;
-						index += ft_strlen(value);
+						new = NULL;
 					}
 					else
 					{
-						new = ft_strjoin(str, "");
-						if(space)
-						new = ft_strjoin(new, space);
+						new = ft_substr(tmp->content, 0, i);
+						new = ft_strjoin(new, ft_substr(tmp->content, i + j + 1, ft_strlen(tmp->content)));
 						free(tmp->content);
 						tmp->content = new;
-
+						new = NULL;
 					}
 					free(key);
-					}
 				}
-				else if(x)
-				{
-					x = 0;
-					new = ft_substr(tmp->content, index + 1, ft_strlen(tmp->content));
-					tmp->content = new;
-					free(tmp->content);
-				}
-
-				index++;
+				i++;
 			}
 		}
+		}
 		else
-				hh(list);
+			hh(list);
+
 		tmp = tmp->next;
 	}
 	return NULL;
+
 }
+
 
 void expand(t_lexer **list, t_env **g_env)
 {
 	expand_variables(list, g_env);
-	t_lexer *tmp = *list;
-	while (tmp)
-	{
-		if(ft_strncmp(tmp->content, "\"", 4) == 0)
-		{
-			tmp->content = ft_strdup("");
-		}
-		tmp = tmp->next;
-	}
-
 }
 
 void hh(t_lexer **list)

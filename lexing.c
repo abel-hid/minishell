@@ -152,7 +152,6 @@ int get_token(char *line, int i, t_lexer **list)
 void create_lexer(char *line, t_lexer **list)
 {
 	int i = 0;
-	int j = 0;
 	int token_length = 0;
 
 	while (line[i])
@@ -312,49 +311,4 @@ void lexing(t_lexer **list, char *line)
 	syntax_check(list);
 }
 
-int main(int ac ,char **av , char **env)
-{
-	char *line;
 
-	t_lexer *lexer;
-	t_env *p_env;
-	t_command *cmd;
-	craete_env(env,	&p_env);
-
-	int i = 0;
-	lexer = NULL;
-	char *token[] = {"WORD", "PIPE_LINE", "REDIR_IN", "REDIR_OUT", "HEARDOC", "APPEND"};
-
-	while (1)
-	{
-		line = readline("minishell-> ");
-			if (line == NULL)
-				break ;
-		lexing(&lexer, line);
-		expand(&lexer, &p_env);
-		// parsing(&lexer,&cmd);
-		cmd = *(srfak_lban(&lexer));
-
-
-				printf("%s\n", cmd->args[0]);
-				// i++;
-
-
-
-
-		// while(lexer != NULL)
-		// {
-		// 	printf("%s\n", lexer->content);
-		// 	printf("%s\n", token[lexer->token]);
-		// 	lexer = lexer->next;
-		// }
-
-		// while(cmd)
-		// {
-		// 	printf("%s\n", cmd->args[i]);
-		// 	i++;
-		// }
-		add_history(line);
-
-	}
-}
