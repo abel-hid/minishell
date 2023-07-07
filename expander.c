@@ -159,6 +159,7 @@ char *delete_dpuote(char* str, char c)
 	new[j] = '\0';
 	return new;
 }
+
 int check_value(char *value, char *key)
 {
 	int i;
@@ -197,6 +198,28 @@ int check_quote(char *line, int i , char c)
 			j++;
 	}
 	return (j);
+}
+
+int c_quote(char *line)
+{
+	int i;
+	int j;
+
+	i = 0;
+	j = 0;
+	while(line[i])
+	{
+		if(line[i] == '\'')
+		{
+			return (1);
+		}
+		if(line[i] == '\"')
+		{
+			return (2);
+		}
+		i++;
+	}
+	return (0);
 }
 
 int my(char *line, char c)
@@ -254,18 +277,18 @@ char *expand_variables(t_lexer **list, t_env **g_env)
 
 		if(check_quote(tmp->content, i, '\"') || !check_quote(tmp->content, i, '\''))
 		{
-			tmp->content = delete_dpuote(tmp->content, '\"');
+			// tmp->content = delete_dpuote(tmp->content, '\"');
 
 		if(my_ff(tmp->content))
 		{
 			while(tmp->content[i])
 			{
-				if(tmp->content[i] == '$' && tmp->content[i + 1] != '\0')
+				if(tmp->content[i] == '$' && tmp->content[i + 1] != '\0' && tmp->content[i + 1] != '\'')
 				{
 					if(is_digit(tmp->content[i + 1]))
 					{
 						i += 2;
-						while (tmp->content[i] != ' ' && tmp->content[i] != '$')
+						while(tmp->content[i] && is_digit(tmp->content[i]))
 							i++;
 					}
 					int j = 0;
@@ -300,33 +323,75 @@ char *expand_variables(t_lexer **list, t_env **g_env)
 			}
 		}
 		}
-		else
-			hh(list);
-
 		tmp = tmp->next;
 	}
 	return NULL;
 
 }
 
+char *delete_dollar(char *str)
+{
+	int i = 0;
+	int j = 0;
+	char *new;
+
+	size_t len = strlen(str);
+
+	new = malloc(sizeof(char) * (len + 1));
+	if (new == NULL)
+		return NULL;
+
+	while (str[i])
+	{
+		if (str[i] != '$')
+		{
+			new[j] = str[i];
+			j++;
+		}
+		i++;
+	}
+	new[j] = '\0';
+	return (new);
+}
+
 
 void expand(t_lexer **list, t_env **g_env)
 {
 	expand_variables(list, g_env);
-}
 
-void hh(t_lexer **list)
-{
-
-	t_lexer *tmp = *list;
-	while (tmp)
+	t_lexer *tmp;
+	tmp = *list;
+	int i;
+	while(tmp)
 	{
-		if(ft_strncmp(tmp->content, "''", 4) == 0)
+
+			i = 0;
+
+			while(tmp->content[i])
+			{
+
+				if(tmp->content[i] == '$' && tmp->content[i + 1] == '\'')
+				{
+				tmp->content = delete_dpuote(tmp->content, '\'');
+				tmp->content = delete_dollar(tmp->content);
+				}
+				i++;
+			}
+
+		if(c_quote(tmp->content) != 0)
 		{
-			tmp->content = ft_strdup("");
+			if(c_quote(tmp->content) == 1)
+			{
+				tmp->content = delete_dpuote(tmp->content, '\'');
+			}
+			else
+			{
+				tmp->content = delete_dpuote(tmp->content, '\"');
+			}
 		}
-		if(check_quote(tmp->content, 0, '\''))
-			tmp->content = delete_dpuote(tmp->content, '\'');
+
 		tmp = tmp->next;
 	}
+
 }
+
