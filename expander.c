@@ -3,7 +3,9 @@ void hh(t_lexer **list);
 
 int is_digit(char c)
 {
-	return (c >= '0' && c <= '9');
+	if(c >= '0' && c <= '9')
+		return (1);
+	return (0);
 }
 
 void lstadd_back(t_env **lst, t_env *new)
@@ -81,9 +83,12 @@ int	ft_strchr(char *s, int c)
 	return (0);
 }
 
-int is_alpha(char c)
+int	ft_isalnum(int c)
 {
-	return ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'));
+	if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')
+		|| (c >= '0' && c <= '9'))
+		return (1);
+	return (0);
 }
 
 t_env *new_env(char *key, char *value)
@@ -277,23 +282,15 @@ char *expand_variables(t_lexer **list, t_env **g_env)
 
 		if(check_quote(tmp->content, i, '\"') || !check_quote(tmp->content, i, '\''))
 		{
-			// tmp->content = delete_dpuote(tmp->content, '\"');
-
 		if(my_ff(tmp->content))
 		{
 			while(tmp->content[i])
 			{
-				if(tmp->content[i] == '$' && tmp->content[i + 1] != '\0' && tmp->content[i + 1] != '\'')
+				if(tmp->content[i] == '$' && !is_digit(tmp->content[i + 1]) && tmp->content[i + 1] != '\'' && tmp->content[i + 1] != '$' && tmp->content[i + 1] != '\0')
 				{
-					if(is_digit(tmp->content[i + 1]))
-					{
-						i += 2;
-						while(tmp->content[i] && is_digit(tmp->content[i]))
-							i++;
-					}
 					int j = 0;
 					int a = i + 1;
-					while (tmp->content[a] && is_alpha(tmp->content[a]))
+					while (tmp->content[a] && ft_isalnum(tmp->content[a]))
 					{
 						j++;
 						a++;
