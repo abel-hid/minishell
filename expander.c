@@ -1,5 +1,4 @@
 #include "minishell.h"
-void hh(t_lexer **list);
 
 int is_digit(char c)
 {
@@ -127,6 +126,7 @@ void craete_env(char **env_list, t_env **g_env)
 		i++;
 	}
 }
+
 char *get_env_value(t_env *env, const char *key)
 {
 	while (env != NULL)
@@ -142,7 +142,7 @@ char *get_env_value(t_env *env, const char *key)
 
 
 
-char *delete_dpuote(char* str, char c)
+char *delete_quote(char* str, char c)
 {
 	int i = 0;
 	int j ;
@@ -160,6 +160,7 @@ char *delete_dpuote(char* str, char c)
 	}
 	return (str);
 }
+
 int check_value(char *value, char *key)
 {
 	int i;
@@ -181,26 +182,23 @@ int check_value(char *value, char *key)
 		return (1);
 	return (0);
 
-
 }
 
-int check_quote(char *line, int i , char c)
+int check_quote(char *line, char c)
 {
 	int j;
 
 	j = 0;
-	if(line[i] == c)
+	while(line[j])
 	{
+		if(line[j] == c)
+			return (1);
 		j++;
-		while(line[i + j] && line[i + j] != c)
-			j++;
-		if(line[i + j] == c)
-			j++;
 	}
-	return (j);
+	return (0);
 }
 
-int c_quote(char *line)
+int quote_check(char *line)
 {
 	int i;
 	int j;
@@ -222,19 +220,6 @@ int c_quote(char *line)
 	return (0);
 }
 
-int my(char *line, char c)
-{
-	int i;
-	 i = 0;
-
-	while(line[i])
-	{
-		if(line[i] == c)
-			return (1);
-		i++;
-	}
-	return (0);
-}
 
 int if_dollar_out_quote(char *line)
 {
@@ -247,7 +232,7 @@ int if_dollar_out_quote(char *line)
 	return (0);
 }
 
-int my_ff(char *str)
+int detect_dollar(char *str)
 {
 	int i = 0;
 	while(str[i])
@@ -259,69 +244,86 @@ int my_ff(char *str)
 	return (0);
 }
 
+char *handler_value(char *str, int *i,int j, char *value)
+{
+	char *new;
+	if (value)
+	{
+		new = ft_substr(str, 0, *i);
+		new = ft_strjoin(new, value);
+		new = ft_strjoin(new, ft_substr(str, *i + j + 1, ft_strlen(str)));
+		free(str);
+		str = new;
+		new = NULL;
+	}
+	else
+	{
+		new = ft_substr(str, 0, *i);
+		new = ft_strjoin(new, ft_substr(str, *i + j + 1, ft_strlen(str)));
+		free(str);
+		str = new;
+		new = NULL;
+	}
+	return (str);
+}
+
+char *handler(char *str, int *i, t_env **g_env)
+{
+	char *key;
+	char *value;
+	int j = 0;
+	int a = *i + 1;
+	while (str[a] && ft_isalnum(str[a]))
+	{
+		j++;
+		a++;
+	}
+	key = ft_substr(str, *i + 1, j);
+	value = get_env_value(*g_env, key);
+	str = handler_value(str, i, j, value);
+	free(key);
+	return (str);
+}
+
+char *ft_expand(char *str, t_env **g_env)
+{
+	static char   *new;
+	int i;
+
+	i = 0;
+	while (str[i])
+	{
+				if(str[i] == '$' && is_digit(str[i + 1]))
+				{
+						i += 2;
+						new = ft_substr(str, i, ft_strlen(str));
+						free(str);
+						str = new;
+						new = NULL;
+				}
+				if(str[i] == '$' && !is_digit(str[i + 1]) && str[i + 1] != '\'' && str[i + 1] != '$' && str[i + 1] != '\0')
+				{
+					str = handler(str, &i, g_env);
+				}
+				i++;
+	}
+	return (str);
+}
 
 char *expand_variables(t_lexer **list, t_env **g_env)
 {
 	t_lexer *tmp;
 
 	tmp = *list;
-	char *key;
-	char *value;
-	static char   *new;
 	int i;
 
 	while(tmp)
 	{
-		i = 0;
-
-		if(check_quote(tmp->content, i, '\"') || !check_quote(tmp->content, i, '\''))
-		{
-		if(my_ff(tmp->content))
-		{
-			while(tmp->content[i])
+			i = 0;
+			if(detect_dollar(tmp->content))
 			{
-				if(tmp->content[i] == '$' && is_digit(tmp->content[i + 1]))
-				{
-					i += 2;
-						new = ft_substr(tmp->content, i, ft_strlen(tmp->content));
-						free(tmp->content);
-						tmp->content = new;
-				}
-
-				if(tmp->content[i] == '$' && !is_digit(tmp->content[i + 1]) && tmp->content[i + 1] != '\'' && tmp->content[i + 1] != '$' && tmp->content[i + 1] != '\0')
-				{
-					int j = 0;
-					int a = i + 1;
-					while (tmp->content[a] && ft_isalnum(tmp->content[a]))
-					{
-						j++;
-						a++;
-					}
-					key = ft_substr(tmp->content, i + 1, j);
-					value = get_env_value(*g_env, key);
-					if (value)
-					{
-						new = ft_substr(tmp->content, 0, i);
-						new = ft_strjoin(new, value);
-						new = ft_strjoin(new, ft_substr(tmp->content, i + j + 1, ft_strlen(tmp->content)));
-						free(tmp->content);
-						tmp->content = new;
-						new = NULL;
-					}
-					else
-					{
-						new = ft_substr(tmp->content, 0, i);
-						new = ft_strjoin(new, ft_substr(tmp->content, i + j + 1, ft_strlen(tmp->content)));
-						free(tmp->content);
-						tmp->content = new;
-						new = NULL;
-					}
-					free(key);
-				}
-				i++;
+				tmp->content = ft_expand(tmp->content, g_env);
 			}
-		}
-		}
 		tmp = tmp->next;
 	}
 	return NULL;
@@ -345,7 +347,7 @@ void delete_dollar(char *str)
 	str[j] = '\0';
 }
 
-void haha(char *str, char c)
+void ft_delete(char *str, char c)
 {
 	int i = 0;
 	int j = 0;
@@ -370,43 +372,40 @@ void haha(char *str, char c)
 
 void expand(t_lexer **list, t_env **g_env)
 {
-	expand_variables(list, g_env);
-
 	t_lexer *tmp;
-	tmp = *list;
 	int i;
+	int j;
+
+	j = 0;
+	tmp = *list;
 	while(tmp)
 	{
-
 			i = 0;
-			haha(tmp->content, '\'');
-			haha(tmp->content, '\"');
-
+			ft_delete(tmp->content, '\'');
+			ft_delete(tmp->content, '\"');
 			while(tmp->content[i])
 			{
-
-				if(tmp->content[i] == '$' && tmp->content[i + 1] == '\'')
+				if(tmp->content[i] == '$' && tmp->content[i + 1] == '\'' && tmp->content[i + 2] != '\0')
 				{
-					tmp->content = delete_dpuote(tmp->content, '\'');
+					j = 1;
+					tmp->content = delete_quote(tmp->content, '\'');
 					delete_dollar(tmp->content);
 				}
 				i++;
 			}
-
-		if(c_quote(tmp->content) != 0)
-		{
-			if(c_quote(tmp->content) == 1)
+			if(quote_check(tmp->content) != 0)
 			{
-				tmp->content = delete_dpuote(tmp->content, '\'');
+				if(quote_check(tmp->content) == 1)
+				{
+					j = 1;
+					tmp->content = delete_quote(tmp->content, '\'');
+				}
+				else
+					tmp->content = delete_quote(tmp->content, '\"');
 			}
-			else
-			{
-				tmp->content = delete_dpuote(tmp->content, '\"');
-			}
-		}
-
 		tmp = tmp->next;
 	}
-
+		if(j == 0)
+		expand_variables(list, g_env);
 }
 
