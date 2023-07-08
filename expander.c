@@ -347,13 +347,17 @@ void delete_dollar(char *str)
 	str[j] = '\0';
 }
 
-void ft_delete(char *str, char c)
+char *ft_delete(const char *str, char c)
 {
 	int i = 0;
 	int j = 0;
-	char new[strlen(str) + 1];
+	int length = ft_strlen(str);
+	char *new = malloc(length + 1);
 
-	while (str[i])
+	if (new == NULL)
+		return NULL;
+
+	while (i < length)
 	{
 		if (str[i] == c && str[i + 1] == c)
 		{
@@ -367,7 +371,7 @@ void ft_delete(char *str, char c)
 		i++;
 	}
 	new[j] = '\0';
-	ft_strncpy(str, new, strlen(new) + 1);
+	return new;
 }
 
 void expand(t_lexer **list, t_env **g_env)
@@ -380,9 +384,9 @@ void expand(t_lexer **list, t_env **g_env)
 	tmp = *list;
 	while(tmp)
 	{
+			tmp->content = ft_delete(tmp->content, '\'');
+			tmp->content = ft_delete(tmp->content, '\"');
 			i = 0;
-			ft_delete(tmp->content, '\'');
-			ft_delete(tmp->content, '\"');
 			while(tmp->content[i])
 			{
 				if(tmp->content[i] == '$' && tmp->content[i + 1] == '\'' && tmp->content[i + 2] != '\0')
