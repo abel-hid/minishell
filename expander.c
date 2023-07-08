@@ -140,31 +140,26 @@ char *get_env_value(t_env *env, const char *key)
 	return NULL;
 }
 
+
+
 char *delete_dpuote(char* str, char c)
 {
 	int i = 0;
-	int j = 0;
-	char *new;
-
-	size_t len = strlen(str);
-
-	 new = (char*)malloc(sizeof(char) * (len + 1));
-	if (new == NULL)
-		return NULL;
+	int j ;
 
 	while (str[i])
 	{
-		if (str[i] != c)
+		if (str[i] == c)
 		{
-			new[j] = str[i];
-			j++;
+			j = 0;
+			while (str[i + j] == c)
+				j++;
+			ft_strncpy(&str[i], &str[i + j], ft_strlen(&str[i + j]) + 1);
 		}
 		i++;
 	}
-	new[j] = '\0';
-	return new;
+	return (str);
 }
-
 int check_value(char *value, char *key)
 {
 	int i;
@@ -275,7 +270,6 @@ char *expand_variables(t_lexer **list, t_env **g_env)
 	static char   *new;
 	int i;
 
-
 	while(tmp)
 	{
 		i = 0;
@@ -286,6 +280,14 @@ char *expand_variables(t_lexer **list, t_env **g_env)
 		{
 			while(tmp->content[i])
 			{
+				if(tmp->content[i] == '$' && is_digit(tmp->content[i + 1]))
+				{
+					i += 2;
+						new = ft_substr(tmp->content, i, ft_strlen(tmp->content));
+						free(tmp->content);
+						tmp->content = new;
+				}
+
 				if(tmp->content[i] == '$' && !is_digit(tmp->content[i + 1]) && tmp->content[i + 1] != '\'' && tmp->content[i + 1] != '$' && tmp->content[i + 1] != '\0')
 				{
 					int j = 0;
@@ -326,21 +328,36 @@ char *expand_variables(t_lexer **list, t_env **g_env)
 
 }
 
-char *delete_dollar(char *str)
+void delete_dollar(char *str)
 {
 	int i = 0;
 	int j = 0;
-	char *new;
-
-	size_t len = strlen(str);
-
-	new = malloc(sizeof(char) * (len + 1));
-	if (new == NULL)
-		return NULL;
 
 	while (str[i])
 	{
 		if (str[i] != '$')
+		{
+			str[j] = str[i];
+			j++;
+		}
+		i++;
+	}
+	str[j] = '\0';
+}
+
+void haha(char *str, char c)
+{
+	int i = 0;
+	int j = 0;
+	char new[strlen(str) + 1];
+
+	while (str[i])
+	{
+		if (str[i] == c && str[i + 1] == c)
+		{
+			i++;
+		}
+		else
 		{
 			new[j] = str[i];
 			j++;
@@ -348,9 +365,8 @@ char *delete_dollar(char *str)
 		i++;
 	}
 	new[j] = '\0';
-	return (new);
+	ft_strncpy(str, new, strlen(new) + 1);
 }
-
 
 void expand(t_lexer **list, t_env **g_env)
 {
@@ -363,14 +379,16 @@ void expand(t_lexer **list, t_env **g_env)
 	{
 
 			i = 0;
+			haha(tmp->content, '\'');
+			haha(tmp->content, '\"');
 
 			while(tmp->content[i])
 			{
 
 				if(tmp->content[i] == '$' && tmp->content[i + 1] == '\'')
 				{
-				tmp->content = delete_dpuote(tmp->content, '\'');
-				tmp->content = delete_dollar(tmp->content);
+					tmp->content = delete_dpuote(tmp->content, '\'');
+					delete_dollar(tmp->content);
 				}
 				i++;
 			}
