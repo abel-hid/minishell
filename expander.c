@@ -7,6 +7,16 @@ int is_digit(char c)
 	return (0);
 }
 
+int ft_strcmp(const char *s1, const char *s2)
+{
+	int i;
+
+	i = 0;
+	while (s1[i] && (s1[i] == s2[i]))
+		i++;
+	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
+}
+
 void lstadd_back(t_env **lst, t_env *new)
 {
 	t_env *last_add;
@@ -131,7 +141,7 @@ char *get_env_value(t_env *env, const char *key)
 {
 	while (env != NULL)
 	{
-		if (strcmp(env->key, key) == 0)
+		if (ft_strcmp(env->key, key) == 0)
 		{
 			return env->value;
 		}
@@ -225,9 +235,14 @@ int if_dollar_out_quote(char *line)
 {
 	int i;
 	i = 0;
-	if(line[i] == '$' && line[i + 1] == '\"')
+	while(line[i])
 	{
-		return (1);
+		if(line[i] == '$')
+		{
+			if(line[i + 1] == '\"' && line[i - 1] == '\"')
+				return (1);
+		}
+		i++;
 	}
 	return (0);
 }
@@ -237,7 +252,7 @@ int detect_dollar(char *str)
 	int i = 0;
 	while(str[i])
 	{
-		if(str[i] == '$')
+		if(str[i] == '$' && str[i + 1] != '$' && str[i + 1] != '\0' && str[i + 1] != '\"')
 			return (1);
 		i++;
 	}
@@ -320,9 +335,12 @@ char *expand_variables(t_lexer **list, t_env **g_env)
 	while(tmp)
 	{
 			i = 0;
-			if(detect_dollar(tmp->content))
+			if(check_quote(tmp->content, '\"') || !check_quote(tmp->content, '\''))
 			{
-				tmp->content = ft_expand(tmp->content, g_env);
+				if(detect_dollar(tmp->content) && !if_dollar_out_quote(tmp->content))
+				{
+					tmp->content = ft_expand(tmp->content, g_env);
+				}
 			}
 		tmp = tmp->next;
 	}
@@ -347,7 +365,7 @@ void delete_dollar(char *str)
 	str[j] = '\0';
 }
 
-char *ft_delete(const char *str, char c)
+char *ft_delete(char *str, char c)
 {
 	int i = 0;
 	int j = 0;
@@ -374,13 +392,65 @@ char *ft_delete(const char *str, char c)
 	return new;
 }
 
+char* delete_first(char *str, int c)
+{
+    int i = 0;
+    int j = 0;
+    int length = strlen(str);
+
+    while (i < length)
+    {
+        if (str[i] == c)
+        {
+            i++;
+        }
+        else
+        {
+            str[j] = str[i];
+            j++;
+        }
+        i++;
+    }
+    str[j] = '\0';
+	return str;
+}
+
+char* handle_dollar(char* str, char c)
+{
+	int i = 0;
+	int j = 0;
+	int len = 0;
+
+	while (str[len])
+		len++;
+
+	char* result = (char*)malloc(len + 1);
+
+	while (str[i])
+	{
+		if (str[i] == '$' && str[i + 1] == c)
+		{
+			i++;
+		}
+		else
+		{
+			result[j] = str[i];
+			j++;
+		}
+		i++;
+	}
+
+
+	result[j] = '\0';
+
+	return result;
+}
+
 void expand(t_lexer **list, t_env **g_env)
 {
 	t_lexer *tmp;
 	int i;
-	int j;
-
-	j = 0;
+		expand_variables(list, g_env);
 	tmp = *list;
 	while(tmp)
 	{
@@ -389,9 +459,8 @@ void expand(t_lexer **list, t_env **g_env)
 			i = 0;
 			while(tmp->content[i])
 			{
-				if(tmp->content[i] == '$' && tmp->content[i + 1] == '\'' && tmp->content[i + 2] != '\0')
+				if(tmp->content[i] == '$' && tmp->content[i + 1] == '\'' && tmp->content[i + 2] != '\0' )
 				{
-					j = 1;
 					tmp->content = delete_quote(tmp->content, '\'');
 					delete_dollar(tmp->content);
 				}
@@ -401,7 +470,6 @@ void expand(t_lexer **list, t_env **g_env)
 			{
 				if(quote_check(tmp->content) == 1)
 				{
-					j = 1;
 					tmp->content = delete_quote(tmp->content, '\'');
 				}
 				else
@@ -409,7 +477,5 @@ void expand(t_lexer **list, t_env **g_env)
 			}
 		tmp = tmp->next;
 	}
-		if(j == 0)
-		expand_variables(list, g_env);
 }
 
