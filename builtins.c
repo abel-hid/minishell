@@ -247,12 +247,7 @@ void signal_handler(int sig)
 		exit(0);
 	}
 
-	
-
 }
-
-
-
 
 int main(int ac , char **av)
 {
