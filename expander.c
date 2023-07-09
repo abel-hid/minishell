@@ -143,13 +143,12 @@ char *get_env_value(t_env *env, const char *key)
 	{
 		if (ft_strcmp(env->key, key) == 0)
 		{
-			return env->value;
+			return (env->value);
 		}
 		env = env->next;
 	}
 	return NULL;
 }
-
 
 
 char *delete_quote(char* str, char c)
@@ -318,7 +317,10 @@ char *ft_expand(char *str, t_env **g_env)
 				}
 				if(str[i] == '$' && !is_digit(str[i + 1]) && str[i + 1] != '\'' && str[i + 1] != '$' && str[i + 1] != '\0')
 				{
-					str = handler(str, &i, g_env);
+					if(str[i + 1] == '\"' && str[i + 2] == '\0')
+					{break;}
+					else
+						str = handler(str, &i, g_env);
 				}
 				i++;
 	}
@@ -339,7 +341,7 @@ char *expand_variables(t_lexer **list, t_env **g_env)
 			{
 				if(detect_dollar(tmp->content) && !if_dollar_out_quote(tmp->content))
 				{
-					printf("tmp->content : %s\n", tmp->content);
+
 					tmp->content = ft_expand(tmp->content, g_env);
 				}
 			}
@@ -393,65 +395,25 @@ char *ft_delete(char *str, char c)
 	return new;
 }
 
-char* delete_first(char *str, int c)
-{
-    int i = 0;
-    int j = 0;
-    int length = strlen(str);
 
-    while (i < length)
-    {
-        if (str[i] == c)
-        {
-            i++;
-        }
-        else
-        {
-            str[j] = str[i];
-            j++;
-        }
-        i++;
-    }
-    str[j] = '\0';
-	return str;
-}
-
-char* handle_dollar(char* str, char c)
+int handle_dollar(char* str, char c)
 {
 	int i = 0;
-	int j = 0;
-	int len = 0;
 
-	while (str[len])
-		len++;
-
-	char* result = (char*)malloc(len + 1);
-
-	while (str[i])
+	while(str[i])
 	{
-		if (str[i] == '$' && str[i + 1] == c)
-		{
-			i++;
-		}
-		else
-		{
-			result[j] = str[i];
-			j++;
-		}
+		if(str[i] == '$' && str[i + 1] == c && str[i - 1]  == c)
+			return (1);
 		i++;
 	}
-
-
-	result[j] = '\0';
-
-	return result;
+	return (0);
 }
 
 void expand(t_lexer **list, t_env **g_env)
 {
 	t_lexer *tmp;
 	int i;
-		expand_variables(list, g_env);
+	int j = 0;
 	tmp = *list;
 	while(tmp)
 	{
@@ -462,20 +424,31 @@ void expand(t_lexer **list, t_env **g_env)
 			{
 				if(tmp->content[i] == '$' && tmp->content[i + 1] == '\'' && tmp->content[i + 2] != '\0' )
 				{
+					j = 1;
 					tmp->content = delete_quote(tmp->content, '\'');
 					delete_dollar(tmp->content);
 				}
 				i++;
 			}
-			if(quote_check(tmp->content) != 0)
+
+		tmp = tmp->next;
+	}
+		if(j == 0)
+			expand_variables(list, g_env);
+		tmp = *list;
+	while(tmp)
+	{
+		if(quote_check(tmp->content) != 0)
+		{
+			if(quote_check(tmp->content) == 1)
 			{
-				if(quote_check(tmp->content) == 1)
-				{
-					tmp->content = delete_quote(tmp->content, '\'');
-				}
-				else
-					tmp->content = delete_quote(tmp->content, '\"');
+				tmp->content = delete_quote(tmp->content, '\'');
 			}
+			else
+			{
+				tmp->content = delete_quote(tmp->content, '\"');
+			}
+		}
 		tmp = tmp->next;
 	}
 }
