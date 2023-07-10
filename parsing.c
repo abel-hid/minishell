@@ -77,4 +77,42 @@
 
 // // 	tmp = *list;
 // // }
-
+void itis_acmd(char *str, t_command *cmd)
+{
+    int i ; 
+    i =0;
+    // int j = 0;
+    while(str[i])
+    {
+        while(str[i] && str[i] != ' '  && str[i] != '|' && str[i] != '<' && str[i] != '>' && str[i] != ';')
+            i++;
+        cmd->command_name = malloc(sizeof(char) * (i + 1));
+        if(!cmd->command_name)
+            return ;
+        printf("%s\n", cmd->command_name);
+        
+    }
+}
+void parse_lex(t_lexer *command ,t_command **cmd)
+{
+    (void)cmd;
+    // int i = 0;
+    // char *token[] = {"WORD", "PIPE_LINE", "REDIR_IN", "REDIR_OUT",÷ "HEARDOC", "APPEND"};
+   
+    while(command != NULL)
+    {
+        if(command->token == WORD)
+        {
+            itis_acmd(command->content,*cmd);
+        }
+        if(command->token == REDIR_IN)
+        {
+            printf("redir in\n");
+        }
+        else if(command->token == PIPE_LINE)
+        {
+            printf("end of command\n");
+        }
+    command = command->next;
+    }
+}

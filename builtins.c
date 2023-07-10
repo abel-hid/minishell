@@ -4,6 +4,15 @@
 #include <unistd.h>
 #include <dirent.h>
 #include <signal.h>
+#include <readline/readline.h>
+#include "minishell.h"
+# include <stdio.h>
+# include <unistd.h>
+# include <stdlib.h>
+# include <string.h>
+#include <readline/readline.h>
+#include <readline/history.h>
+#include <fcntl.h>
 
 void _ls()
 {
@@ -22,6 +31,18 @@ void _ls()
 	closedir(dir);
 
 }
+char *ft_putstr(char *str)
+{
+	int i;
+
+	i = 0;
+	while (str[i])
+	{
+		write(1, &str[i], 1);
+		i++;
+	}
+	return (str);
+}
 int ft_strcmp(const char *s1, const char *s2)
 {
 	int i;
@@ -31,7 +52,7 @@ int ft_strcmp(const char *s1, const char *s2)
 		i++;
 	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
 }
-char **ft_split(char *str, char c)
+char **_ft_split(char *str, char c)
 {
 	char **tab;
 	int i;
@@ -112,7 +133,7 @@ int ft_isdigit(int c)
 		return (1);
 	return (0);
 }
-void echo (char *args)
+void _echo (char *args)
 {
 	int i;
 
@@ -124,7 +145,7 @@ void echo (char *args)
 	}
 	printf("\n");
 }
-void export(char *str)
+void _export(char *str)
 {
 	extern char **environ;
 	char **tab;
@@ -209,7 +230,7 @@ void _builtin_handler(char *str)
 			_pwd();
 		else if (str[i] == 'e' && str[i + 1] == 'c' && str[i + 2] == 'h' && str[i + 3] == 'o')
 		{
-			echo(&str[i + 4]);
+			_echo(&str[i + 4]);
 			i += 4;
 
 		}
@@ -232,38 +253,30 @@ void _builtin_handler(char *str)
 		i++;
 	}
 }
+
 void signal_handler(int sig)
 {
 	if(sig == SIGINT)
 	{
-		printf("\n");
-		printf("minishell-> ");
-		fflush(stdout);
+	
+		ft_putstr("\nminishell-> ");
 
 	}
-	else if (sig == SIGQUIT || sig == SIGSTOP)
-	{
-		printf("Quit (core dumped)\n");
-		exit(0);
-	}
-
 }
 
 int main(int ac , char **av)
 {
-	char *line;
+	char *line = NULL;
 	char **args;
 	int i;
 
-	i = 1;
-	(void)ac;
-	(void)av;
-		signal(SIGINT, signal_handler);
-	while (1)
+	while(1)
 	{
-		printf("minishell-> ");
-		getline(&line, (size_t*)&i, stdin);
+		line = readline("minishell-> ");
+		if(!line)
+			exit(0);
+		signal(SIGINT, signal_handler);
 		_builtin_handler(line);
+		add_history(line);
 	}
-	return (0);
 }
