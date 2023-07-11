@@ -327,6 +327,22 @@ char *ft_expand(char *str, t_env **g_env)
 	return (str);
 }
 
+int hh(char *str)
+{
+	int i = 0;
+	int j = 0;
+	while (str[i])
+	{
+		if(str[i] == '$')
+			j++;
+		i++;
+	}
+	if(j % 2 == 0)
+		return (0);
+	return (1);
+
+}
+
 char *expand_variables(t_lexer **list, t_env **g_env)
 {
 	t_lexer *tmp;
@@ -339,7 +355,7 @@ char *expand_variables(t_lexer **list, t_env **g_env)
 			i = 0;
 			if(check_quote(tmp->content, '\"') || !check_quote(tmp->content, '\''))
 			{
-				if(detect_dollar(tmp->content) && !if_dollar_out_quote(tmp->content))
+				if(detect_dollar(tmp->content) && !if_dollar_out_quote(tmp->content) && hh(tmp->content))
 				{
 
 					tmp->content = ft_expand(tmp->content, g_env);
