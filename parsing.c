@@ -77,42 +77,81 @@
 
 // // 	tmp = *list;
 // // }
-void itis_acmd(char *str, t_command *cmd)
-{
-    int i ; 
-    i =0;
-    // int j = 0;
-    while(str[i])
-    {
-        while(str[i] && str[i] != ' '  && str[i] != '|' && str[i] != '<' && str[i] != '>' && str[i] != ';')
-            i++;
-        cmd->command_name = malloc(sizeof(char) * (i + 1));
-        if(!cmd->command_name)
-            return ;
-        printf("%s\n", cmd->command_name);
+// void itis_acmd(char *str, t_command *cmd)
+// {
+//     int i ; 
+//     i =0;
+//     // int j = 0;
+//     while(str[i])
+//     {
+//         while(str[i] && str[i] != ' '  && str[i] != '|' && str[i] != '<' && str[i] != '>' && str[i] != ';')
+//             i++;
+//         cmd->command_name = malloc(sizeof(char) * (i + 1));
+//         if(!cmd->command_name)
+//             return ;
+//         printf("%s\n", cmd->command_name);
         
-    }
-}
-void parse_lex(t_lexer *command ,t_command **cmd)
+//     }
+// }
+
+// void _parsing(t_lexer **list, t_command *cmd)
+// {
+//     t_lexer *tmp = *list;
+
+//     if (!tmp)
+//         return;
+
+//     cmd = malloc(sizeof(t_command));
+//     if (!cmd)
+//         return;
+
+//     cmd->command_name = tmp->content;
+//     printf("%s\n", cmd->command_name);
+//     if(tmp->token == WORD)
+//     {
+//         cmd->args = malloc(sizeof(char *) * 2);
+//         if(!cmd->args)
+//             return ;
+//         cmd->args[0] = tmp->content;
+//         cmd->args[1] = NULL;
+//         printf("%s\n", cmd->args[0]);
+//     }
+//     list = &tmp;
+// }
+
+void _parsing(t_lexer **list, t_command *cmd)
 {
-    (void)cmd;
-    // int i = 0;
-    // char *token[] = {"WORD", "PIPE_LINE", "REDIR_IN", "REDIR_OUT",÷ "HEARDOC", "APPEND"};
-   
-    while(command != NULL)
+    t_lexer *tmp = *list;
+
+    if (!tmp)
+        return;
+
+    cmd = malloc(sizeof(t_command));
+    if (!cmd)
+        return;
+    cmd->command_name = tmp->content;
+    printf(" command :%s\n", cmd->command_name);
+    tmp = tmp->next;
+    while(tmp)
     {
-        if(command->token == WORD)
+        if(tmp->token == PIPE_LINE)
         {
-            itis_acmd(command->content,*cmd);
+            tmp = tmp->next;
+            cmd->command_name = tmp->content;
+            printf(" command :%s\n", cmd->command_name);
         }
-        if(command->token == REDIR_IN)
+        if(tmp->token == WORD && tmp->prev->token != PIPE_LINE )
         {
-            printf("redir in\n");
+            cmd->args = malloc(sizeof(char *) * 2);
+            if(!cmd->args)
+                return ;
+            cmd->args[0] = tmp->content;
+            cmd->args[1] = NULL;
+            printf(" args : %s\n", cmd->args[0]);
         }
-        else if(command->token == PIPE_LINE)
-        {
-            printf("end of command\n");
-        }
-    command = command->next;
+        tmp = tmp->next;
     }
+
+    tmp = NULL;
+    *list = tmp;
 }
