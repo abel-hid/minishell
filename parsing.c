@@ -66,15 +66,15 @@
 // 	return (command);
 // }
 
-// // int parsing(t_lexer **list, t_command **command)
-// // {
-// // 	t_lexer *tmp;
-// // 	t_lexer *tmp2;
-// // 	t_fd fd;
-// // 	t_redir_list *redir_list;
-// // 	char **content;
-// // 	int i;
+// int parsing(t_lexer **list, t_command **command)
+// {
+// 	t_lexer *tmp;
+// 	t_lexer *tmp2;
+// 	t_fd fd;
+// 	t_redir_list *redir_list;
+// 	char **content;
+// 	int i;
 
-// // 	tmp = *list;
-// // }
+// 	tmp = *list;
+// }
 

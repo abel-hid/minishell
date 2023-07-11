@@ -23,7 +23,6 @@ int main(int ac ,char **av , char **env)
 		lexing(&lexer, line);
 		expand(&lexer, &p_env);
 		// parsing(&lexer,&cmd);
-		// cmd = *(srfak_lban(&lexer));
 
 		while(lexer != NULL)
 		{
@@ -31,12 +30,6 @@ int main(int ac ,char **av , char **env)
 			printf("%s\n", token[lexer->token]);
 			lexer = lexer->next;
 		}
-
-		// while(cmd)
-		// {
-		// 	printf("%s\n", cmd->args[i]);
-		// 	i++;
-		// }
 		add_history(line);
 
 	}

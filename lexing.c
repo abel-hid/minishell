@@ -1,6 +1,5 @@
 #include "minishell.h"
 
-//ls>>><<>>||||kdj|>sS<<>> |   s |   | >   <  || "aaa"||  "|||??>><<|"aa
 
 t_lexer *ft_lstnew(char *content, t_tokens type)
 {
