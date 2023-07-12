@@ -123,10 +123,26 @@
 //     }
 //     list = &tmp;
 // }
+void ft_putendl_fd(char *s, int fd)
+{
+	int i;
+
+	i = 0;
+	if (!s)
+		return ;
+	while(s[i])
+	{
+		write(fd, &s[i], 1);
+		i++;
+	}
+	write(fd, "\n", 1);
+}
 
 void _parsing(t_lexer **list, t_command *cmd)
 {
     t_lexer *tmp = *list;
+	t_fd fd;
+	char *line;
 
     if (!tmp)
         return;
@@ -134,18 +150,75 @@ void _parsing(t_lexer **list, t_command *cmd)
     cmd = malloc(sizeof(t_command));
     if (!cmd)
         return;
-    cmd->command_name = tmp->content;
+		while(tmp->token ==  HEARDOC)
+		{
+			tmp = tmp->next;
+			fd.fd_in = open("heredoc", O_CREAT | O_WRONLY | O_APPEND);
+			while(1)
+			{
+				line = readline("heredoc> ");
+				if(!ft_strncmp(line, tmp->content, ft_strlen(tmp->content)))
+					break;
+				ft_putendl_fd(line, fd.fd_in);
+			}
+		}
+		 if(tmp->token == WORD && tmp->token != PIPE_LINE && tmp->token != REDIR_IN && tmp->token != REDIR_OUT && tmp->token != HEARDOC)
+    		cmd->command_name = tmp->content;
     printf(" command :%s\n", cmd->command_name);
     tmp = tmp->next;
     while(tmp)
     {
+		while(tmp->token == HEARDOC)
+		{
+			
+				tmp = tmp->next;
+				fd.fd_in = open("heredoc", O_CREAT | O_WRONLY | O_APPEND);
+				while(1)
+				{
+					line = readline("heredoc> ");
+					if(!ft_strncmp(line, tmp->content, ft_strlen(tmp->content)))
+						break;
+					ft_putendl_fd(line, fd.fd_in);
+				}
+			
+		}
+		if(tmp->token == REDIR_IN)
+			{
+				tmp= tmp->next;
+				fd.fd_in = open(tmp->content,O_CREAT | O_RDONLY);
+				if(fd.fd_in == -1)
+				{
+					printf("error\n");
+					return ;
+				}
+			}
+			if (tmp->token == REDIR_OUT)
+			{
+				tmp= tmp->next;
+				fd.fd_out = open(tmp->content,O_CREAT | O_WRONLY);
+				if(fd.fd_out == -1)
+				{
+					printf("error\n");
+					return ;
+				}
+			}
+			if(tmp->token == APPEND)
+			{
+				tmp= tmp->next;
+				fd.fd_out = open(tmp->content,O_CREAT | O_WRONLY | O_APPEND);
+				if(fd.fd_out == -1)
+				{
+					printf("error\n");
+					return ;
+				}
+			}
         if(tmp->token == PIPE_LINE)
         {
             tmp = tmp->next;
             cmd->command_name = tmp->content;
             printf(" command :%s\n", cmd->command_name);
-        }
-        if(tmp->token == WORD && tmp->prev->token != PIPE_LINE )
+		}
+        if(tmp->token == WORD && tmp->prev->token != PIPE_LINE && tmp->prev->token != REDIR_IN && tmp->prev->token != REDIR_OUT && tmp->prev->token != HEARDOC && tmp->prev->token != APPEND)
         {
             cmd->args = malloc(sizeof(char *) * 2);
             if(!cmd->args)
