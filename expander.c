@@ -287,7 +287,7 @@ char *handler(char *str, int *i, t_env **g_env)
 	char *value;
 	int j = 0;
 	int a = *i + 1;
-	while (str[a] && ft_isalnum(str[a]))
+	while ((str[a] && ft_isalnum(str[a])) || str[a] == '_')
 	{
 		j++;
 		a++;
@@ -333,6 +333,8 @@ int hh(char *str)
 	int j = 0;
 	while (str[i])
 	{
+		if(str[i] == '\"' )
+			return (1);
 		if(str[i] == '$')
 			j++;
 		i++;
