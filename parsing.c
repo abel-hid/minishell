@@ -1,8 +1,5 @@
 #include "minishell.h"
 
-// t_command *ft_new(char **content, int  fd, t_redir_list *redir_list)
-// {
-// 	t_command *list;
 
 // 	list = malloc(sizeof(t_command));
 // 	if (!list)
@@ -75,162 +72,50 @@
 // 	char **content;
 // 	int i;
 
-
+<<<<<<< HEAD
 // 	tmp = *list;
 // }
 
-
+=======
 // // 	tmp = *list;
 // // }
-// void itis_acmd(char *str, t_command *cmd)
-// {
-//     int i ; 
-//     i =0;
-//     // int j = 0;
-//     while(str[i])
-//     {
-//         while(str[i] && str[i] != ' '  && str[i] != '|' && str[i] != '<' && str[i] != '>' && str[i] != ';')
-//             i++;
-//         cmd->command_name = malloc(sizeof(char) * (i + 1));
-//         if(!cmd->command_name)
-//             return ;
-//         printf("%s\n", cmd->command_name);
-        
-//     }
-// }
-
-// void _parsing(t_lexer **list, t_command *cmd)
-// {
-//     t_lexer *tmp = *list;
-
-//     if (!tmp)
-//         return;
-
-//     cmd = malloc(sizeof(t_command));
-//     if (!cmd)
-//         return;
-
-//     cmd->command_name = tmp->content;
-//     printf("%s\n", cmd->command_name);
-//     if(tmp->token == WORD)
-//     {
-//         cmd->args = malloc(sizeof(char *) * 2);
-//         if(!cmd->args)
-//             return ;
-//         cmd->args[0] = tmp->content;
-//         cmd->args[1] = NULL;
-//         printf("%s\n", cmd->args[0]);
-//     }
-//     list = &tmp;
-// }
-void ft_putendl_fd(char *s, int fd)
+void itis_acmd(char *str, t_command *cmd)
 {
-	int i;
-
-	i = 0;
-	if (!s)
-		return ;
-	while(s[i])
-	{
-		write(fd, &s[i], 1);
-		i++;
-	}
-	write(fd, "\n", 1);
-}
-
-void _parsing(t_lexer **list, t_command *cmd)
-{
-    t_lexer *tmp = *list;
-	t_fd fd;
-	char *line;
-
-    if (!tmp)
-        return;
-
-    cmd = malloc(sizeof(t_command));
-    if (!cmd)
-        return;
-		while(tmp->token ==  HEARDOC)
-		{
-			tmp = tmp->next;
-			fd.fd_in = open("heredoc", O_CREAT | O_WRONLY | O_APPEND);
-			while(1)
-			{
-				line = readline("heredoc> ");
-				if(!ft_strncmp(line, tmp->content, ft_strlen(tmp->content)))
-					break;
-				ft_putendl_fd(line, fd.fd_in);
-			}
-		}
-		 if(tmp->token == WORD && tmp->token != PIPE_LINE && tmp->token != REDIR_IN && tmp->token != REDIR_OUT && tmp->token != HEARDOC)
-    		cmd->command_name = tmp->content;
-    printf(" command :%s\n", cmd->command_name);
-    tmp = tmp->next;
-    while(tmp)
+    int i ; 
+    i =0;
+    // int j = 0;
+    while(str[i])
     {
-		while(tmp->token == HEARDOC)
-		{
-			
-				tmp = tmp->next;
-				fd.fd_in = open("heredoc", O_CREAT | O_WRONLY | O_APPEND);
-				while(1)
-				{
-					line = readline("heredoc> ");
-					if(!ft_strncmp(line, tmp->content, ft_strlen(tmp->content)))
-						break;
-					ft_putendl_fd(line, fd.fd_in);
-				}
-			
-		}
-		if(tmp->token == REDIR_IN)
-			{
-				tmp= tmp->next;
-				fd.fd_in = open(tmp->content,O_CREAT | O_RDONLY);
-				if(fd.fd_in == -1)
-				{
-					printf("error\n");
-					return ;
-				}
-			}
-			if (tmp->token == REDIR_OUT)
-			{
-				tmp= tmp->next;
-				fd.fd_out = open(tmp->content,O_CREAT | O_WRONLY);
-				if(fd.fd_out == -1)
-				{
-					printf("error\n");
-					return ;
-				}
-			}
-			if(tmp->token == APPEND)
-			{
-				tmp= tmp->next;
-				fd.fd_out = open(tmp->content,O_CREAT | O_WRONLY | O_APPEND);
-				if(fd.fd_out == -1)
-				{
-					printf("error\n");
-					return ;
-				}
-			}
-        if(tmp->token == PIPE_LINE)
-        {
-            tmp = tmp->next;
-            cmd->command_name = tmp->content;
-            printf(" command :%s\n", cmd->command_name);
-		}
-        if(tmp->token == WORD && tmp->prev->token != PIPE_LINE && tmp->prev->token != REDIR_IN && tmp->prev->token != REDIR_OUT && tmp->prev->token != HEARDOC && tmp->prev->token != APPEND)
-        {
-            cmd->args = malloc(sizeof(char *) * 2);
-            if(!cmd->args)
-                return ;
-            cmd->args[0] = tmp->content;
-            cmd->args[1] = NULL;
-            printf(" args : %s\n", cmd->args[0]);
-        }
-        tmp = tmp->next;
+        while(str[i] && str[i] != ' '  && str[i] != '|' && str[i] != '<' && str[i] != '>' && str[i] != ';')
+            i++;
+        cmd->command_name = malloc(sizeof(char) * (i + 1));
+        if(!cmd->command_name)
+            return ;
+        printf("%s\n", cmd->command_name);
+        
     }
-
-    tmp = NULL;
-    *list = tmp;
 }
-
+void parse_lex(t_lexer *command ,t_command **cmd)
+{
+    (void)cmd;
+    // int i = 0;
+    // char *token[] = {"WORD", "PIPE_LINE", "REDIR_IN", "REDIR_OUT",÷ "HEARDOC", "APPEND"};
+   
+    while(command != NULL)
+    {
+        if(command->token == WORD)
+        {
+            itis_acmd(command->content,*cmd);
+        }
+        if(command->token == REDIR_IN)
+        {
+            printf("redir in\n");
+        }
+        else if(command->token == PIPE_LINE)
+        {
+            printf("end of command\n");
+        }
+    command = command->next;
+    }
+}
+>>>>>>> refs/remotes/origin/master
