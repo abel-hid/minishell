@@ -426,17 +426,21 @@ int handle_dollar(char* str, char c)
 	}
 	return (0);
 }
-
-void expand(t_lexer **list, t_env **g_env)
+void fun1(t_lexer **list, t_env **g_env)
 {
 	t_lexer *tmp;
 	int i;
-	int j = 0;
+	int j;
+
 	tmp = *list;
+	i = 0;
+	j = 0;
+
 	while(tmp)
 	{
 			tmp->content = ft_delete(tmp->content, '\'');
-			tmp->content = ft_delete(tmp->content, '\"');
+			if(!detect_dollar(tmp->content))
+				tmp->content = ft_delete(tmp->content, '\"');
 			i = 0;
 			while(tmp->content[i])
 			{
@@ -448,14 +452,25 @@ void expand(t_lexer **list, t_env **g_env)
 				}
 				i++;
 			}
-
 		tmp = tmp->next;
 	}
 		if(j == 0)
 			expand_variables(list, g_env);
-		tmp = *list;
+}
+
+void expand(t_lexer **list, t_env **g_env)
+{
+	t_lexer *tmp;
+	int i;
+	int j ;
+
+	tmp = *list;
+	j = 0;
+	i = 0;
+		fun1(list, g_env);
 	while(tmp)
 	{
+		tmp->content = ft_delete(tmp->content, '\"');
 		if(quote_check(tmp->content) != 0)
 		{
 			if(quote_check(tmp->content) == 1)
