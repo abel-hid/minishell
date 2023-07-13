@@ -86,7 +86,6 @@ void free_list(t_lexer *lst);
 void expand(t_lexer **list, t_env **g_env);
 t_command **srfak_lban(t_lexer **list);
 
-void parse_lex(t_lexer *command ,t_command **cmd);
-int parsing(t_lexer **list, t_command **command);
+void _parsing(t_lexer **list,  t_command *cmd);
 
 #endif
