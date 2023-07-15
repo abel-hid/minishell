@@ -64,16 +64,18 @@ int ft_lstsize(t_lexer *lst)
 int calculate_args(t_lexer *tmp)
 {
 	int i;
-
 	i = 0;
-	while (tmp != NULL && tmp->token != PIPE_LINE)
+	while (tmp != NULL)
 	{
 		if (tmp->token == WORD)
 			i++;
+		if(tmp->token == PIPE_LINE)
+			return (i);
 		tmp = tmp->next;
 	}
 	return (i);
 }
+
 
 void _parsing(t_lexer **list, t_command **cmd)
 {
@@ -85,8 +87,9 @@ void _parsing(t_lexer **list, t_command **cmd)
 	fd.fd_in = 0;
 	fd.fd_out = 1;
 	char **args;
-	int args_size = calculate_args(tmp);
-	args = malloc(sizeof(char *) * (args_size + 1));
+	int count = calculate_args(tmp);
+
+	args = malloc(sizeof(char *) * (count + 1));
 	if(!args)
 		return ;
 
@@ -134,7 +137,8 @@ void _parsing(t_lexer **list, t_command **cmd)
 			my_lstadd_back(cmd, ft_new(args, fd));
 			if (tmp->next && tmp->next->token == PIPE_LINE)
 			{
-				args = malloc(sizeof(char *) * (args_size + 1));
+				tmp->next = tmp->next->next;
+				args = malloc(sizeof(char *) * (calculate_args(tmp)));
 				if(!args)
 					return ;
 			}
