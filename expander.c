@@ -30,7 +30,6 @@ void lstadd_back(t_env **lst, t_env *new)
 	while (last_add->next != NULL)
 		last_add = last_add->next;
 	last_add->next = new;
-	new->prev = last_add;
 	new->next = NULL;
 }
 
@@ -251,7 +250,7 @@ int detect_dollar(char *str)
 	int i = 0;
 	while(str[i])
 	{
-		if(str[i] == '$' && str[i + 1] != '$' && str[i + 1] != '\0' )
+		if(str[i] == '$' && str[i + 1] != '$' && str[i + 1] != '\0' && str[i +1 ] != '?' )
 			return (1);
 		i++;
 	}
@@ -273,7 +272,7 @@ char *handler_value(char *str, int *i,int j, char *value)
 	else
 	{
 		new = ft_substr(str, 0, *i);
-		new = ft_strjoin(new, ft_substr(str, *i + j + 1, ft_strlen(str)));
+		new = ft_strjoin(new,ft_strdup(""));
 		free(str);
 		str = new;
 		new = NULL;
@@ -281,7 +280,7 @@ char *handler_value(char *str, int *i,int j, char *value)
 	return (str);
 }
 
-char *handler(char *str, int *i, t_env **g_env)
+char * handler(char *str, int *i, t_env **g_env)
 {
 	char *key;
 	char *value;
@@ -299,30 +298,37 @@ char *handler(char *str, int *i, t_env **g_env)
 	return (str);
 }
 
+int is_spaces(char c)
+{
+    return (c == ' ' || c == '\t' || c == '\n' || c == '\v' || c == '\f' || c == '\r');
+}
+
 char *ft_expand(char *str, t_env **g_env)
 {
 	static char   *new;
 	int i;
 
 	i = 0;
+
 	while (str[i])
 	{
-				if(str[i] == '$' && is_digit(str[i + 1]))
-				{
-						i += 2;
-						new = ft_substr(str, i, ft_strlen(str));
-						free(str);
-						str = new;
-						new = NULL;
-				}
-				if(str[i] == '$' && !is_digit(str[i + 1]) && str[i + 1] != '\'' && str[i + 1] != '$' && str[i + 1] != '\0')
-				{
-					if(str[i + 1] == '\"' && str[i + 2] == '\0')
-					{break;}
-					else
-						str = handler(str, &i, g_env);
-				}
-				i++;
+		if(str[i] == '$' && is_digit(str[i + 1]))
+		{
+				i += 2;
+				new = ft_substr(str, i, ft_strlen(str));
+				free(str);
+				str = new;
+				new = NULL;
+		}
+		if(str[i] == '$' && !is_digit(str[i + 1]) && str[i + 1] != '\'' && str[i + 1] != '$' && str[i + 1] != '\0' && !is_spaces(str[i + 1]))
+		{
+			if(str[i + 1] == '\"' && str[i + 2] == '\0')
+			{break;}
+			else
+				str = handler(str, &i, g_env);
+				continue;
+		}
+		i++;
 	}
 	return (str);
 }
@@ -348,6 +354,8 @@ int hh(char *str)
 char *expand_variables(t_lexer **list, t_env **g_env)
 {
 	t_lexer *tmp;
+	char *new;
+	char *new1;
 
 	tmp = *list;
 	int i;
@@ -357,10 +365,32 @@ char *expand_variables(t_lexer **list, t_env **g_env)
 			i = 0;
 			if(check_quote(tmp->content, '\"') || !check_quote(tmp->content, '\''))
 			{
-				if(detect_dollar(tmp->content) && !if_dollar_out_quote(tmp->content) && hh(tmp->content))
+				if(if_dollar_out_quote(tmp->content))
 				{
+					i +=3;
+					while(tmp->content[i] != '$')
+					{
+						i++;
+					}
+					new = ft_substr(tmp->content, 0, i);
+				}
 
-					tmp->content = ft_expand(tmp->content, g_env);
+				new1 = ft_substr(tmp->content, i, ft_strlen(tmp->content) - i);
+				printf("new1 = %s\n", new1);
+				if(detect_dollar(new1)  && hh(tmp->content))
+				{
+					new1 = ft_expand(new1, g_env);
+					if(if_dollar_out_quote(tmp->content))
+					{
+						new = ft_strjoin(new, new1);
+						free(tmp->content);
+						tmp->content = new;
+					}
+					else
+					{
+						free(tmp->content);
+						tmp->content = new1;
+					}
 				}
 			}
 		tmp = tmp->next;
@@ -444,7 +474,7 @@ void fun1(t_lexer **list, t_env **g_env)
 			i = 0;
 			while(tmp->content[i])
 			{
-				if(tmp->content[i] == '$' && tmp->content[i + 1] == '\'' && tmp->content[i + 2] != '\0' )
+				if(tmp->content[i] == '$' && tmp->content[i + 1] == '\'' && tmp->content[i - 1] != '\'' && tmp->content[i + 2] != '\0' )
 				{
 					j = 1;
 					tmp->content = delete_quote(tmp->content, '\'');
@@ -486,3 +516,4 @@ void expand(t_lexer **list, t_env **g_env)
 	}
 }
 
+// "$"USER""$USER >> expand the last $USER
