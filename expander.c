@@ -30,7 +30,6 @@ void lstadd_back(t_env **lst, t_env *new)
 	while (last_add->next != NULL)
 		last_add = last_add->next;
 	last_add->next = new;
-	new->prev = last_add;
 	new->next = NULL;
 }
 
@@ -163,7 +162,7 @@ char *delete_quote(char* str, char c)
 			j = 0;
 			while (str[i + j] == c)
 				j++;
-			ft_strncpy(&str[i], &str[i + j], ft_strlen(&str[i + j]) + 1);
+			ft_strncpy(&str[i], &str[i + j], ft_strlen(str) - i - j + 1);
 		}
 		i++;
 	}
@@ -207,27 +206,7 @@ int check_quote(char *line, char c)
 	return (0);
 }
 
-int quote_check(char *line)
-{
-	int i;
-	int j;
 
-	i = 0;
-	j = 0;
-	while(line[i])
-	{
-		if(line[i] == '\'')
-		{
-			return (1);
-		}
-		if(line[i] == '\"')
-		{
-			return (2);
-		}
-		i++;
-	}
-	return (0);
-}
 
 
 int if_dollar_out_quote(char *line)
@@ -249,9 +228,9 @@ int if_dollar_out_quote(char *line)
 int detect_dollar(char *str)
 {
 	int i = 0;
-	while(str[i])
+	while(str[i] && str[i + 1])
 	{
-		if(str[i] == '$' && str[i + 1] != '$' && str[i + 1] != '\0' )
+		if(str[i] == '$' && str[i + 1] != '$' && str[i + 1] != '\0' && str[i +1 ] != '?' && str[i -1] != '$')
 			return (1);
 		i++;
 	}
@@ -273,7 +252,7 @@ char *handler_value(char *str, int *i,int j, char *value)
 	else
 	{
 		new = ft_substr(str, 0, *i);
-		new = ft_strjoin(new, ft_substr(str, *i + j + 1, ft_strlen(str)));
+		new = ft_strjoin(new,ft_strdup(""));
 		free(str);
 		str = new;
 		new = NULL;
@@ -281,7 +260,7 @@ char *handler_value(char *str, int *i,int j, char *value)
 	return (str);
 }
 
-char *handler(char *str, int *i, t_env **g_env)
+char * handler(char *str, int *i, t_env **g_env)
 {
 	char *key;
 	char *value;
@@ -299,30 +278,37 @@ char *handler(char *str, int *i, t_env **g_env)
 	return (str);
 }
 
+int is_spaces(char c)
+{
+    return (c == ' ' || c == '\t' || c == '\n' || c == '\v' || c == '\f' || c == '\r');
+}
+
 char *ft_expand(char *str, t_env **g_env)
 {
 	static char   *new;
 	int i;
 
 	i = 0;
+
 	while (str[i])
 	{
-				if(str[i] == '$' && is_digit(str[i + 1]))
-				{
-						i += 2;
-						new = ft_substr(str, i, ft_strlen(str));
-						free(str);
-						str = new;
-						new = NULL;
-				}
-				if(str[i] == '$' && !is_digit(str[i + 1]) && str[i + 1] != '\'' && str[i + 1] != '$' && str[i + 1] != '\0')
-				{
-					if(str[i + 1] == '\"' && str[i + 2] == '\0')
-					{break;}
-					else
-						str = handler(str, &i, g_env);
-				}
-				i++;
+		if(str[i] == '$' && is_digit(str[i + 1]))
+		{
+				i += 2;
+				new = ft_substr(str, i, ft_strlen(str));
+				free(str);
+				str = new;
+				new = NULL;
+		}
+		if(str[i] == '$' && !is_digit(str[i + 1]) && str[i + 1] != '\'' && str[i + 1] != '$' && str[i + 1] != '\0' && !is_spaces(str[i + 1]) && str[i + 1] != '\"' )
+		{
+			if(str[i + 1] == '\"' && str[i + 2] == '\0')
+			{break;}
+			else
+				str = handler(str, &i, g_env);
+				continue;
+		}
+		i++;
 	}
 	return (str);
 }
@@ -331,24 +317,25 @@ int hh(char *str)
 {
 	int i = 0;
 	int j = 0;
-	while (str[i])
+	while (str[i] && str[i + 1])
 	{
-		if(str[i] == '\"' )
-			return (1);
-		if(str[i] == '$')
+		if (str[i] == '\"')
+			return 1;
+		if (str[i] == '$' && (str[i + 1] == '$' || str[i - 1] == '$'))
 			j++;
 		i++;
 	}
-	if(j % 2 == 0)
-		return (0);
-	return (1);
-
+	if (j % 2 == 0)
+		return 0;
+	return 1;
 }
+
 
 char *expand_variables(t_lexer **list, t_env **g_env)
 {
 	t_lexer *tmp;
-
+		char *new ;
+		new = NULL;
 	tmp = *list;
 	int i;
 
@@ -357,9 +344,8 @@ char *expand_variables(t_lexer **list, t_env **g_env)
 			i = 0;
 			if(check_quote(tmp->content, '\"') || !check_quote(tmp->content, '\''))
 			{
-				if(detect_dollar(tmp->content) && !if_dollar_out_quote(tmp->content) && hh(tmp->content))
+				if(detect_dollar(tmp->content) || hh(tmp->content))
 				{
-
 					tmp->content = ft_expand(tmp->content, g_env);
 				}
 			}
@@ -390,13 +376,8 @@ char *ft_delete(char *str, char c)
 {
 	int i = 0;
 	int j = 0;
-	int length = ft_strlen(str);
-	char *new = malloc(length + 1);
 
-	if (new == NULL)
-		return NULL;
-
-	while (i < length)
+	while (str[i])
 	{
 		if (str[i] == c && str[i + 1] == c)
 		{
@@ -404,14 +385,15 @@ char *ft_delete(char *str, char c)
 		}
 		else
 		{
-			new[j] = str[i];
+			str[j] = str[i];
 			j++;
 		}
 		i++;
 	}
-	new[j] = '\0';
-	return new;
+	str[j] = '\0';
+	return str;
 }
+
 
 
 int handle_dollar(char* str, char c)
@@ -444,7 +426,7 @@ void fun1(t_lexer **list, t_env **g_env)
 			i = 0;
 			while(tmp->content[i])
 			{
-				if(tmp->content[i] == '$' && tmp->content[i + 1] == '\'' && tmp->content[i + 2] != '\0' )
+				if(tmp->content[i] == '$' && tmp->content[i + 1] == '\'' && tmp->content[i - 1] != '\'' && tmp->content[i + 2] != '\0' )
 				{
 					j = 1;
 					tmp->content = delete_quote(tmp->content, '\'');
@@ -457,6 +439,72 @@ void fun1(t_lexer **list, t_env **g_env)
 		if(j == 0)
 			expand_variables(list, g_env);
 }
+
+int quote_check(char *line)
+{
+	int i;
+	int j;
+
+	i = 0;
+	j = 0;
+	while(line[i])
+	{
+		if(line[i] == '\'')
+		{
+			return (1);
+		}
+		if(line[i] == '\"')
+		{
+			return (2);
+		}
+		i++;
+	}
+	return (0);
+}
+
+
+char *del_quote(char *str, char c, char c2)
+{
+	int i = 0;
+	int k = 0;
+
+	while (str[i])
+	{
+		if (str[i] == c)
+		{
+			i++;
+
+			while (str[i])
+			{
+				if (str[i] == c)
+				{
+					i++;
+					break;
+				}
+				str[k++] = str[i++];
+			}
+		}
+
+		if (str[i] == c2)
+		{
+			i++;
+
+			while (str[i])
+			{
+				if (str[i] == c2)
+				{
+					i++;
+					break;
+				}
+				str[k++] = str[i++];
+			}
+		}
+		str[k++] = str[i++];
+	}
+	str[k] = '\0';
+	return str;
+}
+
 
 void expand(t_lexer **list, t_env **g_env)
 {
@@ -475,11 +523,12 @@ void expand(t_lexer **list, t_env **g_env)
 		{
 			if(quote_check(tmp->content) == 1)
 			{
-				tmp->content = delete_quote(tmp->content, '\'');
+
+				tmp->content = del_quote(tmp->content, '\'', '\"');
 			}
 			else
 			{
-				tmp->content = delete_quote(tmp->content, '\"');
+				tmp->content = del_quote(tmp->content, '\"', '\'');
 			}
 		}
 		tmp = tmp->next;
