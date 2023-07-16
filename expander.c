@@ -320,7 +320,7 @@ char *ft_expand(char *str, t_env **g_env)
 				str = new;
 				new = NULL;
 		}
-		if(str[i] == '$' && !is_digit(str[i + 1]) && str[i + 1] != '\'' && str[i + 1] != '$' && str[i + 1] != '\0' && !is_spaces(str[i + 1]))
+		if(str[i] == '$' && !is_digit(str[i + 1]) && str[i + 1] != '\'' && str[i + 1] != '$' && str[i + 1] != '\0' && !is_spaces(str[i + 1]) && str[i + 1] != '\"' )
 		{
 			if(str[i + 1] == '\"' && str[i + 2] == '\0')
 			{break;}
@@ -341,7 +341,7 @@ int hh(char *str)
 	{
 		if(str[i] == '\"' )
 			return (1);
-		if(str[i] == '$')
+		if(str[i] == '$' && (str[i + 1] == '$'  || str[i - 1] == '$'))
 			j++;
 		i++;
 	}
@@ -354,9 +354,8 @@ int hh(char *str)
 char *expand_variables(t_lexer **list, t_env **g_env)
 {
 	t_lexer *tmp;
-	char *new;
-	char *new1;
-
+		char *new ;
+		new = NULL;
 	tmp = *list;
 	int i;
 
@@ -365,32 +364,10 @@ char *expand_variables(t_lexer **list, t_env **g_env)
 			i = 0;
 			if(check_quote(tmp->content, '\"') || !check_quote(tmp->content, '\''))
 			{
-				if(if_dollar_out_quote(tmp->content))
+				if(detect_dollar(tmp->content) && hh(tmp->content))
 				{
-					i +=3;
-					while(tmp->content[i] != '$')
-					{
-						i++;
-					}
-					new = ft_substr(tmp->content, 0, i);
-				}
 
-				new1 = ft_substr(tmp->content, i, ft_strlen(tmp->content) - i);
-				printf("new1 = %s\n", new1);
-				if(detect_dollar(new1)  && hh(tmp->content))
-				{
-					new1 = ft_expand(new1, g_env);
-					if(if_dollar_out_quote(tmp->content))
-					{
-						new = ft_strjoin(new, new1);
-						free(tmp->content);
-						tmp->content = new;
-					}
-					else
-					{
-						free(tmp->content);
-						tmp->content = new1;
-					}
+					tmp->content = ft_expand(tmp->content, g_env);
 				}
 			}
 		tmp = tmp->next;
@@ -516,4 +493,3 @@ void expand(t_lexer **list, t_env **g_env)
 	}
 }
 
-// "$"USER""$USER >> expand the last $USER
