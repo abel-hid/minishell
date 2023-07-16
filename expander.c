@@ -376,13 +376,8 @@ char *ft_delete(char *str, char c)
 {
 	int i = 0;
 	int j = 0;
-	int length = ft_strlen(str);
-	char *new = malloc(length + 1);
 
-	if (new == NULL)
-		return NULL;
-
-	while (i < length)
+	while (str[i])
 	{
 		if (str[i] == c && str[i + 1] == c)
 		{
@@ -390,14 +385,15 @@ char *ft_delete(char *str, char c)
 		}
 		else
 		{
-			new[j] = str[i];
+			str[j] = str[i];
 			j++;
 		}
 		i++;
 	}
-	new[j] = '\0';
-	return new;
+	str[j] = '\0';
+	return str;
 }
+
 
 
 int handle_dollar(char* str, char c)
@@ -492,7 +488,7 @@ char *del_quote(char *str, char c, char c2)
 		if (str[i] == c2)
 		{
 			i++;
-		
+
 			while (str[i])
 			{
 				if (str[i] == c2)
