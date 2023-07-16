@@ -20,9 +20,11 @@ int main(int ac ,char **av , char **env)
 		line = readline("minishell-> ");
 			if (line == NULL)
 				break ;
+		
 		lexing(&lexer, line);
+		_heredoc_alm3lm(lexer);
 		expand(&lexer, &p_env);
-		 _parsing(&lexer,cmd);
+		 _parsing(&lexer,&cmd);
 		// parsing(&lexer,&cmd);
 		// cmd = *(srfak_lban(&lexer));
 
@@ -32,12 +34,17 @@ int main(int ac ,char **av , char **env)
 		// 	printf("%s\n", token[lexer->token]);
 		// 	lexer = lexer->next;
 		// }
-
+		// int i = 0;
 		// while(cmd)
 		// {
-		// 	printf("%s\n", cmd->args[i]);
-		// 	i++;
+		// 	while(cmd->args[i])
+		// 	{
+		// 		printf("%s\n", cmd->args[i]);
+		// 		i++;
+		// 	}
+		// 	cmd = cmd->next;
 		// }
+		lexer = NULL;
 		add_history(line);
 
 	}

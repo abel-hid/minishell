@@ -35,9 +35,10 @@ typedef struct s_redir_list
 
 typedef struct s_command
 {
-	char	*command_name;
+	
 	char	**args;
 	t_fd	fd;
+	struct s_command	*next;	
 }	t_command;
 
 
@@ -86,6 +87,7 @@ void free_list(t_lexer *lst);
 void expand(t_lexer **list, t_env **g_env);
 t_command **srfak_lban(t_lexer **list);
 
-void _parsing(t_lexer **list,  t_command *cmd);
+void _parsing(t_lexer **list,  t_command **cmd);
+void _heredoc_alm3lm(t_lexer *tmp);
 
 #endif

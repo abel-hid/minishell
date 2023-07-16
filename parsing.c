@@ -77,6 +77,33 @@ int calculate_args(t_lexer *tmp)
 }
 
 
+
+
+void _heredoc_alm3lm(t_lexer *tmp)
+{
+	char *line;
+	int fd;
+
+	while(tmp != NULL)
+	{
+		if (tmp->token == HEARDOC)
+		{
+			tmp = tmp->next;
+			fd = open("~/tmp/srfak", O_RDONLY, 0644);
+			while(1)
+			{
+				line = readline("> ");
+				if (ft_strncmp(line, tmp->content,ft_strlen(line)) == 0)
+					break ;
+				ft_putendl_fd(line, fd);
+				free(line);
+
+			}
+		}
+		tmp = tmp->next;
+	}
+}
+
 void _parsing(t_lexer **list, t_command **cmd)
 {
 	t_lexer *tmp = *list;
