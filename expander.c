@@ -162,7 +162,7 @@ char *delete_quote(char* str, char c)
 			j = 0;
 			while (str[i + j] == c)
 				j++;
-			ft_strncpy(&str[i], &str[i + j], ft_strlen(&str[i + j]) + 1);
+			ft_strncpy(&str[i], &str[i + j], ft_strlen(str) - i - j + 1);
 		}
 		i++;
 	}
@@ -206,27 +206,7 @@ int check_quote(char *line, char c)
 	return (0);
 }
 
-int quote_check(char *line)
-{
-	int i;
-	int j;
 
-	i = 0;
-	j = 0;
-	while(line[i])
-	{
-		if(line[i] == '\'')
-		{
-			return (1);
-		}
-		if(line[i] == '\"')
-		{
-			return (2);
-		}
-		i++;
-	}
-	return (0);
-}
 
 
 int if_dollar_out_quote(char *line)
@@ -248,9 +228,9 @@ int if_dollar_out_quote(char *line)
 int detect_dollar(char *str)
 {
 	int i = 0;
-	while(str[i])
+	while(str[i] && str[i + 1])
 	{
-		if(str[i] == '$' && str[i + 1] != '$' && str[i + 1] != '\0' && str[i +1 ] != '?' )
+		if(str[i] == '$' && str[i + 1] != '$' && str[i + 1] != '\0' && str[i +1 ] != '?' && str[i -1] != '$')
 			return (1);
 		i++;
 	}
@@ -337,19 +317,19 @@ int hh(char *str)
 {
 	int i = 0;
 	int j = 0;
-	while (str[i])
+	while (str[i] && str[i + 1])
 	{
-		if(str[i] == '\"' )
-			return (1);
-		if(str[i] == '$' && (str[i + 1] == '$'  || str[i - 1] == '$'))
+		if (str[i] == '\"')
+			return 1;
+		if (str[i] == '$' && (str[i + 1] == '$' || str[i - 1] == '$'))
 			j++;
 		i++;
 	}
-	if(j % 2 == 0)
-		return (0);
-	return (1);
-
+	if (j % 2 == 0)
+		return 0;
+	return 1;
 }
+
 
 char *expand_variables(t_lexer **list, t_env **g_env)
 {
@@ -364,9 +344,8 @@ char *expand_variables(t_lexer **list, t_env **g_env)
 			i = 0;
 			if(check_quote(tmp->content, '\"') || !check_quote(tmp->content, '\''))
 			{
-				if(detect_dollar(tmp->content) && hh(tmp->content))
+				if(detect_dollar(tmp->content) || hh(tmp->content))
 				{
-
 					tmp->content = ft_expand(tmp->content, g_env);
 				}
 			}
@@ -465,6 +444,72 @@ void fun1(t_lexer **list, t_env **g_env)
 			expand_variables(list, g_env);
 }
 
+int quote_check(char *line)
+{
+	int i;
+	int j;
+
+	i = 0;
+	j = 0;
+	while(line[i])
+	{
+		if(line[i] == '\'')
+		{
+			return (1);
+		}
+		if(line[i] == '\"')
+		{
+			return (2);
+		}
+		i++;
+	}
+	return (0);
+}
+
+
+char *del_quote(char *str, char c, char c2)
+{
+	int i = 0;
+	int k = 0;
+
+	while (str[i])
+	{
+		if (str[i] == c)
+		{
+			i++;
+
+			while (str[i])
+			{
+				if (str[i] == c)
+				{
+					i++;
+					break;
+				}
+				str[k++] = str[i++];
+			}
+		}
+
+		if (str[i] == c2)
+		{
+			i++;
+		
+			while (str[i])
+			{
+				if (str[i] == c2)
+				{
+					i++;
+					break;
+				}
+				str[k++] = str[i++];
+			}
+		}
+		str[k++] = str[i++];
+	}
+	str[k] = '\0';
+	return str;
+}
+
+
 void expand(t_lexer **list, t_env **g_env)
 {
 	t_lexer *tmp;
@@ -482,11 +527,12 @@ void expand(t_lexer **list, t_env **g_env)
 		{
 			if(quote_check(tmp->content) == 1)
 			{
-				tmp->content = delete_quote(tmp->content, '\'');
+
+				tmp->content = del_quote(tmp->content, '\'', '\"');
 			}
 			else
 			{
-				tmp->content = delete_quote(tmp->content, '\"');
+				tmp->content = del_quote(tmp->content, '\"', '\'');
 			}
 		}
 		tmp = tmp->next;
