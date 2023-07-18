@@ -15,17 +15,6 @@ t_lexer *ft_lstnew(char *content, t_tokens type)
 	return (list);
 }
 
-void free_list(t_lexer *lst)
-{
-	t_lexer *tmp;
-
-	while(lst)
-	{
-		tmp = lst;
-		lst = lst->next;
-		free(tmp);
-	}
-}
 
 int is_qoute(char *line, int i , char c)
 {
@@ -54,7 +43,7 @@ void add_token(t_lexer **list, char *line, t_tokens type)
 
 int is_space(char c)
 {
-    return (c == ' ' || c == '\t');
+    return (c == ' ' || c == '\t' || c == '\n' || c == '\v' || c == '\f' || c == '\r');
 }
 
 int is_quote(char c)
@@ -145,6 +134,7 @@ int get_token(char *line, int i, t_lexer **list)
 			return (1);
 		}
 	}
+
 	return (0);
 }
 
@@ -185,31 +175,7 @@ int help_token(t_lexer **list)
 	return (0);
 }
 
-void status_quote(t_lexer **list)
-{
-	t_lexer *tmp;
-	int i;
-
-	tmp = *list;
-	i = 0;
-	while(tmp)
-	{
-		if(tmp->token == WORD)
-		{
-			while(tmp->content[i])
-			{
-				if(tmp->content[i] == '\'' || tmp->content[i] == '\"')
-				{
-
-				}
-				i++;
-			}
-		}
-		tmp = tmp->next;
-	}
-}
-
-void pipe_line_syntax(t_lexer **list)
+int pipe_line_syntax(t_lexer **list)
 {
 	t_lexer *tmp;
 
@@ -221,21 +187,22 @@ void pipe_line_syntax(t_lexer **list)
 			if(tmp->prev == NULL || tmp->next == NULL)
 			{
 				printf("syntax error near unexpected token `|'\n");
-				*list = NULL;
-				return ;
+				free_lexer_list(list);
+				return (0);
 			}
 			if(help_token(&tmp->prev) == 0 || help_token(&tmp->next) == 0)
 			{
 				printf("syntax error near unexpected token `|'\n");
-				*list = NULL;
-				return ;
+				free_lexer_list(list);
+				return(0) ;
 			}
 		}
 		tmp = tmp->next;
 	}
+	return (0);
 }
 
-void redir_syntax(t_lexer **list)
+int redir_syntax(t_lexer **list)
 {
 	t_lexer *tmp;
 
@@ -254,12 +221,13 @@ void redir_syntax(t_lexer **list)
 			if(tmp->next == NULL || tmp->next->token != WORD)
 			{
 				printf("syntax error near unexpected token `newline'\n");
-				*list = NULL;
-				return ;
+				free_lexer_list(list);
+				return (0);
 			}
 		}
 		tmp = tmp->next;
 	}
+	return (0);
 }
 
 
@@ -285,7 +253,7 @@ int quote_syntax(t_lexer **list)
 					if (tmp->content[i] == '\0')
 					{
 						printf("syntax error near unexpected token `%c'\n", tmp->content[i - 1]);
-						*list = NULL;
+						free_lexer_list(list);
 						return (0);
 					}
 				}

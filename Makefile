@@ -1,21 +1,30 @@
 
 NAME = minishell
 
-SRCS = $(wildcard *.c)
+SRCS =	main.c\
+		expander.c\
+		lexing.c\
+		test.c\
+		list.c\
+		parsing.c\
+		execute.c\
+		env.c\
+		libft.c\
 
 
 OBJS = $(SRCS:.c=.o)
 
 CC = cc
 RM = rm -f
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Werror -Wextra
+READLINE = $(shell brew --prefix readline)
 
 all: $(NAME)
 
 $(NAME):$(OBJS)
-	$(CC) $(OBJS) -o $(NAME) -lreadline
+	$(CC) $(CFLAGS) -L $(READLINE)/lib $(OBJS) -o $(NAME) -lreadline
 %.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -I $(READLINE)/include -c $< -o $@
 
 clean:
 	$(RM) $(OBJS)

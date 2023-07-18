@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: abel-hid <abel-hid@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/07/18 16:47:00 by abel-hid          #+#    #+#             */
+/*   Updated: 2023/07/18 16:47:01 by abel-hid         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef MINISHELL_H
 # define MINISHELL_H
 # include <stdio.h>
@@ -25,28 +37,18 @@ typedef struct s_fd
 }	t_fd;
 
 
-typedef struct s_redir_list
-{
-	char	*file_name;
-	t_tokens	type;
-	struct s_redir_list	*next;
-}	t_redir_list;
-
-
 typedef struct s_command
 {
-	char	*command_name;
 	char	**args;
 	t_fd	fd;
+	struct s_command	*next;
 }	t_command;
-
 
 
 typedef struct s_lexer
 {
 	char    	*content;
 	t_tokens        token;
-	int		i;
 	struct s_lexer	*next;
 	struct s_lexer	*prev;
 }	t_lexer;
@@ -56,20 +58,9 @@ typedef struct s_env
 	char	*key;
 	char	*value;
 	struct s_env	*next;
-	struct s_env	*prev;
 }	t_env;
 
-enum command_type
-{
-	ls,
-	pwd,
-	cd,
-	echo,
-	env,
-	export,
-	unset,
-	exit1,
-};
+
 void lexing(t_lexer **list, char *line);
 void craete_env(char **env_list, t_env **g_env);
 char **ft_split(char const *s, char c);
@@ -82,10 +73,34 @@ t_lexer *ft_lstnew(char *content, t_tokens type);
 char *ft_strncpy(char *s1, char *s2, int n);
 
 char *expand_variables(t_lexer **list, t_env **p_env);
-void free_list(t_lexer *lst);
 void expand(t_lexer **list, t_env **g_env);
 t_command **srfak_lban(t_lexer **list);
 
-void _parsing(t_lexer **list,  t_command *cmd);
+void parsing(t_lexer **list, t_command **cmd);
+char	*ft_strdup(const char *s1);
+int skip_spaces(char *line, int i);
+int execute(t_command *cmd, t_env *g_env);
+char *ft_strjoin(char *s1, char *s2);
+void heredoc(t_lexer **lexer, t_env **g_env);
+int ft_strcmp(const char *s1, const char *s2);
+
+int is_spaces(char c);
+char *handler(char *str, int *i, t_env **g_env);
+char *handler_value(char *str, int *i,int j, char *value);
+int is_digit(char c);
+char *ft_expand(char *str, t_env **g_env);
+char *get_env_value(t_env *env, const char *key);
+char *del_quote(char *str, char c, char c2);
+int      quote_check(char *line);
+void free_lexer_list(t_lexer **lst);
+
+t_env *new_env(char *key, char *value);
+void lstadd_back(t_env **lst, t_env *new);
+int	ft_strchr(char *s, int c);
+void craete_env(char **env_list, t_env **g_env);
+char *get_env_value(t_env *env, const char *key);
+void ft_putendl_fd(char *s, int fd);
+void ft_putstr_fd(char *s, int fd);
+void signal_handler(int sig);
 
 #endif

@@ -21,20 +21,6 @@ void my_lstadd_back(t_command **lst, t_command *new)
 	last_add->next = new;
 }
 
-void ft_putendl_fd(char *s, int fd)
-{
-	int i;
-
-	i = 0;
-	if (!s)
-		return ;
-	while(s[i])
-	{
-		write(fd, &s[i], 1);
-		i++;
-	}
-	write(fd, "\n", 1);
-}
 
 t_command *ft_new(char **args, t_fd fd)
 {
@@ -77,7 +63,7 @@ int calculate_args(t_lexer *tmp)
 }
 
 
-void _parsing(t_lexer **list, t_command **cmd)
+void parsing(t_lexer **list, t_command **cmd)
 {
 	t_lexer *tmp = *list;
 	int i = 0;
@@ -120,6 +106,10 @@ void _parsing(t_lexer **list, t_command **cmd)
 				return;
 			}
 		}
+		else if(tmp->token == HEARDOC)
+		{
+			tmp = tmp->next;
+		}
 		else if (tmp->token == APPEND)
 		{
 			tmp = tmp->next;
@@ -147,4 +137,53 @@ void _parsing(t_lexer **list, t_command **cmd)
 		tmp = tmp->next;
 	}
 
+}
+int valid(char *str)
+{
+	int i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == '\"' || str[i] == '\'')
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
+void heredoc(t_lexer **lexer, t_env **g_env)
+{
+	char *line;
+	int fd;
+	int check;
+	t_lexer *tmp = *lexer;
+
+
+	while(tmp != NULL)
+	{
+		if (tmp->token == HEARDOC)
+		{
+			unlink("/tmp/srfak");
+			tmp = tmp->next;
+			fd = open("/tmp/srfak", O_RDWR | O_CREAT, 0644);
+			check = valid(tmp->content);
+			tmp->content = del_quote(tmp->content, '\'', '\"');
+			while(1)
+			{
+				line = readline("heredoc> ");
+
+				if (ft_strncmp(line, tmp->content,ft_strlen(line)) == 0)
+					break ;
+
+				if (!check)
+				line = ft_expand(line, g_env);
+
+				ft_putendl_fd(line, fd);
+
+			}
+			close(fd);
+		}
+		tmp = tmp->next;
+	}
 }
