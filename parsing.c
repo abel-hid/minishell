@@ -63,6 +63,8 @@ int calculate_args(t_lexer *tmp)
 }
 
 
+
+
 void parsing(t_lexer **list, t_command **cmd)
 {
 	t_lexer *tmp = *list;

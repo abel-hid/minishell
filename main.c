@@ -66,7 +66,9 @@ int main(int ac ,char **av , char **env)
 		line = readline("minishell-> ");
 			if (line == NULL)
 				break ;
+
 		lexing(&lexer, line);
+
 		if(lexer != NULL)
 		{
 			heredoc(&lexer, &p_env);
@@ -98,10 +100,7 @@ int main(int ac ,char **av , char **env)
 		// }
 
 
-
-
-
-
+		lexer = NULL;
 		add_history(line);
 		free_lexer_list(&lexer);
 		free_cmd_list(&cmd);
