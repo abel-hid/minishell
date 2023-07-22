@@ -275,7 +275,7 @@ char *expand_variables(t_lexer **list, t_env **g_env)
 	{
 				if(detect_dollar(tmp->content) || hh(tmp->content))
 					tmp->content = ft_expand(tmp->content, g_env);
-		tmp = tmp->next;
+			tmp = tmp->next;
 	}
 	return NULL;
 
@@ -311,7 +311,7 @@ int handle_dollar(char* str, char c)
 	return (0);
 }
 
-void fun1(t_lexer **list, t_env **g_env)
+void function(t_lexer **list, t_env **g_env)
 {
 	t_lexer *tmp;
 	int i;
@@ -411,15 +411,7 @@ void expand(t_lexer **list, t_env **g_env)
 	tmp = *list;
 	j = 0;
 	i = 0;
-		fun1(list, g_env);
+	function(list, g_env);
 
-	// while(tmp)
-	// {
-	// 	if(quote_check(tmp->content) == 1)
-	// 	{
-	// 		tmp->content = del_quote(tmp->content, '\'', '\"');
-	// 	}
-	// 	tmp = tmp->next;
-	// }
 }
 

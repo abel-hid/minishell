@@ -6,7 +6,7 @@
 /*   By: abel-hid <abel-hid@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 16:47:00 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/07/18 19:11:26 by abel-hid         ###   ########.fr       */
+/*   Updated: 2023/07/21 13:11:21 by abel-hid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ char *expand_variables(t_lexer **list, t_env **p_env);
 void expand(t_lexer **list, t_env **g_env);
 t_command **srfak_lban(t_lexer **list);
 
-void parsing(t_lexer **list, t_command **cmd);
+void parsing(t_lexer **list, t_command **cmd, t_env **g_env);
 char	*ft_strdup(const char *s1);
 int skip_spaces(char *line, int i);
 int execute(t_command *cmd, t_env *g_env);
@@ -103,5 +103,7 @@ char *get_env_value(t_env *env, const char *key);
 void ft_putendl_fd(char *s, int fd);
 void ft_putstr_fd(char *s, int fd);
 void signal_handler(int sig);
-
+int hh(char *str);
+int detect_dollar(char *str);
+char	**ft_split1(char *str, char *charset);
 #endif

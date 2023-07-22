@@ -188,6 +188,7 @@ int pipe_line_syntax(t_lexer **list)
 			{
 				printf("syntax error near unexpected token `|'\n");
 				free_lexer_list(list);
+
 				return (0);
 			}
 			if(help_token(&tmp->prev) == 0 || help_token(&tmp->next) == 0)
@@ -268,8 +269,8 @@ int quote_syntax(t_lexer **list)
 void syntax_check(t_lexer **list)
 {
 	pipe_line_syntax(list);
-	redir_syntax(list);
 	quote_syntax(list);
+	redir_syntax(list);
 }
 
 void lexing(t_lexer **list, char *line)

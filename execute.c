@@ -1,19 +1,6 @@
 
 #include "minishell.h"
 
-int	lstsize(t_command *lst)
-{
-	int	i;
-
-	i = 0;
-	while (lst)
-	{
-		lst = lst->next;
-		i++;
-	}
-	return (i);
-}
-
 void ft_echo(t_command *cmd)
 {
 	int i = 1;
@@ -154,7 +141,6 @@ void execute_builtins(t_command *cmd, t_env **g_env)
 		ft_echo(cmd);
 	else if (ft_strcmp(cmd->args[0], "cd") == 0)
 	{
-			exit(0);
 		if (cmd->args[1] != NULL)
 			ft_cd(cmd);
 	}
@@ -200,7 +186,7 @@ void signal_handler(int sig)
 		rl_on_new_line();
 		//This function call is likely used to move the cursor to a new line.
 		//It ensures that the next output or user input will start on a new line
-		rl_replace_line("", 0);
+		// rl_replace_line("", 0);
 		//eplaces the current input line with an empty string
 		rl_redisplay();
 		//After modifying the input line, this function is called to refresh the display

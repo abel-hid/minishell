@@ -4,13 +4,15 @@ void free_lexer_list(t_lexer **lst)
 {
 	t_lexer *tmp;
 
-	while (*lst != NULL)
+
+	while ((*lst) != NULL)
 	{
-		tmp = (*lst)->next;
-		free(*lst);
-		*lst = tmp;
+		tmp = ((*lst))->next;
+		
+		free((*lst));
+		(*lst) = tmp;
 	}
-	*lst = NULL;
+	(*lst) = NULL;
 }
 void free_cmd_list(t_command **lst)
 {
@@ -41,7 +43,6 @@ void free_env(t_env **lst)
 }
 
 
-
 int main(int ac ,char **av , char **env)
 {
 	char *line;
@@ -61,7 +62,7 @@ int main(int ac ,char **av , char **env)
 
 	while (1)
 	{
-		signal(SIGINT, signal_handler);
+		// signal(SIGINT, signal_handler);
 
 		line = readline("minishell-> ");
 			if (line == NULL)
@@ -71,16 +72,20 @@ int main(int ac ,char **av , char **env)
 
 		if(lexer != NULL)
 		{
-			heredoc(&lexer, &p_env);
-			expand(&lexer, &p_env);
-			parsing(&lexer,&cmd);
-			execute(cmd, p_env);
+			// heredoc(&lexer, &p_env);
+			// expand(&lexer, &p_env);
+
+			// parsing(&lexer,&cmd, &p_env);
+
+			// execute(cmd, p_env);
 		}
 
 
 		// while(lexer != NULL)
 		// {
 		// 	printf("%s\n", lexer->content);
+		// 	// free(lexer->content);
+		// 	// free((void *)lexer->token);
 		// 	// printf("%s\n", token[lexer->token]);
 		// 	lexer = lexer->next;
 		// }
@@ -100,13 +105,21 @@ int main(int ac ,char **av , char **env)
 		// }
 
 
-		lexer = NULL;
-		add_history(line);
-		free_lexer_list(&lexer);
+
+
+
+
+
+
+
 		free_cmd_list(&cmd);
+		// free_lexer_list(&lexer);
+		// lexer = NULL;
+		add_history(line);
+		free(line);
 
 	}
-	free_env(&p_env);
+		free_env(&p_env);
 }
 
 

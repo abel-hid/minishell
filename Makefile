@@ -10,6 +10,7 @@ SRCS =	main.c\
 		execute.c\
 		env.c\
 		libft.c\
+		t.c\
 
 
 OBJS = $(SRCS:.c=.o)
