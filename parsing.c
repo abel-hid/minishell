@@ -161,11 +161,22 @@ void parsing(t_lexer **list, t_command **cmd, t_env **g_env)
 			}
 			else
 			{
+				if(args == NULL)
+				args = malloc(sizeof(char *) * (calculate_args(tmp)));
 				tmp->content = del_quote(tmp->content, '\'', '\"');
 				args[i] = ft_strdup(tmp->content);
 				i++;
 			}
 
+		}
+		if (!tmp->next || tmp->token == PIPE_LINE)
+		{
+			args[i] = NULL;
+			my_lstadd_back(cmd, ft_new(args, fd));
+			args = NULL;
+			fd.fd_in = 0;
+			fd.fd_out = 1;
+			i = 0;
 		}
 		else if (tmp->token == REDIR_IN)
 		{
@@ -177,6 +188,7 @@ void parsing(t_lexer **list, t_command **cmd, t_env **g_env)
 				return;
 			}
 		}
+		
 		else if (tmp->token == REDIR_OUT)
 		{
 			tmp = tmp->next;
@@ -192,6 +204,7 @@ void parsing(t_lexer **list, t_command **cmd, t_env **g_env)
 			tmp = tmp->next;
 			fd.fd_in = open("/tmp/srfak", O_RDONLY, 0644);
 		}
+
 		else if (tmp->token == APPEND)
 		{
 			tmp = tmp->next;
@@ -203,19 +216,6 @@ void parsing(t_lexer **list, t_command **cmd, t_env **g_env)
 			}
 		}
 
-		if (!tmp->next || tmp->next->token == PIPE_LINE)
-		{
-			args[i] = NULL;
-			my_lstadd_back(cmd, ft_new(args, fd));
-			if (tmp->next && tmp->next->token == PIPE_LINE)
-			{
-				tmp->next = tmp->next->next;
-				args = malloc(sizeof(char *) * (calculate_args(tmp)));
-				if(!args)
-					return ;
-			}
-			i = 0;
-		}
 		tmp = tmp->next;
 	}
 

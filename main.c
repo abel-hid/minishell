@@ -93,7 +93,7 @@ int main(int ac ,char **av , char **env)
 				heredoc(&lexer, &p_env);
 				expand(&lexer, &p_env);
 				parsing(&lexer,&cmd, &p_env);
-				// execute(cmd, p_env);
+				execute(cmd, p_env);
 			}
 
 
