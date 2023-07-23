@@ -6,7 +6,7 @@
 /*   By: abel-hid <abel-hid@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 16:47:00 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/07/21 13:11:21 by abel-hid         ###   ########.fr       */
+/*   Updated: 2023/07/23 03:12:18 by abel-hid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ typedef struct s_env
 }	t_env;
 
 
-void lexing(t_lexer **list, char *line);
+int lexing(t_lexer **list, char *line);
 void craete_env(char **env_list, t_env **g_env);
 char **ft_split(char const *s, char c);
 char	*ft_strdup(const char *s1);
@@ -106,4 +106,7 @@ void signal_handler(int sig);
 int hh(char *str);
 int detect_dollar(char *str);
 char	**ft_split1(char *str, char *charset);
+void	free_args(char **s);
+int check_space(char *line);
+int	count_strings(char *str, char *charset);
 #endif

@@ -150,15 +150,44 @@ int detect_dollar(char *str)
 	return (0);
 }
 
+char *my_strjoin(char *s1, char *s2)
+{
+	char *new;
+	int i;
+	int j;
+
+	i = 0;
+	j = 0;
+	new = malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
+	if(!new)
+		return (NULL);
+	while(s1[i])
+	{
+		new[i] = s1[i];
+		i++;
+	}
+	while(s2[j])
+	{
+		new[i] = s2[j];
+		i++;
+		j++;
+	}
+	new[i] = '\0';
+	free(s1);
+	return (new);
+}
+
 char *handler_value(char *str, int *i,int j, char *value)
 {
 	char *new;
-	new = NULL;
+	char *s;
+
 	if (value)
 	{
 		new = ft_substr(str, 0, *i);
-		new = ft_strjoin(new, value);
-		new = ft_strjoin(new, ft_substr(str, *i + j + 1, ft_strlen(str)));
+		new = my_strjoin(new, value);
+		s = ft_substr(str, *i + j + 1, ft_strlen(str));
+		new = my_strjoin(new, s);
 		free(str);
 		str = new;
 		new = NULL;
@@ -166,13 +195,14 @@ char *handler_value(char *str, int *i,int j, char *value)
 	else
 	{
 		new = ft_substr(str, 0, *i);
-		new = ft_strjoin(new,ft_strdup(""));
-		new = ft_strjoin(new, ft_substr(str, *i + j + 1, ft_strlen(str)));
+		new = my_strjoin(new,"");
+		s = ft_substr(str, *i + j + 1, ft_strlen(str));
+		new = my_strjoin(new, s);
 		free(str);
 		str = new;
 		new = NULL;
 	}
-	return (str);
+	return (free(s),str);
 }
 
 char * handler(char *str, int *i, t_env **g_env)
@@ -222,8 +252,6 @@ char *ft_expand(char *str, t_env **g_env)
 	int i;
 
 	i = 0;
-
-
 	while (str[i])
 	{
 		if(str[i] == '$' && is_digit(str[i + 1]))
@@ -238,10 +266,9 @@ char *ft_expand(char *str, t_env **g_env)
 		if(str[i] == '$' && !is_digit(str[i + 1]) && str[i + 1] != '\'' && str[i + 1] != '$' && str[i + 1] != '\0' && !is_spaces(str[i + 1]) && str[i + 1] != '\"' )
 		{
 			if(str[i + 1] == '\"' && str[i + 2] == '\0')
-			{break;}
+				break;
 			else
 				str = handler(str, &i, g_env);
-				continue;
 		}
 		i++;
 	}
@@ -363,30 +390,17 @@ char* del_quote(char* str, char c, char c2)
 {
 	int i = 0;
 	int k = 0;
+	char c3;
 
 	while (str[i])
 	{
-		if (str[i] == c)
+		if (str[i] == c || str[i] == c2)
 		{
-			i++;
-
-			while (str[i])
-			{
-				if (str[i] == c)
-				{
-					i++;
-					break;
-				}
-				str[k++] = str[i++];
-			}
-		}
-
-		else if(str[i] == c2)
-		{
+			c3 = str[i];
 			i++;
 			while (str[i])
 			{
-				if (str[i] == c2)
+				if (str[i] == c3)
 				{
 					i++;
 					break;

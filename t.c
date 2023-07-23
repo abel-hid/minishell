@@ -81,7 +81,7 @@ char	**ft_split1(char *str, char *charset)
 		while (*str && !check_separator(*str, charset))
 			str++;
 	}
-	strings[i] = 0;
+	strings[i] = NULL;
 	return (strings);
 }
 

@@ -3,7 +3,6 @@
 
 t_command	*lstlast(t_command *lst)
 {
-	printf("[%p]\n", lst);
 	while (lst && lst->next)
 		lst = lst->next;
 	return (lst);
@@ -50,18 +49,38 @@ int ft_lstsize(t_lexer *lst)
 }
 int calculate_args(t_lexer *tmp)
 {
-	int i;
-	i = 0;
-	while (tmp != NULL)
+	int i = 0;
+
+	while(tmp != NULL && tmp->token != PIPE_LINE)
 	{
-		if (tmp->token == WORD)
+		if(tmp->token == WORD)
 			i++;
-		if(tmp->token == PIPE_LINE)
-			return (i);
 		tmp = tmp->next;
 	}
 	return (i);
 }
+
+int count_agrs_after_pipe(t_lexer **list, int pos)
+{
+	t_lexer *tmp = *list;
+	int i = 0;
+	int j = -1;
+	printf("pos %d\n", pos);
+	while (tmp)
+	{
+		printf("tmp->token %d\n", tmp->token);
+		if(tmp->token == PIPE_LINE)
+			j++;
+		if(pos == j && tmp->token != PIPE_LINE)
+		{
+				i++;
+		}
+		tmp = tmp->next;
+	}
+	return (i);
+
+}
+
 
 int check_space(char *line)
 {
@@ -95,6 +114,7 @@ void parsing(t_lexer **list, t_command **cmd, t_env **g_env)
 	int i = 0;
 	t_fd fd;
 	int j;
+	int k;
 
 	(void)g_env;
 	t_env *env ;
@@ -110,7 +130,6 @@ void parsing(t_lexer **list, t_command **cmd, t_env **g_env)
 	args = malloc(sizeof(char *) * (count + 1));
 	if(!args)
 		return ;
-
 
 
 	while (tmp != NULL)
@@ -131,12 +150,14 @@ void parsing(t_lexer **list, t_command **cmd, t_env **g_env)
 			{
 				tmp->content = del_quote(tmp->content, '\'', '\"');
 				p = ft_split1(tmp->content, "' ' '\t' '\n' '\v' '\f' '\r'");
-				while(*p)
+				k = 0;
+				while(p[k])
 				{
-					args[i] = ft_strdup(*p);
-					i++;
-					p++;
+					args[i++] = ft_strdup(p[k]);
+					free(p[k]);
+					k++;
 				}
+				free(p);
 			}
 			else
 			{
@@ -212,14 +233,13 @@ int valid(char *str)
 	}
 	return (0);
 }
+
 char *expand_heredoc(char *str, t_env **g_env)
 {
 	static char   *new;
 	int i;
 
 	i = 0;
-
-
 	while (str[i])
 	{
 		if(str[i] == '$' && is_digit(str[i + 1]))
@@ -236,45 +256,57 @@ char *expand_heredoc(char *str, t_env **g_env)
 				break;
 			else
 				str = handler(str, &i, g_env);
-				continue;
 		}
 		i++;
 	}
+	free(new);
 	return (str);
+}
+
+int here_doc(char *str, char *line, t_env **g_env)
+{
+	int fd;
+	int check;
+
+	unlink("/tmp/srfak");
+	fd = open("/tmp/srfak", O_CREAT | O_WRONLY | O_TRUNC, 0644);
+	check = valid(str);
+	str = del_quote(str, '\'', '\"');
+	while(1)
+	{
+		line = readline("heredoc>");
+		if(ft_strcmp(line, str) == 0)
+		{
+			free(line);
+			return (1);
+			break ;
+		}
+		if (!check)
+		line = expand_heredoc(line, g_env);
+		ft_putendl_fd(line, fd);
+		free(line);
+	}
+	close(fd);
+	return (0);
 }
 
 void heredoc(t_lexer **lexer, t_env **g_env)
 {
-	char *line;
-	int fd;
-	int check;
-	t_lexer *tmp = *lexer;
-	check = 0;
 
+	char *line;
+	line = NULL;
+
+	t_lexer *tmp = *lexer;
 
 	while(tmp != NULL)
 	{
 		if (tmp->token == HEARDOC)
 		{
-			unlink("/tmp/srfak");
 			tmp = tmp->next;
-			fd = open("/tmp/srfak", O_RDWR | O_CREAT, 0644);
-			check = valid(tmp->content);
-			tmp->content = del_quote(tmp->content, '\'', '\"');
-			while(1)
+			if (here_doc(tmp->content, line, g_env))
 			{
-				line = readline("heredoc> ");
-
-				if (ft_strcmp(line, tmp->content) == 0)
-					break ;
-
-				if (!check)
-				line = expand_heredoc(line, g_env);
-
-				ft_putendl_fd(line, fd);
-
+				break;
 			}
-			close(fd);
 		}
 		tmp = tmp->next;
 	}

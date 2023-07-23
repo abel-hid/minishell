@@ -56,7 +56,6 @@ void ft_export(t_command *cmd, t_env **p_env)
 			tmp = new_env(key, value);
 			lstadd_back(p_env, tmp);
 		}
-
 		i++;
 	}
 }
@@ -136,6 +135,7 @@ void ft_unset(t_command *cmd, t_env **g_env)
 void execute_builtins(t_command *cmd, t_env **g_env)
 {
 	char *path;
+	path = NULL;
 
 	if (ft_strcmp(cmd->args[0], "echo") == 0)
 		ft_echo(cmd);
@@ -176,6 +176,7 @@ void execute_builtins(t_command *cmd, t_env **g_env)
 			exit(1);
 		}
 	}
+	free(path);
 }
 
 void signal_handler(int sig)
