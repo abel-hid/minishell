@@ -146,50 +146,53 @@ void ft_unset(t_command *cmd, t_env **g_env)
 	}
 }
 
-void execute_builtins(t_command *cmd, t_env **g_env)
+
+int execute_builtins(t_command *cmd ,char **envi)
 {
 	char *path;
-
-	if (ft_strcmp(cmd->args[0], "echo") == 0)
-		ft_echo(cmd);
-	else if (ft_strcmp(cmd->args[0], "cd") == 0)
-	{
-			exit(0);
-		if (cmd->args[1] != NULL)
-			ft_cd(cmd);
-	}
-	else if (ft_strcmp(cmd->args[0], "pwd") == 0)
-		ft_pwd();
-	else if (ft_strcmp(cmd->args[0], "export") == 0)
-	{
-		if (cmd->args[1] != NULL)
-			ft_export(cmd, g_env);
-	}
-	else if (ft_strcmp(cmd->args[0], "unset") == 0)
-	{
-		exit(0);
-		if (cmd->args[1] != NULL)
-			ft_unset(cmd, g_env);
-	}
-	else if (ft_strcmp(cmd->args[0], "env") == 0)
-		ft_env(cmd, g_env);
-	else if (ft_strcmp(cmd->args[0], "exit") == 0)
-	{
-		exit(0);
-		ft_exit();
-	}
-	else
-	{
-		path = "/bin/";
-		path = ft_strjoin(path, cmd->args[0]);
-		if(execve(path, cmd->args, NULL) == -1)
+	extern char **environ;
+	int i = 0;
+		while(environ[i])
 		{
-			ft_putstr_fd("minishell: ", 1);
-			ft_putstr_fd(cmd->args[0], 1);
-			ft_putstr_fd(": command not found\n", 1);
-			exit(1);
+			if(ft_strncmp(environ[i], "PATH=", 5) == 0)
+				path = ft_strdup(environ[i] + 5);
+			i++;
 		}
+		i =0;
+		char **paths ;
+		paths = ft_split(path, ':');
+		while(paths[i])
+		{
+
+			char *tmp = ft_strjoin(paths[i],"/");
+			tmp = ft_strjoin(tmp, cmd->args[0]);
+			if (access(tmp, F_OK) == 0)
+			{
+				cmd->args[0] = tmp;
+				break;
+			}
+			i++;
+		}
+		if(execve(cmd->args[0], cmd->args,envi) == -1)
+		{
+				printf("minishell: %s: command not found\n", cmd->args[0]);
+				printf("cmd->args[0] = %s\n", cmd->args[0]);
+				return (1);
+				exit(0);
+		}
+		return (0);
+			
+	
+}
+int ft_lst_size(t_command *cmd)
+{
+	int i =0;
+	while(cmd)
+	{
+		i++;
+		cmd = cmd->next;
 	}
+	return i;
 }
 
 void signal_handler(int sig)
@@ -200,93 +203,84 @@ void signal_handler(int sig)
 		rl_on_new_line();
 		//This function call is likely used to move the cursor to a new line.
 		//It ensures that the next output or user input will start on a new line
-		rl_replace_line("", 0);
+		// rl_replace_line("", 0);
 		//eplaces the current input line with an empty string
 		rl_redisplay();
 		//After modifying the input line, this function is called to refresh the display
 	}
 
 	if(sig == SIGQUIT)
-	{
-
-
-	}
+	;
 }
 
-
-int execute(t_command* cmd, t_env* g_env)
+int execute_the_shOt(t_command* cmd, char **envp)
 {
-	int pipe_fd[2];
-	pid_t pid;
-
-	while (cmd != NULL && cmd->args[0] != NULL)
+	int old;
+	t_command *tmp =NULL;
+	tmp = cmd;
+	int fd[2] = {-1,-1};
+			if(!cmd)
+				return (77);
+	while (cmd)
 	{
-		if (cmd->next != NULL)
+		old = fd[0]; // -1;
+		if (pipe(fd) != 0)      
 		{
-			if (pipe(pipe_fd) < 0)
-			{
-				perror("pipe");
-				exit(1);
-			}
-			pipe_fd[1] = 1;
-			pipe_fd[0] = 0;
+			perror("failed to create a pipe");
+			return(2);
 		}
-
-		pid = fork();
-		if (pid == 0)
+		cmd->pid = fork();
+		if (cmd->pid == 0)      
 		{
-			if (cmd->fd.fd_in != 0)
+			close(fd[0]);
+			if (cmd->next)
 			{
-				dup2(cmd->fd.fd_in, 0);
-				close(cmd->fd.fd_in);
+				dup2(fd[1],1);
+				close(fd[1]);
 			}
-			if (cmd->fd.fd_out != 1)
+			if(cmd->fd.fd_out != 1)
 			{
-				dup2(cmd->fd.fd_out, 1);
-				close(cmd->fd.fd_out);
+				dup2(cmd->fd.fd_out,1);
+				close(cmd->fd.fd_out);	
 			}
-			if (cmd->next != NULL)
+			if (old != -1)
 			{
-				dup2(pipe_fd[1], 1);
-				close(pipe_fd[0]);
-				close(pipe_fd[1]);
+				dup2(old, 0);
+				close(old);     
 			}
-			execute_builtins(cmd, &g_env);
-			exit(0);
+			if(cmd->fd.fd_in != 0)
+			{
+				dup2(cmd->fd.fd_in,0);
+				close(cmd->fd.fd_in);	
+			}
+			execute_builtins(cmd, envp);
+			
 		}
-		else if (pid > 0)
+		else if (cmd->pid > 0)   
 		{
-			waitpid(pid, NULL, 0);
-			if (cmd->fd.fd_in != 0)
-			{
-				close(cmd->fd.fd_in);
-			}
-			if (cmd->fd.fd_out != 1)
-			{
-				close(cmd->fd.fd_out);
-			}
-
-			if(ft_strcmp(cmd->args[0], "exit") == 0)
-				exit(0);
-			if(ft_strcmp(cmd->args[0], "cd") == 0)
-				ft_cd(cmd);
-			if(ft_strcmp(cmd->args[0], "export") == 0)
-				ft_export(cmd, &g_env);
-			if(ft_strcmp(cmd->args[0], "unset") == 0)
-				ft_unset(cmd, &g_env);
-
+			printf(" cmd pid%d\n",cmd->pid);
+			close(fd[1]);
+			if (old != -1)
+				close(old);
 		}
 		else
 		{
-			perror("fork");
-			exit(1);
+
+			perror("fork() failed");
+			continue;
 		}
 
 		cmd = cmd->next;
 	}
-
-	return (0);
+	close(fd[1]);
+	while(tmp)
+	{
+		waitpid(tmp->pid,NULL,0);
+		tmp = tmp->next;
+	}
+	return (0);               
 }
+
 
 
 

@@ -8,7 +8,6 @@ t_command	*lstlast(t_command *lst)
 		lst = lst->next;
 	return (lst);
 }
-
 void my_lstadd_back(t_command **lst, t_command *new)
 {
 	t_command	*last_add;
@@ -63,88 +62,29 @@ int calculate_args(t_lexer *tmp)
 	return (i);
 }
 
-int check_space(char *line)
-{
-	int i = 0;
 
-	while(line[i])
-	{
-		if(line[i] == ' ' || line[i] == '\t')
-			return (1);
-		i++;
-	}
-	return (0);
-}
-int is_quote1(char *str)
-{
-	int i = 0;
-
-	while(str[i])
-	{
-		if(str[i] == '\"')
-			return (1);
-		i++;
-	}
-	return (0);
-}
-
-
-void parsing(t_lexer **list, t_command **cmd, t_env **g_env)
+void parsing(t_lexer **list, t_command **cmd)
 {
 	t_lexer *tmp = *list;
 	int i = 0;
 	t_fd fd;
-	int j;
-
-	(void)g_env;
-	t_env *env ;
-	(void)env;
 
 	*cmd = NULL;
 	fd.fd_in = 0;
 	fd.fd_out = 1;
 	char **args;
-	char **p;
 	int count = calculate_args(tmp);
 
 	args = malloc(sizeof(char *) * (count + 1));
 	if(!args)
 		return ;
 
-
-
 	while (tmp != NULL)
 	{
 		if (tmp->token == WORD)
 		{
-			j = 0;
-			env = *g_env;
-			while(env)
-			{
-				env->value = del_quote(env->value, '\'', '\"');
-				if(ft_strcmp(env->value, tmp->content) == 0)
-					j = 1;
-				env = env->next;
-			}
-
-			if(check_space(tmp->content) && j)
-			{
-				tmp->content = del_quote(tmp->content, '\'', '\"');
-				p = ft_split1(tmp->content, "' ' '\t' '\n' '\v' '\f' '\r'");
-				while(*p)
-				{
-					args[i] = ft_strdup(*p);
-					i++;
-					p++;
-				}
-			}
-			else
-			{
-				tmp->content = del_quote(tmp->content, '\'', '\"');
-				args[i] = ft_strdup(tmp->content);
-				i++;
-			}
-
+			args[i] = ft_strdup(tmp->content);
+			i++;
 		}
 		else if (tmp->token == REDIR_IN)
 		{
@@ -169,7 +109,6 @@ void parsing(t_lexer **list, t_command **cmd, t_env **g_env)
 		else if(tmp->token == HEARDOC)
 		{
 			tmp = tmp->next;
-			fd.fd_in = open("/tmp/srfak", O_RDONLY, 0644);
 		}
 		else if (tmp->token == APPEND)
 		{
@@ -212,36 +151,6 @@ int valid(char *str)
 	}
 	return (0);
 }
-char *expand_heredoc(char *str, t_env **g_env)
-{
-	static char   *new;
-	int i;
-
-	i = 0;
-
-
-	while (str[i])
-	{
-		if(str[i] == '$' && is_digit(str[i + 1]))
-		{
-				i += 2;
-				new = ft_substr(str, i, ft_strlen(str));
-				free(str);
-				str = new;
-				new = NULL;
-		}
-		if(str[i] == '$' && !is_digit(str[i + 1]) && str[i + 1] != '\'' && str[i + 1] != '$' && str[i + 1] != '\0' && !is_spaces(str[i + 1]) && str[i + 1] != '\"' )
-		{
-			if(str[i + 1] == '\"' && str[i + 2] == '\0')
-				break;
-			else
-				str = handler(str, &i, g_env);
-				continue;
-		}
-		i++;
-	}
-	return (str);
-}
 
 void heredoc(t_lexer **lexer, t_env **g_env)
 {
@@ -249,7 +158,6 @@ void heredoc(t_lexer **lexer, t_env **g_env)
 	int fd;
 	int check;
 	t_lexer *tmp = *lexer;
-	check = 0;
 
 
 	while(tmp != NULL)
@@ -265,11 +173,11 @@ void heredoc(t_lexer **lexer, t_env **g_env)
 			{
 				line = readline("heredoc> ");
 
-				if (ft_strcmp(line, tmp->content) == 0)
+				if (ft_strncmp(line, tmp->content,ft_strlen(line)) == 0)
 					break ;
 
 				if (!check)
-				line = expand_heredoc(line, g_env);
+				line = ft_expand(line, g_env);
 
 				ft_putendl_fd(line, fd);
 
