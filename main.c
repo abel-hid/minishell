@@ -73,8 +73,8 @@ int main(int ac ,char **av , char **env)
 		{
 			heredoc(&lexer, &p_env);
 			expand(&lexer, &p_env);
-			parsing(&lexer,&cmd);
-			execute_the_shOt(cmd,env);
+			parsing(&lexer,&cmd,&p_env);
+			execute_the_shOt(cmd,p_env,env);
 		}
 
 
@@ -91,7 +91,8 @@ int main(int ac ,char **av , char **env)
 		// 	printf(" ----------cmd--------------\n");
 		// 	while(cmd && cmd->args[i] != NULL)
 		// 	{
-		// 		printf("%d %s\n", i, cmd->args[i]);
+		// 		printf("%s\n", cmd->args[i]);
+				
 		// 		i++;
 		// 	}
 		// 	// printf("fd_in %d\n", cmd->fd.fd_in);

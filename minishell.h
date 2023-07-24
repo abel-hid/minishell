@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 16:47:00 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/07/23 13:27:07 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/07/24 19:47:32 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ typedef struct s_env
 
 
 void lexing(t_lexer **list, char *line);
+char	*get_next_line(int fd);
 void craete_env(char **env_list, t_env **g_env);
 char **ft_split(char const *s, char c);
 char	*ft_strdup(const char *s1);
@@ -78,10 +79,10 @@ char *expand_variables(t_lexer **list, t_env **p_env);
 void expand(t_lexer **list, t_env **g_env);
 t_command **srfak_lban(t_lexer **list);
 
-void parsing(t_lexer **list, t_command **cmd);
+void parsing(t_lexer **list, t_command **cmd,t_env **g_env);
 char	*ft_strdup(const char *s1);
 int skip_spaces(char *line, int i);
-int execute_the_shOt(t_command* cmd, char **envp);
+int execute_the_shOt(t_command* cmd,t_env *g_esnv, char **envp);
 char *ft_strjoin(char *s1, char *s2);
 void heredoc(t_lexer **lexer, t_env **g_env);
 int ft_strcmp(const char *s1, const char *s2);

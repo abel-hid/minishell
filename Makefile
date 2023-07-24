@@ -10,6 +10,7 @@ SRCS =	main.c\
 		execute.c\
 		env.c\
 		libft.c\
+		get_next_line.c\
 
 
 OBJS = $(SRCS:.c=.o)
