@@ -60,13 +60,10 @@ int calculate_args(t_lexer *tmp)
 			j =  + count_strings(tmp->content, " \t\n\v\f\r");
 			i += j;
 		}
-		else if(tmp->token == REDIR_IN || tmp->token == REDIR_OUT || tmp->token == APPEND)
+		else if(tmp->token == REDIR_IN || tmp->token == REDIR_OUT || tmp->token == APPEND || tmp->token == HEARDOC)
 		{
-			i++;
 			tmp = tmp->next;
-			i++;
 		}
-			i++;
 		tmp = tmp->next;
 	}
 	return (i);
@@ -127,6 +124,7 @@ char **get_p(char *str)
 	p = ft_split1(str, "' ' '\t' '\n' '\v' '\f' '\r'");
 	return (p);
 }
+
 char **is_word(char *str, char **args, t_env **g_env, int i)
 {
 	char **p;
@@ -142,8 +140,8 @@ char **is_word(char *str, char **args, t_env **g_env, int i)
 	}
 	else
 	{
-		if (ft_strcmp(str, ""))
-			args[i++] = add_args(str);
+
+		args[i++] = add_args(str);
 	}
 	return (args);
 }
@@ -157,7 +155,7 @@ int parse_redir_out(int type, char *str_next, int fd)
 			if (fd == -1)
 			{
 				printf("minishell: %s: ambiguous redirect\n", str_next);
-				return (1);
+				return (-1);
 			}
 		}
 		else if (type == APPEND)
@@ -167,7 +165,7 @@ int parse_redir_out(int type, char *str_next, int fd)
 			if (fd == -1)
 			{
 				printf("minishell: %s: ambiguous redirect\n", str_next);
-				return(1);
+				return(-1);
 			}
 		}
 	return fd;
@@ -182,7 +180,7 @@ int parse_redir_in(int type, char *str_next, int fd)
 		if (fd == -1)
 		{
 			printf("minishell: %s: No such file or directory\n", str_next);
-			return (0);
+			return (-1);
 		}
 	}
 	if(type == HEARDOC)
@@ -230,18 +228,20 @@ void parsing1(t_lexer *tmp ,char **args, t_env **g_env, t_command **cmd)
 	i = 0;
 	while (tmp != NULL)
 	{
-		if (tmp->token == WORD)
+		if (tmp->token == WORD && ft_strcmp(tmp->content, ""))
 			args = is_word(tmp->content, args, g_env, i++);
 		if(tmp->token == REDIR_OUT || tmp->token == APPEND || tmp->token == REDIR_IN || tmp->token == HEARDOC)
 		{
 			fd = parse_redirection(tmp->token, tmp->next->content, fd);
+			if(fd.fd_in == -1 || fd.fd_out == -1)
+				return ;
 			tmp = tmp->next;
 		}
 		if (!tmp->next || tmp->token == PIPE_LINE)
 		{
 			i = create(args, cmd, fd, i);
 			if (tmp->next && tmp->token == PIPE_LINE)
-				args = realloc_args(args, calculate_args(tmp->next));
+				args = realloc_args(args, calculate_args(tmp->next) + 1);
 		}
 		tmp = tmp->next;
 	}
@@ -253,8 +253,10 @@ void parse_args(t_lexer **list,t_command **cmd,  t_env **g_env)
 	char **args;
 
 	tmp = *list;
-	args = NULL;
-	args = realloc_args(args, calculate_args(tmp));
+	int count = calculate_args(tmp);
+	args = malloc(sizeof(char *) * (count + 1));
+	if(!args)
+		return ;
 	parsing1(tmp, args, g_env, cmd);
 }
 
