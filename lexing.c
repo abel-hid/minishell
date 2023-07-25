@@ -14,9 +14,9 @@ t_lexer	*ft_lstnew(char *content, t_tokens type)
 	return (list);
 }
 
-int	is_qoute(char *line, int i , char c)
+int	is_qoute(char *line, int i, char c)
 {
-	int j;
+	int	j;
 
 	j = 0;
 	if (line[i] == c)
@@ -30,39 +30,42 @@ int	is_qoute(char *line, int i , char c)
 	return (j);
 }
 
-void add_token(t_lexer **list, char *line, t_tokens type)
+void	add_token(t_lexer **list, char *line, t_tokens type)
 {
-	t_lexer *new;
+	t_lexer	*new;
 
 	new = ft_lstnew(line, type);
-	if(new != NULL)
+	if (new != NULL)
 		ft_lstadd_back(list, new);
 }
 
-int is_space(char c)
+int	is_space(char c)
 {
-    return (c == ' ' || c == '\t' || c == '\n' || c == '\v' || c == '\f' || c == '\r');
+	return (c == ' ' || c == '\t' || c == '\n'
+		|| c == '\v' || c == '\f' || c == '\r');
 }
 
-int is_quote(char c)
+int	is_quote(char c)
 {
-    return (c == '\'' || c == '\"');
+	return (c == '\'' || c == '\"');
 }
 
-int skip_spaces(char *line, int i)
+int	skip_spaces(char *line, int i)
 {
-	int j = 0;
+	int	j;
+
+	j = 0;
 	while (line[i + j] && is_space(line[i + j]))
 		j++;
 	return (j);
 }
 
-int is_token(char c)
+int	is_token(char c)
 {
 	return (c == '|' || c == '<' || c == '>');
 }
 
-int is_quote_end(char c, char quote_type)
+int	is_quote_end(char c, char quote_type)
 {
 	if (quote_type == '\'')
 		return (c == '\'');
@@ -71,23 +74,25 @@ int is_quote_end(char c, char quote_type)
 	return (0);
 }
 
-int  get_quote_length(char *line, int i, char quote_type)
+int	get_quote_length(char *line, int i, char quote_type)
 {
-	int j = 1;
+	int	j;
+
+	j = 1;
 	while (line[i + j] && !is_quote_end(line[i + j], quote_type))
 		j++;
-	return j;
+	return (j);
 }
 
-char *ft_strndup(const char* src, size_t n)
+char	*ft_strndup(const char *src, size_t n)
 {
-	char* dst;
-	size_t i;
+	char	*dst;
+	size_t	i;
 
-	dst = (char*)malloc(sizeof(char) * (n + 1));
+	i = 0;
+	dst = malloc(sizeof(char) * (n + 1));
 	if (!dst)
 		return (NULL);
-	i = 0;
 	while (src[i] && i < n)
 	{
 		dst[i] = src[i];
@@ -97,12 +102,16 @@ char *ft_strndup(const char* src, size_t n)
 	return (dst);
 }
 
-int get_word(char *line, int i, t_lexer **list)
+int	get_word(char *line, int i, t_lexer **list)
 {
-	int j = 0;
-	char *str;
-	char quote_type = 0;
-	int quote_length = 0;
+	int		j;
+	char	*str;
+	char	quote_type;
+	int		quote_length;
+
+	quote_type = 0;
+	quote_length = 0;
+	j = 0;
 	while (line[i + j] && !is_token(line[i + j]) && !is_space(line[i + j]))
 	{
 		if (is_quote(line[i + j]))
@@ -119,7 +128,7 @@ int get_word(char *line, int i, t_lexer **list)
 	return (j);
 }
 
-int add_redir_out(char *line , int i, t_lexer **list)
+int	add_redir_out(char *line, int i, t_lexer **list)
 {
 	if (line[i] == '>')
 	{
@@ -135,15 +144,14 @@ int add_redir_out(char *line , int i, t_lexer **list)
 		}
 	}
 	return (0);
-
 }
 
-int get_token(char *line, int i, t_lexer **list)
+int	get_token(char *line, int i, t_lexer **list)
 {
 	if (line[i] == '|')
 	{
 		add_token(list, "|", PIPE_LINE);
-		return 1;
+		return (1);
 	}
 	else if (line[i] == '<')
 	{
@@ -160,15 +168,16 @@ int get_token(char *line, int i, t_lexer **list)
 	}
 	else
 		return (add_redir_out(line, i, list));
-
 	return (0);
 }
 
-void  create_lexer(char *line, t_lexer **list)
+void	create_lexer(char *line, t_lexer **list)
 {
-	int i = 0;
-	int token_length = 0;
+	int	i;
+	int	token_length;
 
+	i = 0;
+	token_length = 0;
 	while (line[i])
 	{
 		if (is_space(line[i]))
@@ -181,46 +190,43 @@ void  create_lexer(char *line, t_lexer **list)
 			i += token_length;
 		}
 		else
-		 {
+		{
 			token_length = get_word(line, i, list);
 			i += token_length;
 		}
 	}
 }
 
-
-int help_token(t_lexer **list)
+int	help_token(t_lexer **list)
 {
-	t_lexer *tmp;
+	t_lexer	*tmp;
+
 	tmp = *list;
-
-		if(tmp->token == WORD || tmp->token == REDIR_IN ||
-		tmp->token == REDIR_OUT || tmp->token == APPEND || tmp->token == HEARDOC)
-			return (1);
-
+	if (tmp->token == WORD || tmp->token == REDIR_IN
+		|| tmp->token == REDIR_OUT
+		|| tmp->token == APPEND || tmp->token == HEARDOC)
+		return (1);
 	return (0);
 }
 
-int pipe_line_syntax(t_lexer **list)
+int	pipe_line_syntax(t_lexer **list)
 {
-	t_lexer *tmp;
+	t_lexer	*tmp;
 
 	tmp = *list;
-	while(tmp)
+	while (tmp)
 	{
-		if(tmp->token == PIPE_LINE)
+		if (tmp->token == PIPE_LINE)
 		{
-			if(tmp->prev == NULL || tmp->next == NULL)
+			if (tmp->prev == NULL || tmp->next == NULL)
 			{
 				printf("syntax error near unexpected token `|'\n");
-
 				return (1);
 			}
-			if(help_token(&tmp->prev) == 0 || help_token(&tmp->next) == 0)
+			if (help_token(&tmp->prev) == 0 || help_token(&tmp->next) == 0)
 			{
 				printf("syntax error near unexpected token `|'\n");
-				// free_lexer_list(list);
-				return(1) ;
+				return (1);
 			}
 		}
 		tmp = tmp->next;
@@ -228,26 +234,24 @@ int pipe_line_syntax(t_lexer **list)
 	return (0);
 }
 
-int redir_syntax(t_lexer **list)
+int	redir_syntax(t_lexer **list)
 {
-	t_lexer *tmp;
+	t_lexer	*tmp;
 
 	tmp = *list;
-
-	while(tmp)
+	while (tmp)
 	{
-		if(tmp->token == REDIR_IN || tmp->token == REDIR_OUT || tmp->token == APPEND || tmp->token == HEARDOC)
+		if (tmp->token == REDIR_IN || tmp->token == REDIR_OUT
+			|| tmp->token == APPEND || tmp->token == HEARDOC)
 		{
-			if(tmp->token == REDIR_IN)
+			if (tmp->token == REDIR_IN)
 			{
-				if(tmp->next != NULL && tmp->next->token == REDIR_OUT)
+				if (tmp->next != NULL && tmp->next->token == REDIR_OUT)
 					tmp = tmp->next;
 			}
-
-			if(tmp->next == NULL || tmp->next->token != WORD)
+			if (tmp->next == NULL || tmp->next->token != WORD)
 			{
 				printf("syntax error near unexpected token `newline'\n");
-				// free_lexer_list(list);
 				return (1);
 			}
 		}
@@ -256,11 +260,12 @@ int redir_syntax(t_lexer **list)
 	return (0);
 }
 
-int quote_error(char *str)
+int	quote_error(char *str)
 {
-	int i = 0;
-	char c;
+	int		i;
+	char	c;
 
+	i = 0;
 	while (str[i] != '\0')
 	{
 		if (str[i] == '\'' || str[i] == '\"')
@@ -280,41 +285,38 @@ int quote_error(char *str)
 	return (0);
 }
 
-
-int quote_syntax(t_lexer **list)
+int	quote_syntax(t_lexer **list)
 {
-    t_lexer *tmp;
+	t_lexer	*tmp;
 
 	tmp = *list;
 	while (tmp != NULL)
 	{
 		if (tmp->token == WORD)
 		{
-				if(quote_error(tmp->content))
-					return (1);
+			if (quote_error(tmp->content))
+				return (1);
 		}
 		tmp = tmp->next;
 	}
 	return (0);
 }
 
-int syntax_check(t_lexer **list)
+int	syntax_check(t_lexer **list)
 {
-	if(pipe_line_syntax(list))
+	if (pipe_line_syntax(list))
 		return (1);
-	if(quote_syntax(list))
+	if (quote_syntax(list))
 		return (1);
-	if(redir_syntax(list))
+	if (redir_syntax(list))
 		return (1);
 	return (0);
 }
 
-int lexing(t_lexer **list, char *line)
+int	lexing(t_lexer **list, char *line)
 {
 	create_lexer(line, list);
-	if(syntax_check(list))
+	if (syntax_check(list))
 		return (1);
 	return (0);
 }
-
-

@@ -6,7 +6,7 @@
 /*   By: abel-hid <abel-hid@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 16:47:00 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/07/23 03:12:18 by abel-hid         ###   ########.fr       */
+/*   Updated: 2023/07/25 04:01:21 by abel-hid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,4 +109,12 @@ char	**ft_split1(char *str, char *charset);
 void	free_args(char **s);
 int check_space(char *line);
 int	count_strings(char *str, char *charset);
+
+
+
+
+
+
+
+void parse_args(t_lexer **list,t_command **cmd,  t_env **g_env);
 #endif

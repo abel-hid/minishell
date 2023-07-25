@@ -1,4 +1,3 @@
-
 #include "minishell.h"
 
 t_lexer	*ft_lstlast(t_lexer *lst)
@@ -8,14 +7,14 @@ t_lexer	*ft_lstlast(t_lexer *lst)
 	return (lst);
 }
 
-void ft_lstadd_back(t_lexer **lst, t_lexer *new)
+void	ft_lstadd_back(t_lexer **lst, t_lexer *new)
 {
-	t_lexer *last_add;
+	t_lexer	*last_add;
 
 	if (*lst == NULL)
 	{
 		*lst = new;
-		return;
+		return ;
 	}
 	last_add = *lst;
 	while (last_add->next != NULL)

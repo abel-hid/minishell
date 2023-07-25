@@ -157,6 +157,7 @@ int parse_redir_out(int type, char *str_next, int fd)
 				printf("minishell: %s: ambiguous redirect\n", str_next);
 				return (-1);
 			}
+
 		}
 		else if (type == APPEND)
 		{
@@ -167,6 +168,7 @@ int parse_redir_out(int type, char *str_next, int fd)
 				printf("minishell: %s: ambiguous redirect\n", str_next);
 				return(-1);
 			}
+
 		}
 	return fd;
 }
@@ -182,6 +184,7 @@ int parse_redir_in(int type, char *str_next, int fd)
 			printf("minishell: %s: No such file or directory\n", str_next);
 			return (-1);
 		}
+
 	}
 	if(type == HEARDOC)
 	{

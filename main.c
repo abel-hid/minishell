@@ -4,16 +4,18 @@ void free_lexer_list(t_lexer **lst)
 {
 	t_lexer *tmp;
 
-
-	while ((*lst) != NULL)
+	while (*lst != NULL)
 	{
-		tmp = ((*lst))->next;
+		tmp = (*lst)->next;
 		if((*lst)->token == WORD)
+		{
 			free((*lst)->content);
-		free((*lst));
-		(*lst) = tmp;
+			// printf("%p\n", (*lst)->content);
+		}
+		free(*lst);
+		*lst = tmp;
 	}
-	(*lst) = NULL;
+	*lst = NULL;
 }
 
 void	free_args(char **s)
@@ -31,15 +33,17 @@ void free_cmd_list(t_command **lst)
 {
 	t_command *tmp;
 
+
 	while (*lst != NULL)
 	{
-
 		tmp = (*lst)->next;
 		free_args((*lst)->args);
 		free(*lst);
 		*lst = tmp;
 	}
+	free(*lst);
 	*lst = NULL;
+
 }
 
 void free_env(t_env **lst)
@@ -82,6 +86,11 @@ int main(int ac ,char **av , char **env)
 		line = readline("minishell-> ");
 			if (line == NULL)
 				break ;
+			if (ft_strlen(line) == 0)
+			{
+				free(line);
+				continue ;
+			}
 
 
 
@@ -92,42 +101,39 @@ int main(int ac ,char **av , char **env)
 			{
 				heredoc(&lexer, &p_env);
 				expand(&lexer, &p_env);
-				parsing(&lexer,&cmd, &p_env);
-				execute(cmd, p_env);
+				parse_args(&lexer, &cmd, &p_env);
+				// parsing(&lexer, &cmd, &p_env);
+				// execute(cmd, p_env);
 			}
 
 
 
 
 
-		// while(cmd != NULL)
-		// {
-		// 	int i = 0;
-		// 	printf(" ----------cmd--------------\n");
-		// 	while(cmd && cmd->args[i] != NULL)
-		// 	{
-		// 		printf("%d %s\n", i, cmd->args[i]);
-		// 		i++;
-		// 	}
-		// 	// printf("fd_in %d\n", cmd->fd.fd_in);
-		// 	// printf("fd_out %d\n", cmd->fd.fd_out);
-		// 	cmd = cmd->next;
-		// }
 
 
 
 
+		while(cmd != NULL)
+		{
+			int i = 0;
+			printf(" ----------cmd--------------\n");
+			while(cmd->args[i] != NULL)
+			{
+				printf("args[%d] = %s\n", i, cmd->args[i]);
+				i++;
+			}
+			printf("fd_in %d\n", cmd->fd.fd_in);
+			printf("fd_out %d\n", cmd->fd.fd_out);
+			cmd = cmd->next;
+		}
 
 
 
-		// while (lexer != NULL)
-		// {
-		// 	// printf("%s\n", token[lexer->token]);
-		// 	printf("%s\n", lexer->content);
-		// 	lexer = lexer->next;
-		// }
+
 
 		free_cmd_list(&cmd);
+
 		free_lexer_list(&lexer);
 
 		add_history(line);
