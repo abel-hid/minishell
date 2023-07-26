@@ -240,7 +240,7 @@ int	hehe(char *str, int i)
 		{
 			if (str[i] == '\'')
 				j++;
-				i++;
+			i++;
 			if (j % 2 == 0)
 				return (i);
 		}
@@ -250,14 +250,14 @@ int	hehe(char *str, int i)
 
 char	*ft_expand(char *str, t_env **g_env)
 {
-	int	i;
-	char *p;
+	int		i;
+	char	*p;
 
 	i = 0;
 	while (str[i])
 	{
 		i = hehe(str, i);
-		if(str[i] == '$' && str[i + 1] == '?')
+		if (str[i] == '$' && str[i + 1] == '?')
 		{
 			p = ft_itoa(42);
 			str = handler_value(str, &i, 1, p);
@@ -303,9 +303,11 @@ char	*expand_variables(t_lexer **list, t_env **g_env)
 	tmp = *list;
 	while (tmp)
 	{
-		if ((detect_dollar(tmp->content) || hh(tmp->content)) && tmp->token == WORD)
+		if ((detect_dollar(tmp->content) || hh(tmp->content))
+			&& tmp->token == WORD)
 			tmp->content = ft_expand(tmp->content, g_env);
-		if (tmp->token == APPEND || tmp->token == REDIR_IN || tmp->token == REDIR_OUT || tmp->token == HEARDOC)
+		if (tmp->token == APPEND || tmp->token == REDIR_IN
+			|| tmp->token == REDIR_OUT || tmp->token == HEARDOC)
 			tmp = tmp->next;
 		tmp = tmp->next;
 	}
@@ -403,14 +405,13 @@ char	*del_quote(char *str, char c, char c2)
 	{
 		if (str[i] == c || str[i] == c2)
 		{
-			c3 = str[i];
-			i++;
+			c3 = str[i++];
 			while (str[i])
 			{
 				if (str[i] == c3)
 				{
 					i++;
-					break;
+					break ;
 				}
 				str[k++] = str[i++];
 			}
@@ -418,10 +419,8 @@ char	*del_quote(char *str, char c, char c2)
 		else
 			str[k++] = str[i++];
 	}
-	str[k] = '\0';
-	return (str);
+	return (str[k] = '\0', str);
 }
-
 
 void	expand(t_lexer **list, t_env **g_env)
 {
@@ -434,4 +433,3 @@ void	expand(t_lexer **list, t_env **g_env)
 	i = 0;
 	function(list, g_env);
 }
-

@@ -130,15 +130,14 @@ char **is_word(char *str, char **args, t_env **g_env, int *i)
 	char **p;
 	char *s;
 	int k = 0;
-	s = ft_expand(str, g_env);
 	if (check_space(str) && !is_dquote(str))
 	{
+		s = ft_expand(str, g_env);
 		p = get_p(s);
 		k = 0;
 		while (p[k])
 		{
 			args[*i] = ft_strdup(p[k]);
-			printf("%s\n", args[*i]);
 			(*i)++;
 			free(p[k++]);
 		}
@@ -185,6 +184,7 @@ int handel_redirout(char *str_next, int fd, t_env **g_env,int a)
 		{
 			write(1, "minishell: ", 11);
 			write(1, str, ft_strlen(str));
+			write(1, ": ", 2);
 			perror("");
 			return (free(str), -1);
 		}
@@ -209,7 +209,10 @@ int handel_redirin(char *str_next, int fd, t_env **g_env,int a)
 		fd = open(str, O_RDONLY, 0644);
 		if(fd == -1 )
 		{
-			printf("minishell: %s: No such file or directory\n", str);
+			write(1, "minishell: ", 11);
+			write(1, str, ft_strlen(str));
+			write(1, ": ", 2);
+			perror("");
 			return (free(str), -1);
 		}
 	}
@@ -330,116 +333,6 @@ void parse_args(t_lexer **list,t_command **cmd,  t_env **g_env)
 
 }
 
-
-// void parsing(t_lexer **list, t_command **cmd, t_env **g_env)
-// {
-// 	t_lexer *tmp = *list;
-// 	int i = 0;
-// 	int j = 0;
-// 	t_fd fd;
-// 	int k;
-
-// 	*cmd = NULL;
-// 	fd.fd_in = 0;
-// 	fd.fd_out = 1;
-// 	char **args;
-// 	char **p;
-// 	int count = calculate_args(tmp);
-
-// 	args = malloc(sizeof(char *) * (count + 1));
-// 	if(!args)
-// 		return ;
-
-// 	while (tmp != NULL)
-// 	{
-// 		if (tmp->token == WORD)
-// 		{
-// 			j = parse_env(g_env, tmp->content);
-// 			if(check_space(tmp->content) && j)
-// 			{
-// 				tmp->content = del_quote(tmp->content, '\'', '\"');
-// 				p  = ft_split1(tmp->content, "' ' '\t' '\n' '\v' '\f' '\r'");
-// 				k = 0;
-// 				while(p[k])
-// 				{
-// 					args[i++] = ft_strdup(p[k]);
-// 					free(p[k++]);
-// 				}
-// 				free(p);
-// 			}
-// 			else
-// 			{
-
-// 				tmp->content = del_quote(tmp->content, '\'', '\"');
-// 				args[i] = ft_strdup(tmp->content);
-// 				printf("%p\n", args[i]);
-// 				i++;
-// 			}
-
-// 		}
-// 		else if (tmp->token == REDIR_IN)
-// 		{
-// 			tmp = tmp->next;
-// 			fd.fd_in = open(tmp->content, O_RDONLY, 0644);
-// 			if (fd.fd_in == -1)
-// 			{
-// 				printf("minishell: %s: No such file or directory\n", tmp->content);
-// 				return;
-// 			}
-// 		}
-// 		else if (tmp->token == REDIR_OUT)
-// 		{
-// 			tmp = tmp->next;
-// 			tmp->content = del_quote(tmp->content, '\'', '\"');
-// 			fd.fd_out = open(tmp->content, O_CREAT | O_WRONLY | O_TRUNC, 0644);
-// 			if (fd.fd_out == -1)
-// 			{
-// 				printf("minishell: $s: ambiguous redirect\n");
-// 				return;
-// 			}
-// 		}
-// 		else if(tmp->token == HEARDOC)
-// 		{
-// 			tmp = tmp->next;
-// 			fd.fd_in = open("/tmp/srfak", O_RDONLY, 0644);
-// 		}
-// 		else if (tmp->token == APPEND)
-// 		{
-// 			tmp = tmp->next;
-// 			tmp->content = del_quote(tmp->content, '\'', '\"');
-// 			fd.fd_out = open(tmp->content, O_CREAT | O_WRONLY | O_APPEND, 0644);
-// 			if (fd.fd_out == -1)
-// 			{
-// 				printf("minishell: $s: ambiguous redirect\n");
-// 				return;
-// 			}
-// 		}
-
-// 			if (!tmp->next || tmp->token == PIPE_LINE)
-// 			{
-// 				args[i] = NULL;
-// 				my_lstadd_back(cmd, ft_new(args, fd));
-// 				if (tmp->next && tmp->token == PIPE_LINE)
-// 				{
-// 					tmp = tmp->next;
-// 					count = calculate_args(tmp);
-// 					args = malloc(sizeof(char *) * (count + 1));
-// 					if(!args)
-// 						return ;
-// 					i = 0;
-
-// 				}
-// 				else
-// 					tmp = tmp->next;
-
-// 				i = 0;
-// 			}
-// 			else
-// 				tmp = tmp->next;
-
-// 	}
-
-// }
 int valid(char *str)
 {
 	int i;
