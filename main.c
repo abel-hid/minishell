@@ -10,7 +10,6 @@ void free_lexer_list(t_lexer **lst)
 		if((*lst)->token == WORD)
 		{
 			free((*lst)->content);
-			// printf("%p\n", (*lst)->content);
 		}
 		free(*lst);
 		*lst = tmp;
@@ -41,7 +40,6 @@ void free_cmd_list(t_command **lst)
 		free(*lst);
 		*lst = tmp;
 	}
-	free(*lst);
 	*lst = NULL;
 
 }
@@ -102,10 +100,16 @@ int main(int ac ,char **av , char **env)
 				heredoc(&lexer, &p_env);
 				expand(&lexer, &p_env);
 				parse_args(&lexer, &cmd, &p_env);
-				// parsing(&lexer, &cmd, &p_env);
-				// execute(cmd, p_env);
+
+				execute(cmd, p_env);
 			}
 
+			// while(lexer != NULL)
+			// {
+			// 	printf(" ----------lexer--------------\n");
+			// 	printf("content = %s\n", lexer->content);
+			// 	lexer = lexer->next;
+			// }
 
 
 
@@ -114,19 +118,20 @@ int main(int ac ,char **av , char **env)
 
 
 
-		while(cmd != NULL)
-		{
-			int i = 0;
-			printf(" ----------cmd--------------\n");
-			while(cmd->args[i] != NULL)
-			{
-				printf("args[%d] = %s\n", i, cmd->args[i]);
-				i++;
-			}
-			printf("fd_in %d\n", cmd->fd.fd_in);
-			printf("fd_out %d\n", cmd->fd.fd_out);
-			cmd = cmd->next;
-		}
+
+		// while(cmd != NULL)
+		// {
+		// 	int i = 0;
+		// 	printf(" ----------cmd--------------\n");
+		// 	while(cmd->args[i] != NULL)
+		// 	{
+		// 		printf("args[%d] = %s\n", i, cmd->args[i]);
+		// 		i++;
+		// 	}
+		// 	printf("fd_in %d\n", cmd->fd.fd_in);
+		// 	printf("fd_out %d\n", cmd->fd.fd_out);
+		// 	cmd = cmd->next;
+		// }
 
 
 

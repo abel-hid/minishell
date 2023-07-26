@@ -113,6 +113,7 @@ void ft_unset(t_command *cmd, t_env **g_env)
 		tmp = *g_env;
 		prev = NULL;
 		while (tmp)
+		
 		{
 			if (ft_strcmp(tmp->key, cmd->args[i]) == 0)
 			{

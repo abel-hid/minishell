@@ -6,7 +6,7 @@
 /*   By: abel-hid <abel-hid@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 16:47:00 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/07/25 04:01:21 by abel-hid         ###   ########.fr       */
+/*   Updated: 2023/07/26 05:12:06 by abel-hid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,12 +109,13 @@ char	**ft_split1(char *str, char *charset);
 void	free_args(char **s);
 int check_space(char *line);
 int	count_strings(char *str, char *charset);
-
-
-
-
-
-
+int	detect_dollar(char *str);
+int	hh(char *str);
+void free_cmd_list(t_command **lst);
+char	*ft_expand(char *str, t_env **g_env);
+char *expand_heredoc(char *str, t_env **g_env);
+char	*ft_itoa(int n);
+int is_dquote(char *str);
 
 void parse_args(t_lexer **list,t_command **cmd,  t_env **g_env);
 #endif

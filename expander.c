@@ -140,7 +140,7 @@ int	detect_dollar(char *str)
 	while (str[i] && str[i + 1])
 	{
 		if (str[i] == '$' && str[i + 1] != '$' && str[i + 1] != '\0'
-			&& str[i + 1] != '?' && str[i - 1] != '$')
+			&& str[i - 1] != '$')
 			return (1);
 		i++;
 	}
@@ -250,21 +250,20 @@ int	hehe(char *str, int i)
 
 char	*ft_expand(char *str, t_env **g_env)
 {
-	static char	*new;
-	int			i;
+	int	i;
+	char *p;
 
 	i = 0;
 	while (str[i])
 	{
-		if (str[i] == '$' && is_digit(str[i + 1]))
-		{
-			i += 2;
-			new = ft_substr(str, i, ft_strlen(str));
-			free(str);
-			str = new;
-			new = NULL;
-		}
 		i = hehe(str, i);
+		if(str[i] == '$' && str[i + 1] == '?')
+		{
+			p = ft_itoa(42);
+			str = handler_value(str, &i, 1, p);
+			free(p);
+			continue ;
+		}
 		if (str[i] == '$' && !is_digit(str[i + 1]) && str[i + 1] != '\''
 			&& str[i + 1] != '$' && str[i + 1] != '\0' && !is_spaces(str[i + 1])
 			&& str[i + 1] != '\"' )
@@ -304,8 +303,10 @@ char	*expand_variables(t_lexer **list, t_env **g_env)
 	tmp = *list;
 	while (tmp)
 	{
-		if (detect_dollar(tmp->content) || hh(tmp->content))
+		if ((detect_dollar(tmp->content) || hh(tmp->content)) && tmp->token == WORD)
 			tmp->content = ft_expand(tmp->content, g_env);
+		if (tmp->token == APPEND || tmp->token == REDIR_IN || tmp->token == REDIR_OUT || tmp->token == HEARDOC)
+			tmp = tmp->next;
 		tmp = tmp->next;
 	}
 	return (NULL);
