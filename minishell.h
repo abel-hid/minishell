@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 16:47:00 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/07/24 19:47:32 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/07/26 16:36:47 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,11 @@ typedef struct s_env
 	char	*value;
 	struct s_env	*next;
 }	t_env;
-
+ typedef struct s_exit
+{
+	int		status;
+	int		is_exit;
+}	t_exit;
 
 void lexing(t_lexer **list, char *line);
 char	*get_next_line(int fd);
@@ -105,6 +109,7 @@ char *get_env_value(t_env *env, const char *key);
 void ft_putendl_fd(char *s, int fd);
 void ft_putstr_fd(char *s, int fd);
 void signal_handler(int sig);
+void set_exit_status(t_exit *exit_status, int status);
 
 
 #endif

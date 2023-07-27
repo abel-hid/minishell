@@ -11,13 +11,14 @@ SRCS =	main.c\
 		env.c\
 		libft.c\
 		get_next_line.c\
+		exit.c
 
 
 OBJS = $(SRCS:.c=.o)
 
 CC = cc
 RM = rm -f
-CFLAGS = -Wall -Werror -Wextra
+CFLAGS = -Wall -Werror -Wextra -g 
 READLINE = $(shell brew --prefix readline)
 
 all: $(NAME)

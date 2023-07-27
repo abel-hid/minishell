@@ -3,7 +3,7 @@
 
 t_command	*lstlast(t_command *lst)
 {
-	printf("[%p]\n", lst);
+	// printf("[%p]\n", lst);
 	while (lst && lst->next)
 		lst = lst->next;
 	return (lst);
@@ -267,8 +267,13 @@ void heredoc(t_lexer **lexer, t_env **g_env)
 			tmp->content = del_quote(tmp->content, '\'', '\"');
 			while(1)
 			{
-				line = readline("heredoc> ");
 
+				line = readline("heredoc> ");
+				if(!line)
+				{
+					printf("\n");
+					break;
+				}
 				if (ft_strcmp(line, tmp->content) == 0)
 					break ;
 
