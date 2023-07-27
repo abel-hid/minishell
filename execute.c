@@ -135,6 +135,8 @@ void ft_cd(t_command *cmd)
 {
 	const char *home;
 	home = getenv("HOME");
+
+
 	char *path;
 	if (cmd->args[1] == NULL)
 	{
@@ -145,17 +147,28 @@ void ft_cd(t_command *cmd)
 		}
 		path = ft_strdup(home);
 	}
-	else if (ft_strcmp(cmd->args[1], "~") == 0)
+	 else if (ft_strcmp(cmd->args[1], "~") == 0)
 	{
+		if(cmd->args[2])
+		{
+			path = ft_strdup(cmd->args[2]);
+		}
 		if (home == NULL)
 		{
 			ft_putstr_fd("minishell: cd: HOME not set\n", 1);
 			return ;
 		}
-		path = ft_strdup(home);
+		if(cmd->args[2] == NULL)
+			path = ft_strdup(home);
 	}
 	else if (ft_strcmp(cmd->args[1], "-") == 0)
 	{
+		if(!home)
+		{
+			ft_putstr_fd("minishell: cd: enviroment is unset \n", 1);
+			return ;
+		}
+		
 		path = ft_strdup(getenv("OLDPWD"));
 		if (path == NULL)
 		{
@@ -203,10 +216,40 @@ void ft_env(t_command *cmd, t_env **g_env)
 	tmp = NULL;
 	g_env = &tmp;
 }
-
-void ft_exit()
+int ft_isdigit(int c)
 {
-	exit(0);
+	if(c >= '0' && c <= '9')
+		return (1);
+	return (0);
+}
+
+void ft_exit(t_command *cmd,t_exit *exit_status)
+{
+	
+	if(cmd->args[1] == NULL)
+		exit(0);
+	else if(cmd->args[1] != NULL)
+	{
+		if(ft_isdigit(cmd->args[1][0]) == 0)
+		{
+			printf("minishell: exit: %s: numeric argument required\n", cmd->args[1]);
+			exit_status->status = 255;
+			return ;
+		}
+		else if(ft_isdigit(cmd->args[1][0]) == 1)
+		{
+			if(cmd->args[2] != NULL)
+			{
+				printf("minishell: exit: too many arguments\n");
+				return ;
+			}
+			else
+			{
+				printf("exit\n");
+				exit(atoi(cmd->args[1]));
+			}
+		}
+	}
 }
 
 
@@ -280,7 +323,7 @@ void execute_builtins(t_command *cmd ,char **envi)
 							}
 							else if(cmd->args[0][j] == '/')
 							{
-								 if(file_existance == -1 )
+								 if(file_existance == -1)
 								{
 									printf("minishell: %s: No such file or directory\n", cmd->args[0]);
 									return;
@@ -295,16 +338,8 @@ void execute_builtins(t_command *cmd ,char **envi)
 					
 							else if(cmd->args[0][j] == '.')
 							{
-								 if(file_existance == -1)
+								if(cmd->args[0][j + 1] == '/' || cmd->args[0][j + 1] == '.')
 								{
-									printf("minishell: %s: No such file or directory\n", cmd->args[0]);
-									return;
-									
-								}
-								if(cmd->args[0][j + 1] == '/' )
-								{
-									if(file_permission == 0)
-										break;
 
 									printf("minishell : %s is a directory\n", cmd->args[0]);
 									return ;
@@ -312,15 +347,15 @@ void execute_builtins(t_command *cmd ,char **envi)
 							}
 						j++;
 						
-					}
-					
 					
 				if(execve(cmd->args[0], cmd->args,envi) == -1)
 				{
-
+							
 					printf("minishell: %s: command not found\n", cmd->args[0]);
 					// printf("cmd->args[0] = %s\n", cmd->args[0]);
 				}
+					}
+					
 				}
 			char *tmp = ft_strjoin(paths[i],"/");
 			tmp = ft_strjoin(tmp, cmd->args[0]);
@@ -360,7 +395,7 @@ int checkfor_builtins(t_command *cmd)
 	return(0);
 	
 }
-int execute_built_ins(t_command *cmd, t_env *envp)
+int execute_built_ins(t_command *cmd, t_env *envp ,t_exit *exit)
 {
 
 	if(ft_strcmp(cmd->args[0], "echo") == 0)
@@ -376,7 +411,7 @@ int execute_built_ins(t_command *cmd, t_env *envp)
 	else if(ft_strcmp(cmd->args[0], "unset") == 0)
 		ft_unset(cmd, &envp);
 	else if(ft_strcmp(cmd->args[0], "exit") == 0)
-		ft_exit();
+		ft_exit(cmd, exit);
 	return (0);
 
 	
@@ -411,7 +446,7 @@ void signal_handler(int sig)
 }
 
 
-int execute_the_shOt(t_command* cmd,t_env *g_env, char **envp)
+int execute_the_shOt(t_command* cmd,t_env *g_env, char **envp, t_exit *exit_status)
 {
 	int old;
 	t_command *tmp =NULL;
@@ -432,7 +467,7 @@ int execute_the_shOt(t_command* cmd,t_env *g_env, char **envp)
 			return(2);
 		}
 		if(lstsize(cmd) == 1)
-			execute_built_ins(cmd,g_env);
+			execute_built_ins(cmd,g_env,exit_status);
 
 		cmd->pid = fork();
 		if (cmd->pid == 0)      
@@ -459,7 +494,7 @@ int execute_the_shOt(t_command* cmd,t_env *g_env, char **envp)
 				close(cmd->fd.fd_in);	
 			}
 			if(cmd->next)
-				execute_built_ins(cmd,g_env);
+				execute_built_ins(cmd,g_env,exit_status);
 			if(a == 0)
 				execute_builtins(cmd, envp);
 			exit(0);

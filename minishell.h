@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 16:47:00 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/07/26 16:36:47 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/07/27 15:14:10 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ t_command **srfak_lban(t_lexer **list);
 void parsing(t_lexer **list, t_command **cmd,t_env **g_env);
 char	*ft_strdup(const char *s1);
 int skip_spaces(char *line, int i);
-int execute_the_shOt(t_command* cmd,t_env *g_esnv, char **envp);
+int execute_the_shOt(t_command* cmd,t_env *g_esnv, char **envp, t_exit *exit_status);
 char *ft_strjoin(char *s1, char *s2);
 void heredoc(t_lexer **lexer, t_env **g_env);
 int ft_strcmp(const char *s1, const char *s2);

@@ -24,7 +24,7 @@ READLINE = $(shell brew --prefix readline)
 all: $(NAME)
 
 $(NAME):$(OBJS)
-	$(CC) $(CFLAGS) -L $(READLINE)/lib $(OBJS) -o $(NAME) -lreadline
+	$(CC) $(CFLAGS) -L $(READLINE)/lib $(OBJS) -o $(NAME) -lreadline 
 %.o: %.c
 	$(CC) $(CFLAGS) -I $(READLINE)/include -c $< -o $@
 
