@@ -380,6 +380,8 @@ int here_doc(char *str, char *line, t_env **g_env)
 	while(1)
 	{
 		line = readline("heredoc>");
+		if(!line)
+			break ;
 		if(ft_strcmp(line, str) == 0)
 		{
 			free(line);

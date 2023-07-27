@@ -21,44 +21,160 @@ void ft_echo(t_command *cmd)
 		ft_putstr_fd("\n", 1);
 }
 
+
+
+// void ft_export(t_command *cmd, t_env **p_env)
+// {
+// 	int i = 1;
+// 	char *key;
+// 	char *value;
+// 	t_env *tmp = *p_env;
+
+// 	while (cmd->args[i] != NULL && ft_strchr(cmd->args[i], '='))
+// 	{
+// 		int j = 0;
+// 		while (cmd->args[i][j] && (cmd->args[i][j] != '='  && (cmd->args[i][j] != '+' )))
+// 			j++;
+// 		key = ft_substr(cmd->args[i], 0, j);
+// 		value = NULL;
+
+// 		if(cmd->args[i][j] == '+' && cmd->args[i][j + 1] == '=')
+// 		{
+// 			value = ft_substr(cmd->args[i], j + 2, ft_strlen(cmd->args[i]) - j - 2);
+// 			while (tmp)
+// 			{
+// 				if (ft_strcmp(tmp->key, key) == 0)
+// 				{
+// 					if (value)
+// 					{
+// 						free(tmp->value);
+// 						tmp->value = ft_strjoin(tmp->value, value);
+// 						free(value);
+// 						free(key);
+// 					}
+// 					break;
+// 				}
+// 				tmp = tmp->next;
+// 			}
+// 			if (tmp == NULL)
+// 			{
+// 				tmp = new_env(key, value);
+// 				lstadd_back(p_env, tmp);
+// 			}
+// 			i++;
+// 			continue;
+// 		}
+// 		if (cmd->args[i][j] == '=')
+// 			value = ft_substr(cmd->args[i], j + 1, ft_strlen(cmd->args[i]) - j - 1);
+// 		while (tmp)
+// 		{
+// 			if (ft_strcmp(tmp->key, key) == 0)
+// 			{
+// 				if (value)
+// 				{
+// 					free(tmp->value);
+// 					tmp->value = ft_strdup(value);
+// 				}
+// 				break;
+// 			}
+// 			tmp = tmp->next;
+// 		}
+// 		if (tmp == NULL)
+// 		{
+// 			tmp = new_env(key, value);
+// 			lstadd_back(p_env, tmp);
+// 		}
+// 		i++;
+// 	}
+// }
+
+void update_or_add_env_var(t_env **p_env, char *key, char *value)
+{
+    t_env *tmp = *p_env;
+  	 while (tmp)
+	{
+		if (ft_strcmp(tmp->key, key) == 0)
+		{
+			if (value)
+			{
+				free(tmp->value);
+				tmp->value = ft_strjoin(tmp->value, value);
+				free(value);
+				free(key);
+			}
+			break;
+		}
+		tmp = tmp->next;
+	}
+	if (tmp == NULL)
+	{
+		tmp = new_env(key, value);
+		lstadd_back(p_env, tmp);
+	}
+}
+
+void add_env_var(t_env **p_env, char *key, char *value)
+{
+	t_env *tmp = *p_env;
+	while (tmp)
+	{
+		if (ft_strcmp(tmp->key, key) == 0)
+		{
+			if (value)
+			{
+				free(tmp->value);
+				tmp->value = ft_strdup(value);
+				free(value);
+				free(key);
+			}
+			break;
+		}
+		tmp = tmp->next;
+	}
+	if (tmp == NULL)
+	{
+		tmp = new_env(key, value);
+		lstadd_back(p_env, tmp);
+	}
+}
+
+void create_key_value(char *arg, char **key, char **value, t_env **g_env)
+{
+	int j;
+	t_env *tmp;
+
+	tmp = *g_env;
+	j = 0;
+	while (arg[j] && (arg[j] != '=' && (arg[j] != '+')))
+		j++;
+	*key = ft_substr(arg, 0, j);
+	*value = NULL;
+	if (arg[j] == '+')
+	{
+		*value = ft_substr(arg, j + 2, ft_strlen(arg) - j - 2);
+		update_or_add_env_var(g_env, *key, *value);
+	}
+	else if (arg[j] == '=')
+	{
+		*value = ft_substr(arg, j + 1, ft_strlen(arg) - j - 1);
+		add_env_var(g_env, *key, *value);
+	}
+}
+
 void ft_export(t_command *cmd, t_env **p_env)
 {
 	int i = 1;
 	char *key;
 	char *value;
-	t_env *tmp = *p_env;
 
 	while (cmd->args[i] != NULL && ft_strchr(cmd->args[i], '='))
 	{
-		int j = 0;
-		while (cmd->args[i][j] && cmd->args[i][j] != '=')
-			j++;
-
-		key = ft_substr(cmd->args[i], 0, j);
-		value = NULL;
-		if (cmd->args[i][j] == '=')
-			value = ft_substr(cmd->args[i], j + 1, ft_strlen(cmd->args[i]) - j - 1);
-		while (tmp)
-		{
-			if (ft_strcmp(tmp->key, key) == 0)
-			{
-				if (value)
-				{
-					free(tmp->value);
-					tmp->value = ft_strdup(value);
-				}
-				break;
-			}
-			tmp = tmp->next;
-		}
-		if (tmp == NULL)
-		{
-			tmp = new_env(key, value);
-			lstadd_back(p_env, tmp);
-		}
+		create_key_value(cmd->args[i], &key, &value, p_env);
 		i++;
 	}
 }
+
+
 
 void ft_cd(t_command *cmd)
 {
@@ -113,7 +229,7 @@ void ft_unset(t_command *cmd, t_env **g_env)
 		tmp = *g_env;
 		prev = NULL;
 		while (tmp)
-		
+
 		{
 			if (ft_strcmp(tmp->key, cmd->args[i]) == 0)
 			{
