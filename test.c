@@ -128,12 +128,12 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 	return (p);
 }
 
-char *ft_strncpy(char *s1, char *s2, int n)
+char	*ft_strncpy(char *s1, char *s2, int n)
 {
-	int i;
+	int	i;
 
 	i = 0;
-	while(s2[i] && i < n)
+	while (s2[i] && i < n)
 	{
 		s1[i] = s2[i];
 		i++;
@@ -141,4 +141,3 @@ char *ft_strncpy(char *s1, char *s2, int n)
 	s1[i] = '\0';
 	return (s1);
 }
-

@@ -6,7 +6,7 @@
 /*   By: abel-hid <abel-hid@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 16:47:00 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/07/26 05:12:06 by abel-hid         ###   ########.fr       */
+/*   Updated: 2023/07/29 08:15:20 by abel-hid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,9 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <fcntl.h>
+#include <signal.h>
 
-typedef enum s_tokens
+typedef enum e_tokens
 {
 	WORD,
 	PIPE_LINE ,
@@ -41,10 +42,9 @@ typedef struct s_command
 {
 	char	**args;
 	t_fd	fd;
+	pid_t	pid;
 	struct s_command	*next;
 }	t_command;
-
-
 
 typedef struct s_lexer
 {
@@ -61,6 +61,11 @@ typedef struct s_env
 	struct s_env	*next;
 }	t_env;
 
+ typedef struct s_exit
+{
+	int		status;
+	int		is_exit;
+}	t_exit;
 
 int lexing(t_lexer **list, char *line);
 void craete_env(char **env_list, t_env **g_env);
@@ -116,6 +121,9 @@ char	*ft_expand(char *str, t_env **g_env);
 char *expand_heredoc(char *str, t_env **g_env);
 char	*ft_itoa(int n);
 int is_dquote(char *str);
+char *ft_delete(char *str);
 
 void parse_args(t_lexer **list,t_command **cmd,  t_env **g_env);
+int execute_the_shOt(t_command* cmd,t_env **g_env, char **envp, t_exit *exit_status);
+void set_exit_status(t_exit *exit_status, int status);
 #endif

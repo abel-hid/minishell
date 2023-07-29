@@ -11,7 +11,7 @@ SRCS =	main.c\
 		env.c\
 		libft.c\
 		t.c\
-
+		exit.c\
 
 OBJS = $(SRCS:.c=.o)
 

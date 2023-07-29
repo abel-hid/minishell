@@ -85,8 +85,6 @@ char	**ft_split1(char *str, char *charset)
 	return (strings);
 }
 
-
-
 int	ft_len(int n)
 {
 	long	nbr;
