@@ -47,7 +47,7 @@ int main(int ac ,char **av , char **env)
 	char *line;
 	t_lexer *lexer;
 	t_env *p_env;
-	t_exit exit;
+	// t_exit exit;
 	p_env = NULL;
 	lexer = NULL;
 
@@ -62,7 +62,8 @@ int main(int ac ,char **av , char **env)
 
 	while (1)
 	{
-		// signal(SIGINT, signal_handler);
+		signal(SIGINT, signal_handler);
+		signal(SIGQUIT, signal_handler);
 
 		line = readline("minishell-> ");
 			if (line == NULL)
@@ -75,7 +76,7 @@ int main(int ac ,char **av , char **env)
 			heredoc(&lexer, &p_env);
 			expand(&lexer, &p_env);
 			parsing(&lexer,&cmd,&p_env);
-			execute_the_shOt(cmd,p_env,env,&exit);
+			execute_the_shOt(cmd,p_env,env);
 		}
 
 

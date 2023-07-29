@@ -1,5 +1,7 @@
 
 #include "minishell.h"
+#include <readline/readline.h>
+#include <readline/history.h>
 
 int	lstsize(t_command *lst)
 {
@@ -33,7 +35,7 @@ void ft_echo(t_command *cmd)
 	if (!n)
 		ft_putstr_fd("\n", 1);
 }
-///# 35 expands export 
+
 
 t_env * ft_lst_new( char *key,char *value)
 {
@@ -95,7 +97,47 @@ void add_env_var(t_env **p_env, char *key, char *value)
 		lstadd_back(p_env, tmp);
 	}
 }
+int ft_isaplpha(char c)
+{
+	if((c >= 'a' && c <= 'z' )|| (c >= 'A' && c <= 'Z'))
+		return (1);
+	return (0);
+}
+char *ft_strcpy(char *dest, char *src)
+{
+	int i = 0;
+	while(src[i])
+	{
+		dest[i] = src[i];
+		i++;
+	}
+	dest[i] = '\0';
+	return (dest);
+}
+//number after export
+// _ or alpha 
+void check_key(char *str)
+{
+	char *p;
+	if(*str >= '0' && *str <= '9')
+	{
+		printf("minishell: export: `%s': not a valid identifier\n",str);
+		return ;
+	}
+	p = ft_strdup(str);
+	while(*str)
+	{
+		if(!ft_isaplpha(*str) && *str != '_' && !(*str >= '0' && *str <= '9'))
+		{
+			printf("minishell: export: `%s': not a valid identifier\n",p);
+			free(p);
+			return ;
+		}
+		free(p);	
+		str++;
+	}
 
+}
 void create_key_value(char *arg, char **key, char **value, t_env **g_env)
 {
 	int j;
@@ -106,6 +148,7 @@ void create_key_value(char *arg, char **key, char **value, t_env **g_env)
 	while (arg[j] && (arg[j] != '=' && (arg[j] != '+')))
 		j++;
 	*key = ft_substr(arg, 0, j);
+	check_key(*key);
 	*value = NULL;
 	if (arg[j] == '+')
 	{
@@ -118,14 +161,48 @@ void create_key_value(char *arg, char **key, char **value, t_env **g_env)
 		add_env_var(g_env, *key, *value);
 	}
 }
+int check_for_equal(char *str)
+{
+	int i = 0;
+	while(str[i])
+	{
+		if(str[i] == '=')
+			return (1);
+		i++;
+	}
+	return (0);
+}
 
 void ft_export(t_command *cmd, t_env **p_env)
 {
 	int i = 1;
 	char *key;
 	char *value;
+	char *p ;
 
-	while (cmd->args[i] != NULL && ft_strchr(cmd->args[i], '='))
+	if(cmd->args[1] == NULL || !check_for_equal(cmd->args[1]))
+	{
+		if(cmd->args[1])
+			p = ft_strdup(cmd->args[1]);
+		printf("minishell: export: `%s': not a valid identifier\n",p);
+		t_env *tmp = *p_env;
+		while (tmp)
+		{
+			ft_putstr_fd("declare -x ", 1);
+			ft_putstr_fd(tmp->key, 1);
+			if (tmp->value)
+			{
+				ft_putstr_fd("=\"", 1);
+				ft_putstr_fd(tmp->value, 1);
+				ft_putstr_fd("\"", 1);
+			}
+			ft_putstr_fd("\n", 1);
+			tmp = tmp->next;
+		}
+		return ;
+	}
+
+	while (cmd->args[i] != NULL )
 	{
 		create_key_value(cmd->args[i], &key, &value, p_env);
 		i++;
@@ -147,7 +224,7 @@ void ft_cd(t_command *cmd)
 		}
 		path = ft_strdup(home);
 	}
-	 else if (ft_strcmp(cmd->args[1], "~") == 0)
+	else if (ft_strcmp(cmd->args[1], "~") == 0)
 	{
 		if(cmd->args[2])
 		{
@@ -168,7 +245,6 @@ void ft_cd(t_command *cmd)
 			ft_putstr_fd("minishell: cd: enviroment is unset \n", 1);
 			return ;
 		}
-		
 		path = ft_strdup(getenv("OLDPWD"));
 		if (path == NULL)
 		{
@@ -223,17 +299,15 @@ int ft_isdigit(int c)
 	return (0);
 }
 
-void ft_exit(t_command *cmd,t_exit *exit_status)
+void ft_exit(t_command *cmd)
 {
-	
 	if(cmd->args[1] == NULL)
-		exit(0);
+		exit (0);
 	else if(cmd->args[1] != NULL)
 	{
 		if(ft_isdigit(cmd->args[1][0]) == 0)
 		{
 			printf("minishell: exit: %s: numeric argument required\n", cmd->args[1]);
-			exit_status->status = 255;
 			return ;
 		}
 		else if(ft_isdigit(cmd->args[1][0]) == 1)
@@ -284,104 +358,107 @@ void ft_unset(t_command *cmd, t_env **g_env)
 	}
 
 }
+char **path_splitted()
+{
+	extern char **environ;
+	int		i;
+	char	*path;
+	char	**paths;
+
+	i = 0;
+	if (!*environ)
+		path = ft_strdup("/usr/gnu/bin:/usr/local/bin:/bin:/usr/bin:");
+	while (environ[i])
+	{
+		if (ft_strncmp(environ[i], "PATH=", 5) == 0)
+			path = ft_strdup(environ[i] + 5);
+		i++;
+	}
+	paths = ft_split(path, ':');
+	return(paths);
+
+}
+
+void norm_help(t_command *cmd , int j ,int existance ,char c)
+{
+	if(cmd->args[0][j] == c)
+	{
+		if(cmd->args[0][j + 1] == '/' || cmd->args[0][j + 1] == '.')
+		{
+			if(existance == -1)
+			{
+				printf("minishell: %s: No such file or directory\n", cmd->args[0]);
+				exit(1);
+			}
+			else
+			{
+				printf("minishell : %s is a directory\n", cmd->args[0]);
+				exit(1);
+				}
+		}
+	}
+}
+void _manipulate_files(int permission, int existance , t_command *cmd)
+{
+	int j;
+
+	j = 0;
+	while(cmd->args[0][j])
+	{
+		if(!existance && permission == -1)
+		{
+			printf("minishell: %s: Permission denied\n", cmd->args[0]);
+			exit(0);
+		}
+		norm_help(cmd,j,existance,'/');
+		norm_help(cmd,j,existance,'.');
+		j++;
+	}
+}
+
+void check_filepermission_ndexistance(t_command *cmd)
+{
+	int	file_existance;
+	int	file_permission;
+
+	file_existance = access(cmd->args[0], F_OK);
+	file_permission = access(cmd->args[0], X_OK);
+
+	if((cmd->args[0][0] == '.' || cmd->args[0][0] == '/'))
+		_manipulate_files(file_permission,file_existance,cmd);
+}
 
 void execute_builtins(t_command *cmd ,char **envi)
 {
-	char *path;
-	char *lwa;
-	extern char **environ;
-	int i = 0;
-		if(!*environ)
-		{
-			path = ft_strdup("/usr/gnu/bin:/usr/local/bin:/bin:/usr/bin:");
-		}
-		while(environ[i])
-		{
-			// printf("environ[i] = %s\n", environ[i]);
-			if(ft_strncmp(environ[i], "PATH=", 5) == 0)
-				path = ft_strdup(environ[i] + 5);
-			i++;
-		}
-		i =0;
-		char **paths ;
-		paths = ft_split(path, ':');
+	char	*lwa;
+	int		i;
+	char **paths;
+	i = 0;
+	
+	paths = path_splitted();
 		while(paths[i] )
 		{
-
-				int file_existance = access(cmd->args[0], F_OK);
-				int file_permission = access(cmd->args[0], X_OK);
-					if((cmd->args[0][0] == '.' || cmd->args[0][0] == '/'))
-					{
-						int j = 0;
-						while(cmd->args[0][j])
-						{
-							if(!file_existance && file_permission == -1)
-							{
-								printf("minishell: %s: Permission denied\n", cmd->args[0]);
-								return ;
-								exit(0);
-							}
-							else if(cmd->args[0][j] == '/')
-							{
-								 if(file_existance == -1)
-								{
-									printf("minishell: %s: No such file or directory\n", cmd->args[0]);
-									return;
-									
-								}
-								if(cmd->args[0][j + 1] == '/' )
-								{
-									printf("minishell : %s is a directory\n", cmd->args[0]);
-									return ;
-								}
-							}
-					
-							else if(cmd->args[0][j] == '.')
-							{
-								if(cmd->args[0][j + 1] == '/' || cmd->args[0][j + 1] == '.')
-								{
-
-									printf("minishell : %s is a directory\n", cmd->args[0]);
-									return ;
-								}
-							}
-						j++;
-						
-					
-				if(execve(cmd->args[0], cmd->args,envi) == -1)
-				{
-							
-					printf("minishell: %s: command not found\n", cmd->args[0]);
-					// printf("cmd->args[0] = %s\n", cmd->args[0]);
-				}
-					}
-					
-				}
+			check_filepermission_ndexistance(cmd);			
 			char *tmp = ft_strjoin(paths[i],"/");
 			tmp = ft_strjoin(tmp, cmd->args[0]);
 			if (access(tmp, F_OK | X_OK) == 0)
-			{
 				lwa = tmp;
-				break;
-			}
 			i++;
 		}
-		 if(execve(lwa, cmd->args,envi) == -1)
+		if(execve(lwa, cmd->args,envi) == -1)
 		{
-				lwa = cmd->args[0];
-				printf("minishell: %s: command not found\n",lwa);
-				// printf("cmd->args[0] = %s\n", cmd->args[0]);
-				exit(0);
+			lwa = cmd->args[0];
+			printf("minishell: %s: command not found\n",lwa);
+			hi = 127;
+			exit(127);
 		}
-			
-	
 }
 int checkfor_builtins(t_command *cmd)
 {
 	if(ft_strcmp(cmd->args[0], "echo") == 0)
 		return(44);
 	else if(ft_strcmp(cmd->args[0], "cd") == 0)
-		return(44);
+		return(77);
 	else if(ft_strcmp(cmd->args[0], "export") == 0)
 		return(44);
 	else if(ft_strcmp(cmd->args[0], "pwd") == 0)
@@ -395,7 +472,7 @@ int checkfor_builtins(t_command *cmd)
 	return(0);
 	
 }
-int execute_built_ins(t_command *cmd, t_env *envp ,t_exit *exit)
+int execute_built_ins(t_command *cmd, t_env *envp )
 {
 
 	if(ft_strcmp(cmd->args[0], "echo") == 0)
@@ -411,11 +488,12 @@ int execute_built_ins(t_command *cmd, t_env *envp ,t_exit *exit)
 	else if(ft_strcmp(cmd->args[0], "unset") == 0)
 		ft_unset(cmd, &envp);
 	else if(ft_strcmp(cmd->args[0], "exit") == 0)
-		ft_exit(cmd, exit);
+		ft_exit(cmd);
 	return (0);
 
 	
 }
+
 int ft_lst_size(t_command *cmd)
 {
 	int i =0;
@@ -427,52 +505,16 @@ int ft_lst_size(t_command *cmd)
 	return i;
 }
 
-void signal_handler(int sig)
-{
-	if (sig == SIGINT)
+void signal_handler(int signal) {
+    if(signal == SIGINT)
 	{
-		ft_putstr_fd("\n", 1);
-		rl_on_new_line();
-		//This function call is likely used to move the cursor to a new line.
-		//It ensures that the next output or user input will start on a new line
-		// rl_replace_line("", 0);
-		//eplaces the current input line with an empty string
-		rl_redisplay();
-		//After modifying the input line, this function is called to refresh the display
+		
 	}
-
-	if(sig == SIGQUIT)
-	;
 }
 
-
-int execute_the_shOt(t_command* cmd,t_env *g_env, char **envp, t_exit *exit_status)
+void handle_child_process(t_command *cmd, int *fd ,int old)
 {
-	int old;
-	t_command *tmp =NULL;
-	tmp = cmd;
-	
-	int fd[2] = {-1,-1};
-			if(!cmd)
-				return (77);
-	while (cmd)
-	{
-		if(cmd->args[0] == NULL)
-			return (77);
-		int a = checkfor_builtins(cmd);
-		old = fd[0]; // -1;
-		if (pipe(fd) != 0)      
-		{
-			perror("failed to create a pipe");
-			return(2);
-		}
-		if(lstsize(cmd) == 1)
-			execute_built_ins(cmd,g_env,exit_status);
-
-		cmd->pid = fork();
-		if (cmd->pid == 0)      
-		{
-			close(fd[0]);
+		close(fd[0]);
 			if (cmd->next)
 			{
 				dup2(fd[1],1);
@@ -486,29 +528,60 @@ int execute_the_shOt(t_command* cmd,t_env *g_env, char **envp, t_exit *exit_stat
 			if (old != -1)
 			{
 				dup2(old, 0);
-				close(old);     
+				close(old);
 			}
 			if(cmd->fd.fd_in != 0)
 			{
 				dup2(cmd->fd.fd_in,0);
 				close(cmd->fd.fd_in);	
 			}
-			if(cmd->next)
-				execute_built_ins(cmd,g_env,exit_status);
-			if(a == 0)
+			
+			
+}
+void protection(int *fd)
+{
+	if (pipe(fd) != 0)      
+	{
+		perror("failed to create a pipe");
+		return;
+	}
+}
+
+
+int execute_the_shOt(t_command* cmd,t_env *g_env, char **envp)
+{
+	int old;
+	t_command *tmp = NULL;
+	tmp = cmd;
+	int fd[2] = {-1,-1};
+	
+			if(!cmd)
+				return (77);
+	while (cmd && cmd->args[0])
+	{
+		int a = checkfor_builtins(cmd);
+		old = fd[0]; // -1;
+		protection(fd);
+		if(lstsize(cmd) == 1)
+			execute_built_ins(cmd,g_env);
+		cmd->pid = fork();
+		if (cmd->pid == 0)      
+		{
+			handle_child_process(cmd,fd,old);
+			if(lstsize(cmd)> 1)
+				execute_built_ins(cmd,g_env);
+			if(a == 0 && a != 77)
 				execute_builtins(cmd, envp);
-			exit(0);
+				exit(0);
 		}
 		else if (cmd->pid > 0) 
 		{
-			
 			close(fd[1]);
 			if (old != -1)
 				close(old);
 		}
 		else
 		{
-
 			perror("fork() failed");
 			return (1);
 		}
@@ -518,9 +591,7 @@ int execute_the_shOt(t_command* cmd,t_env *g_env, char **envp, t_exit *exit_stat
 	close(fd[1]);
 	while(tmp)
 	{
-		t_exit exit_status;
-		set_exit_status(&exit_status, 0);
-		waitpid(tmp->pid,&exit_status.status,0);
+		waitpid(tmp->pid,NULL,0);
 		tmp = tmp->next;
 	}
 	return (0);               
