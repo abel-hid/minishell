@@ -230,9 +230,7 @@ int ambiguous_redirect(char *str, t_env **g_env, char *str_next)
 
 	ft_strncpy(str1, str_next, ft_strlen(str_next));
 	str_next = ft_delete(str_next);
-	printf("str_next = %s\n", str_next);
 	str = del_quote(str, '\'', '\"');
-
 
 	if(!is_dquote(str_next) && more_than_one(str) == 1)
 	{
@@ -262,7 +260,9 @@ int	handel_redirout(char *str_next, int fd, t_env **g_env, int a)
 	}
 	else
 	{
+
 		printf("minishell: %s: ambiguous redirect\n", str_next);
+		return (-1);
 	}
 	free(str);
 	return (fd);
@@ -277,7 +277,8 @@ int	handel_redirin(char *str_next, int fd, t_env **g_env, int a)
 	str = ft_expand(str, g_env);
 	if (ft_strcmp(str, ""))
 	{
-
+		if(ambiguous_redirect(str,g_env,str_next) == 1)
+			return (-1);
 		str = del_quote(str, '\'', '\"');
 		fd = open(str, O_RDONLY, 0644);
 		if (fd == -1)
@@ -289,6 +290,7 @@ int	handel_redirin(char *str_next, int fd, t_env **g_env, int a)
 	else
 	{
 		printf("minishell: %s: ambiguous redirect\n", str_next);
+		return (-1);
 	}
 	free(str);
 	return (fd);
@@ -319,7 +321,11 @@ int	parse_redir_out(int type, char *str_next, int fd, t_env **g_env)
 int	parse_redir_in(int type, char *str_next, int fd, t_env **g_env)
 {
 	int	a;
+	char *tmp;
+	char *p;
+	int 		i;
 
+	i = 0;
 	a = is_dquote(str_next);
 	if (type == REDIR_IN)
 	{
@@ -329,7 +335,12 @@ int	parse_redir_in(int type, char *str_next, int fd, t_env **g_env)
 	}
 	if (type == HEARDOC)
 	{
-		fd = open("/tmp/srfak", O_RDONLY, 0644);
+		tmp = ft_itoa(i);
+		p = ft_strjoin("/tmp/", tmp);
+		fd = open(tmp, O_RDONLY, 0644);
+		free(tmp);
+		free(p);
+		i++;
 	}
 	return (fd);
 }
@@ -444,13 +455,30 @@ char	*expand_heredoc(char *str, t_env **g_env)
 	return (str);
 }
 
-int	here_doc(char *str, char *line, t_env **g_env)
+// void craete_heredoc_fd(char *str, int *fd)
+// {
+// 	char *tmp;
+// 	char *p;
+
+// 	tmp = ft_itoa(*fd);
+// 	p = ft_strjoin("/tmp/", tmp);
+// 	unlink("p");
+// 	*fd = open(p, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+// 	free(tmp);
+// 	free(p);
+// }
+
+int	here_doc(char *str, char *line, t_env **g_env, int *i)
 {
 	int	fd;
 	int	check;
+	char	*tmp;
+	char 	*p;
 
-	unlink("/tmp/srfak");
-	fd = open("/tmp/srfak", O_CREAT | O_WRONLY | O_TRUNC, 0644);
+	tmp = ft_itoa(*i);
+	p = ft_strjoin("/tmp/", tmp);
+	unlink("p");
+	fd = open(p, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 	check = valid(str);
 	str = del_quote(str, '\'', '\"');
 	while (1)
@@ -469,6 +497,8 @@ int	here_doc(char *str, char *line, t_env **g_env)
 		ft_putendl_fd(line, fd);
 		free(line);
 	}
+	free(tmp);
+	free(p);
 	close(fd);
 	return (0);
 }
@@ -477,15 +507,18 @@ void	heredoc(t_lexer **lexer, t_env **g_env)
 {
 	t_lexer	*tmp;
 	char	*line;
+	int		i;
 
 	line = NULL;
 	tmp = *lexer;
+	i = 0;
 	while (tmp != NULL)
 	{
 		if (tmp->token == HEARDOC)
 		{
 			tmp = tmp->next;
-			here_doc(tmp->content, line, g_env);
+			here_doc(tmp->content, line, g_env,&i);
+			i++;
 		}
 		tmp = tmp->next;
 	}

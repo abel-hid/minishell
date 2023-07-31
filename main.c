@@ -64,7 +64,7 @@ int main(int ac ,char **av , char **env)
 {
 	char *line;
 	t_lexer *lexer;
-	t_exit exit;
+
 	struct sigaction sa;
 	t_env *p_env;
 	p_env = NULL;
@@ -108,7 +108,7 @@ int main(int ac ,char **av , char **env)
 				heredoc(&lexer, &p_env);
 				expand(&lexer, &p_env);
 				parse_args(&lexer, &cmd, &p_env);
-				execute_the_shOt(cmd,&p_env,env,&exit);
+				execute_the_shOt(cmd,p_env,env);
 			}
 
 			// while(lexer != NULL)

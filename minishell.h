@@ -6,7 +6,7 @@
 /*   By: abel-hid <abel-hid@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 16:47:00 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/07/29 08:15:20 by abel-hid         ###   ########.fr       */
+/*   Updated: 2023/07/31 01:11:24 by abel-hid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,6 +124,6 @@ int is_dquote(char *str);
 char *ft_delete(char *str);
 
 void parse_args(t_lexer **list,t_command **cmd,  t_env **g_env);
-int execute_the_shOt(t_command* cmd,t_env **g_env, char **envp, t_exit *exit_status);
+int execute_the_shOt(t_command* cmd,t_env *g_env, char **envp);
 void set_exit_status(t_exit *exit_status, int status);
 #endif
