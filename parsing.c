@@ -325,7 +325,6 @@ int	parse_redir_in(int type, char *str_next, int fd, t_env **g_env)
 	char *p;
 	int 		i;
 
-	i = 0;
 	a = is_dquote(str_next);
 	if (type == REDIR_IN)
 	{
@@ -335,9 +334,10 @@ int	parse_redir_in(int type, char *str_next, int fd, t_env **g_env)
 	}
 	if (type == HEARDOC)
 	{
+		i = 0;
 		tmp = ft_itoa(i);
 		p = ft_strjoin("/tmp/", tmp);
-		fd = open(tmp, O_RDONLY, 0644);
+		fd = open(p, O_RDONLY, 0644);
 		free(tmp);
 		free(p);
 		i++;
@@ -455,30 +455,27 @@ char	*expand_heredoc(char *str, t_env **g_env)
 	return (str);
 }
 
-// void craete_heredoc_fd(char *str, int *fd)
-// {
-// 	char *tmp;
-// 	char *p;
+int ft_create_fd(int i)
+{
+	char *tmp;
+	char *p;
+	int fd;
 
-// 	tmp = ft_itoa(*fd);
-// 	p = ft_strjoin("/tmp/", tmp);
-// 	unlink("p");
-// 	*fd = open(p, O_CREAT | O_WRONLY | O_TRUNC, 0644);
-// 	free(tmp);
-// 	free(p);
-// }
+	tmp = ft_itoa(i);
+	p = ft_strjoin("/tmp/", tmp);
+	unlink("p");
+	fd = open(p, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+	free(tmp);
+	free(p);
+	return (fd);
+}
 
 int	here_doc(char *str, char *line, t_env **g_env, int *i)
 {
 	int	fd;
 	int	check;
-	char	*tmp;
-	char 	*p;
 
-	tmp = ft_itoa(*i);
-	p = ft_strjoin("/tmp/", tmp);
-	unlink("p");
-	fd = open(p, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+	fd = ft_create_fd(*i);
 	check = valid(str);
 	str = del_quote(str, '\'', '\"');
 	while (1)
@@ -497,8 +494,6 @@ int	here_doc(char *str, char *line, t_env **g_env, int *i)
 		ft_putendl_fd(line, fd);
 		free(line);
 	}
-	free(tmp);
-	free(p);
 	close(fd);
 	return (0);
 }

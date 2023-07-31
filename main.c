@@ -77,7 +77,7 @@ int main(int ac ,char **av , char **env)
     // sa.sa_handler = signal_handler;
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
-
+	exit_status = 0;
 	cmd = NULL;
 	(void)ac;
 	(void)av;
@@ -91,7 +91,10 @@ int main(int ac ,char **av , char **env)
 
 		line = readline("minishell-> ");
 			if (line == NULL)
-				break ;
+			{
+				printf("exit\n");
+				exit(0);
+			}
 			if (ft_strlen(line) == 0)
 			{
 				free(line);
@@ -99,16 +102,12 @@ int main(int ac ,char **av , char **env)
 			}
 
 
-
-
-
-
 			if(lexing(&lexer,line) == 0)
 			{
 				heredoc(&lexer, &p_env);
 				expand(&lexer, &p_env);
 				parse_args(&lexer, &cmd, &p_env);
-				execute_the_shOt(cmd,p_env,env);
+				execute_the_shOt(cmd,&p_env,env);
 			}
 
 			// while(lexer != NULL)

@@ -259,7 +259,7 @@ char	*ft_expand(char *str, t_env **g_env)
 		i = hehe(str, i);
 		if (str[i] == '$' && str[i + 1] == '?')
 		{
-			p = ft_itoa(42);
+			p = ft_itoa(exit_status);
 			str = handler_value(str, &i, 1, p);
 			free(p);
 			continue ;

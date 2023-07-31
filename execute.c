@@ -133,7 +133,6 @@ void check_key(char *str)
 			free(p);
 			return ;
 		}
-		free(p);
 		str++;
 	}
 
@@ -223,9 +222,8 @@ void ft_cd(t_command *cmd)
 	else if (ft_strcmp(cmd->args[1], "~") == 0)
 	{
 		if(cmd->args[2])
-		{
 			path = ft_strdup(cmd->args[2]);
-		}
+
 		if (home == NULL)
 		{
 			ft_putstr_fd("minishell: cd: HOME not set\n", 1);
@@ -251,8 +249,9 @@ void ft_cd(t_command *cmd)
 		ft_putstr_fd("\n", 1);
 	}
 	else
+	{
 		path = ft_strdup(cmd->args[1]);
-
+	}
 	if (chdir(path) == -1)
 	{
 		ft_putstr_fd("minishell: cd: ", 1);
@@ -260,6 +259,8 @@ void ft_cd(t_command *cmd)
 		ft_putstr_fd(": No such file or directory\n", 1);
 		return ;
 	}
+	if(path)
+		free(path);
 }
 
 void ft_pwd()
@@ -328,16 +329,16 @@ void ft_unset(t_command *cmd, t_env **g_env)
 	int i = 1;
 	t_env *tmp;
 	t_env *prev;
+	int j;
+	j = 0;
 	while (cmd->args[i])
 	{
 		tmp = *g_env;
-		prev = NULL;
+
 		while (tmp)
 		{
 			if (ft_strcmp(tmp->key, cmd->args[i]) == 0)
 			{
-				// unset USER send EOF
-				// hna l9lawi
 				if (prev == NULL)
 					*g_env = tmp->next;
 				else
@@ -352,7 +353,6 @@ void ft_unset(t_command *cmd, t_env **g_env)
 		}
 		i++;
 	}
-
 }
 char **path_splitted()
 {
@@ -371,7 +371,6 @@ char **path_splitted()
 		i++;
 	}
 	paths = ft_split(path, ':');
-	printf("path = %s\n", path);
 	return(paths);
 
 }
@@ -445,9 +444,8 @@ void execute_builtins(t_command *cmd ,char **envi)
 		if(execve(lwa, cmd->args,envi) == -1)
 		{
 			lwa = cmd->args[0];
-			printf("%s\n",lwa);
 			printf("minishell: %s: command not found\n",lwa);
-			exit(127);
+			exit(0);
 		}
 }
 int checkfor_builtins(t_command *cmd)
@@ -469,7 +467,7 @@ int checkfor_builtins(t_command *cmd)
 	return(0);
 
 }
-int execute_built_ins(t_command *cmd, t_env *envp )
+int execute_built_ins(t_command *cmd, t_env **envp )
 {
 
 	if(ft_strcmp(cmd->args[0], "echo") == 0)
@@ -479,11 +477,11 @@ int execute_built_ins(t_command *cmd, t_env *envp )
 	else if(ft_strcmp(cmd->args[0], "pwd") == 0)
 		ft_pwd();
 	else if(ft_strcmp(cmd->args[0], "export") == 0)
-		ft_export(cmd, &envp);
+		ft_export(cmd, envp);
 	else if(ft_strcmp(cmd->args[0], "env") == 0)
-		ft_env(cmd, &envp);
+		ft_env(cmd, envp);
 	else if(ft_strcmp(cmd->args[0], "unset") == 0)
-		ft_unset(cmd, &envp);
+		ft_unset(cmd, envp);
 	else if(ft_strcmp(cmd->args[0], "exit") == 0)
 		ft_exit(cmd);
 	return (0);
@@ -521,7 +519,10 @@ void handle_child_process(t_command *cmd, int *fd ,int old)
 			if(cmd->fd.fd_out != 1 )
 			{
 				if(cmd->fd.fd_out == -1)
+				{
+					exit_status = 1;
 					exit(1);
+				}
 				dup2(cmd->fd.fd_out,1);
 				close(cmd->fd.fd_out);
 			}
@@ -533,7 +534,10 @@ void handle_child_process(t_command *cmd, int *fd ,int old)
 			if(cmd->fd.fd_in != 0)
 			{
 				if(cmd->fd.fd_in == -1)
+				{
+					exit_status = 1;
 					exit(1);
+				}
 				dup2(cmd->fd.fd_in,0);
 				close(cmd->fd.fd_in);
 			}
@@ -550,7 +554,7 @@ void protection(int *fd)
 }
 
 
-int execute_the_shOt(t_command* cmd,t_env *g_env, char **envp)
+int execute_the_shOt(t_command* cmd,t_env **g_env, char **envp)
 {
 	int old;
 	t_command *tmp = NULL;
@@ -593,7 +597,7 @@ int execute_the_shOt(t_command* cmd,t_env *g_env, char **envp)
 	close(fd[1]);
 	while(tmp)
 	{
-		waitpid(tmp->pid,NULL,0);
+		waitpid(tmp->pid, &exit_status, 0);
 		tmp = tmp->next;
 	}
 	return (0);
