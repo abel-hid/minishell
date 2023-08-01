@@ -3,6 +3,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
+
 int	lstsize(t_command *lst)
 {
 	int	i;
@@ -114,28 +115,33 @@ char *ft_strcpy(char *dest, char *src)
 	dest[i] = '\0';
 	return (dest);
 }
-//number after export
-// _ or alpha
-void check_key(char *str)
+
+int check_key(char *str, char *arg)
 {
 	char *p;
 	if(*str >= '0' && *str <= '9')
 	{
-		printf("minishell: export: `%s': not a valid identifier\n",str);
-		return ;
+		ft_putstr_fd("minishell: export: `", 2);
+		ft_putstr_fd(str, 2);
+		ft_putendl_fd("': not a valid identifier", 2);
+		exit_status = 1;
+		return(45);
 	}
 	p = ft_strdup(str);
 	while(*str)
 	{
-		if(!ft_isaplpha(*str) && *str != '_' && !(*str >= '0' && *str <= '9'))
+		if(!ft_isalnum(*str) && *str != '_')
 		{
-			printf("minishell: export: `%s': not a valid identifier\n",p);
+			ft_putstr_fd("minishell: export: `", 2);
+			ft_putstr_fd(arg, 2);
+			ft_putendl_fd("': not a valid identifier", 2);
+			exit_status = 1;
 			free(p);
-			return ;
+			return (45);
 		}
 		str++;
 	}
-
+	return (0);
 }
 void create_key_value(char *arg, char **key, char **value, t_env **g_env)
 {
@@ -144,10 +150,18 @@ void create_key_value(char *arg, char **key, char **value, t_env **g_env)
 
 	tmp = *g_env;
 	j = 0;
+	if(*arg == '=' || *arg == '+' || *arg == '-')
+	{
+		ft_putstr_fd("minishell: export: `", 2);
+		ft_putstr_fd(arg, 2);
+		ft_putendl_fd("': not a valid identifier", 2);
+		return ;
+	}
 	while (arg[j] && (arg[j] != '=' && (arg[j] != '+')))
 		j++;
 	*key = ft_substr(arg, 0, j);
-	check_key(*key);
+	if(check_key(*key,arg) == 45)
+		return ;
 	*value = NULL;
 	if (arg[j] == '+')
 	{
@@ -160,6 +174,7 @@ void create_key_value(char *arg, char **key, char **value, t_env **g_env)
 		add_env_var(g_env, *key, *value);
 	}
 }
+
 int check_for_equal(char *str)
 {
 	int i = 0;
@@ -171,36 +186,52 @@ int check_for_equal(char *str)
 	}
 	return (0);
 }
+void haha(t_env **env_list, char *str)
+{
+	lstadd_back(env_list,new_env(ft_strdup(str),NULL));
+}
 
-void ft_export(t_command *cmd, t_env **p_env)
+void print_export(t_env **env_list)
+{
+
+	t_env *tmp = *env_list;
+	while (tmp)
+	{
+		ft_putstr_fd("declare -x ", 1);
+		ft_putstr_fd(tmp->key, 1);
+		if(tmp->value)
+		{
+			ft_putstr_fd("=\"", 1);
+			ft_putstr_fd(tmp->value, 1);
+			ft_putstr_fd("\"", 1);
+		}
+		ft_putstr_fd("\n", 1);
+		tmp = tmp->next;
+	}
+}
+
+
+
+
+void ft_export(t_command *cmd, t_env **p_env, t_env **env_list)
 {
 	int i = 1;
 	char *key;
 	char *value;
 
-	if(cmd->args[1] == NULL || !check_for_equal(cmd->args[1]))
+	if(cmd->args[1] != NULL && !check_for_equal(cmd->args[1]))
 	{
-		t_env *tmp = *p_env;
-		while (tmp)
-		{
-			ft_putstr_fd("declare -x ", 1);
-			ft_putstr_fd(tmp->key, 1);
-			if (tmp->value)
-			{
-				ft_putstr_fd("=\"", 1);
-				ft_putstr_fd(tmp->value, 1);
-				ft_putstr_fd("\"", 1);
-			}
-			ft_putstr_fd("\n", 1);
-			tmp = tmp->next;
-		}
-		return ;
+		if(check_key(cmd->args[1], cmd->args[1]) == 45)
+			return ;
+		haha(env_list, cmd->args[1]);
 	}
-
-	while (cmd->args[i] != NULL )
+	if(cmd->args[i] != NULL && check_for_equal(cmd->args[i]))
 	{
-		create_key_value(cmd->args[i], &key, &value, p_env);
-		i++;
+		while (cmd->args[i] != NULL && check_for_equal(cmd->args[1]))
+		{
+			create_key_value(cmd->args[i], &key, &value, p_env);
+			i++;
+		}
 	}
 }
 void ft_cd(t_command *cmd)
@@ -286,8 +317,6 @@ void ft_env(t_command *cmd, t_env **g_env)
 		ft_putstr_fd("\n", 1);
 		tmp = tmp->next;
 	}
-	tmp = NULL;
-	g_env = &tmp;
 }
 int ft_isdigit(int c)
 {
@@ -326,15 +355,12 @@ void ft_exit(t_command *cmd)
 
 void ft_unset(t_command *cmd, t_env **g_env)
 {
+	t_env *tmp = *g_env;
+	t_env *prev = NULL;
 	int i = 1;
-	t_env *tmp;
-	t_env *prev;
-	int j;
-	j = 0;
 	while (cmd->args[i])
 	{
 		tmp = *g_env;
-
 		while (tmp)
 		{
 			if (ft_strcmp(tmp->key, cmd->args[i]) == 0)
@@ -437,16 +463,23 @@ void execute_builtins(t_command *cmd ,char **envi)
 			check_filepermission_ndexistance(cmd);
 			char *tmp = ft_strjoin(paths[i],"/");
 			tmp = ft_strjoin(tmp, cmd->args[0]);
-			if (access(tmp, F_OK | X_OK) == 0)
+
+			if (access(tmp, F_OK ) == 0)
 				lwa = tmp;
 			i++;
 		}
 		if(execve(lwa, cmd->args,envi) == -1)
 		{
 			lwa = cmd->args[0];
+			exit_status = 127;
 			printf("minishell: %s: command not found\n",lwa);
-			exit(0);
+			exit(exit_status);
 		}
+		// else
+		// {
+		// 	exit_status = 0;
+		// 	exit(0);
+		// }
 }
 int checkfor_builtins(t_command *cmd)
 {
@@ -463,11 +496,10 @@ int checkfor_builtins(t_command *cmd)
 	else if(ft_strcmp(cmd->args[0], "unset") == 0)
 		return(44);
 	else if(ft_strcmp(cmd->args[0], "exit") == 0)
-		return(44);
-	return(0);
+		return(44);	return(0);
 
 }
-int execute_built_ins(t_command *cmd, t_env **envp )
+int execute_built_ins(t_command *cmd, t_env **envp ,t_env **env_list)
 {
 
 	if(ft_strcmp(cmd->args[0], "echo") == 0)
@@ -477,7 +509,12 @@ int execute_built_ins(t_command *cmd, t_env **envp )
 	else if(ft_strcmp(cmd->args[0], "pwd") == 0)
 		ft_pwd();
 	else if(ft_strcmp(cmd->args[0], "export") == 0)
-		ft_export(cmd, envp);
+	{
+		if(cmd->args[1] != NULL)
+			ft_export(cmd, envp, env_list);
+		else
+			print_export(env_list);
+	}
 	else if(ft_strcmp(cmd->args[0], "env") == 0)
 		ft_env(cmd, envp);
 	else if(ft_strcmp(cmd->args[0], "unset") == 0)
@@ -554,7 +591,7 @@ void protection(int *fd)
 }
 
 
-int execute_the_shOt(t_command* cmd,t_env **g_env, char **envp)
+int execute_the_shOt(t_command* cmd,t_env **g_env, char **envp, t_env **env_list)
 {
 	int old;
 	t_command *tmp = NULL;
@@ -569,19 +606,25 @@ int execute_the_shOt(t_command* cmd,t_env **g_env, char **envp)
 		old = fd[0]; // -1;
 		protection(fd);
 		if(lstsize(cmd) == 1)
-			execute_built_ins(cmd,g_env);
+			execute_built_ins(cmd,g_env,env_list);
 		cmd->pid = fork();
 		if (cmd->pid == 0)
 		{
 			handle_child_process(cmd,fd,old);
 			if(lstsize(cmd)> 1)
-				execute_built_ins(cmd,g_env);
+				execute_built_ins(cmd,g_env,env_list);
 			if(a == 0 && a != 77)
 				execute_builtins(cmd, envp);
 				exit(0);
 		}
 		else if (cmd->pid > 0)
 		{
+			int a;
+			waitpid(cmd->pid, &a, 0);
+			if(a != 0)
+				exit_status = a / 256;
+			else
+				exit_status = 0;
 			close(fd[1]);
 			if (old != -1)
 				close(old);
@@ -593,12 +636,6 @@ int execute_the_shOt(t_command* cmd,t_env **g_env, char **envp)
 		}
 
 		cmd = cmd->next;
-	}
-	close(fd[1]);
-	while(tmp)
-	{
-		waitpid(tmp->pid, &exit_status, 0);
-		tmp = tmp->next;
 	}
 	return (0);
 }

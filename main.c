@@ -51,7 +51,9 @@ void free_env(t_env **lst)
 	while (*lst != NULL)
 	{
 		tmp = (*lst)->next;
+		if((*lst)->key != NULL)
 		free((*lst)->key);
+		if((*lst)->value != NULL)
 		free((*lst)->value);
 		free(*lst);
 		*lst = tmp;
@@ -67,11 +69,14 @@ int main(int ac ,char **av , char **env)
 
 	struct sigaction sa;
 	t_env *p_env;
+	t_env *env_list;
 	p_env = NULL;
 	lexer = NULL;
+	env_list = NULL;
 
 
 	craete_env(env,	&p_env);
+	craete_env(env,	&env_list);
 	t_command *cmd;
 
     // sa.sa_handler = signal_handler;
@@ -107,8 +112,9 @@ int main(int ac ,char **av , char **env)
 				heredoc(&lexer, &p_env);
 				expand(&lexer, &p_env);
 				parse_args(&lexer, &cmd, &p_env);
-				execute_the_shOt(cmd,&p_env,env);
+				execute_the_shOt(cmd,&p_env,env,&env_list);
 			}
+
 
 			// while(lexer != NULL)
 			// {
@@ -125,13 +131,13 @@ int main(int ac ,char **av , char **env)
 
 
 
-		// while(cmd != NULL)
+		// while(cmd != N
 		// {
 		// 	int i = 0;
 		// 	printf(" ----------cmd--------------\n");
 		// 	while(cmd->args[i] != NULL)
 		// 	{
-		// 		printf("args[%d] = %s\n", i, cmd->args[i]);
+		// 		printf("args[%d] = '%s'\n", i, cmd->args[i]);
 		// 		i++;
 		// 	}
 		// 	printf("fd_in %d\n", cmd->fd.fd_in);
@@ -152,6 +158,7 @@ int main(int ac ,char **av , char **env)
 
 	}
 		free_env(&p_env);
+		free_env(&env_list);
 }
 
 

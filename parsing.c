@@ -153,12 +153,24 @@ char *ft_delete(char *str)
 			if (str[i] == '\"')
 				i++;
 			else
-				i -= k;
+				i -= k + 1;
 		}
 		str[j++] = str[i++];
 	}
 	str[j] = '\0';
 	return (str);
+}
+int is_env(t_env **g_env, char *str)
+{
+	t_env *env;
+	env = *g_env;
+	while(env)
+	{
+		if(ft_strcmp(env->value, str) == 0)
+			return (1);
+		env = env->next;
+	}
+	return (0);
 }
 
 char	**is_word(char *str, char **args, t_env **g_env, int *i)
@@ -169,9 +181,10 @@ char	**is_word(char *str, char **args, t_env **g_env, int *i)
 
 	k = 0;
 	str = ft_delete(str);
-	if (check_space(str) && !is_dquote(str))
+
+	s = ft_expand(str, g_env);
+	if (check_space(str) && !is_dquote(str) && is_env(g_env, s))
 	{
-		s = ft_expand(str, g_env);
 		p = get_p(s);
 		k = 0;
 		while (p[k])

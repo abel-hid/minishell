@@ -6,7 +6,7 @@
 /*   By: abel-hid <abel-hid@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 16:47:00 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/07/31 04:26:03 by abel-hid         ###   ########.fr       */
+/*   Updated: 2023/08/01 11:52:24 by abel-hid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,6 @@ t_command **srfak_lban(t_lexer **list);
 void parsing(t_lexer **list, t_command **cmd, t_env **g_env);
 char	*ft_strdup(const char *s1);
 int skip_spaces(char *line, int i);
-int execute(t_command *cmd, t_env *g_env);
 char *ft_strjoin(char *s1, char *s2);
 void heredoc(t_lexer **lexer, t_env **g_env);
 int ft_strcmp(const char *s1, const char *s2);
@@ -123,8 +122,8 @@ char *expand_heredoc(char *str, t_env **g_env);
 char	*ft_itoa(int n);
 int is_dquote(char *str);
 char *ft_delete(char *str);
-
 void parse_args(t_lexer **list,t_command **cmd,  t_env **g_env);
-int execute_the_shOt(t_command* cmd,t_env **g_env, char **envp);
-
+int execute_the_shOt(t_command* cmd,t_env **g_env, char **envp, t_env **env_list);
+int execute(t_command* cmd, t_env* g_env);
+int	ft_isalnum(int c);
 #endif
