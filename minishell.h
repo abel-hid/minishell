@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abel-hid <abel-hid@student.42.fr>          +#+  +:+       +#+        */
+/*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 16:47:00 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/08/01 11:52:24 by abel-hid         ###   ########.fr       */
+/*   Updated: 2023/08/01 15:06:30 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,7 @@ char	*ft_itoa(int n);
 int is_dquote(char *str);
 char *ft_delete(char *str);
 void parse_args(t_lexer **list,t_command **cmd,  t_env **g_env);
-int execute_the_shOt(t_command* cmd,t_env **g_env, char **envp, t_env **env_list);
+int execute_the_shOt(t_command* cmd,t_env **g_env, char **envp);
 int execute(t_command* cmd, t_env* g_env);
 int	ft_isalnum(int c);
 #endif

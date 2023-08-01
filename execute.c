@@ -143,10 +143,23 @@ int check_key(char *str, char *arg)
 	}
 	return (0);
 }
-void create_key_value(char *arg, char **key, char **value, t_env **g_env)
+int _check(char *key,t_env **g_env)
+{
+	t_env *tmp = *g_env;
+	while (tmp)
+	{
+		if (ft_strcmp(tmp->key, key) == 0)
+			return (1);
+		tmp = tmp->next;
+	}
+	return (0);
+}
+void create_key_value(char *arg, t_env **g_env)
 {
 	int j;
 	t_env *tmp;
+	char *key;
+	char *value;
 
 	tmp = *g_env;
 	j = 0;
@@ -159,20 +172,25 @@ void create_key_value(char *arg, char **key, char **value, t_env **g_env)
 	}
 	while (arg[j] && (arg[j] != '=' && (arg[j] != '+')))
 		j++;
-	*key = ft_substr(arg, 0, j);
-	if(check_key(*key,arg) == 45)
+	key = ft_substr(arg, 0, j);
+	if(check_key(key,arg) == 45)
 		return ;
-	*value = NULL;
+	value = NULL;
 	if (arg[j] == '+')
 	{
-		*value = ft_substr(arg, j + 2, ft_strlen(arg) - j - 2);
-		update_or_add_env_var(g_env, *key, *value);
+		value = ft_substr(arg, j + 2, ft_strlen(arg) - j - 2);
+		update_or_add_env_var(g_env, key, value);
 	}
 	else if (arg[j] == '=')
 	{
-		*value = ft_substr(arg, j + 1, ft_strlen(arg) - j - 1);
-		add_env_var(g_env, *key, *value);
+		value = ft_substr(arg, j + 1, ft_strlen(arg) - j - 1);
+		add_env_var(g_env, key, value);
 	}
+	if(value == NULL && _check(key,g_env) == 0)
+	
+		lstadd_back(g_env, new_env(key, NULL));
+	
+
 }
 
 int check_for_equal(char *str)
@@ -185,10 +203,6 @@ int check_for_equal(char *str)
 		i++;
 	}
 	return (0);
-}
-void haha(t_env **env_list, char *str)
-{
-	lstadd_back(env_list,new_env(ft_strdup(str),NULL));
 }
 
 void print_export(t_env **env_list)
@@ -210,26 +224,19 @@ void print_export(t_env **env_list)
 	}
 }
 
-
-
-
-void ft_export(t_command *cmd, t_env **p_env, t_env **env_list)
+void ft_export(t_command *cmd, t_env **p_env)
 {
 	int i = 1;
-	char *key;
-	char *value;
-
 	if(cmd->args[1] != NULL && !check_for_equal(cmd->args[1]))
 	{
 		if(check_key(cmd->args[1], cmd->args[1]) == 45)
 			return ;
-		haha(env_list, cmd->args[1]);
 	}
-	if(cmd->args[i] != NULL && check_for_equal(cmd->args[i]))
+	if(cmd->args[i] != NULL)
 	{
-		while (cmd->args[i] != NULL && check_for_equal(cmd->args[1]))
+		while (cmd->args[i] != NULL)
 		{
-			create_key_value(cmd->args[i], &key, &value, p_env);
+			create_key_value(cmd->args[i], p_env);
 			i++;
 		}
 	}
@@ -308,13 +315,15 @@ void ft_env(t_command *cmd, t_env **g_env)
 {
 	(void)cmd;
 	t_env *tmp = *g_env;
-
 	while (tmp)
 	{
-		ft_putstr_fd(tmp->key, 1);
-		ft_putstr_fd("=", 1);
-		ft_putstr_fd(tmp->value, 1);
-		ft_putstr_fd("\n", 1);
+		if(tmp->value != NULL)
+		{
+			ft_putstr_fd(tmp->key, 1);
+			ft_putstr_fd("=", 1);
+			ft_putstr_fd(tmp->value, 1);
+			ft_putstr_fd("\n", 1);
+		}
 		tmp = tmp->next;
 	}
 }
@@ -471,8 +480,9 @@ void execute_builtins(t_command *cmd ,char **envi)
 		if(execve(lwa, cmd->args,envi) == -1)
 		{
 			lwa = cmd->args[0];
-			exit_status = 127;
-			printf("minishell: %s: command not found\n",lwa);
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(lwa, 2);
+			ft_putstr_fd(": command not found\n", 2);
 			exit(exit_status);
 		}
 		// else
@@ -490,7 +500,7 @@ int checkfor_builtins(t_command *cmd)
 	else if(ft_strcmp(cmd->args[0], "export") == 0)
 		return(44);
 	else if(ft_strcmp(cmd->args[0], "pwd") == 0)
-		return(44);
+		return(88);
 	else if(ft_strcmp(cmd->args[0], "env") == 0)
 		return(44);
 	else if(ft_strcmp(cmd->args[0], "unset") == 0)
@@ -499,21 +509,22 @@ int checkfor_builtins(t_command *cmd)
 		return(44);	return(0);
 
 }
-int execute_built_ins(t_command *cmd, t_env **envp ,t_env **env_list)
+int execute_built_ins(t_command *cmd, t_env **envp)
 {
 
 	if(ft_strcmp(cmd->args[0], "echo") == 0)
 		ft_echo(cmd);
-	else if(ft_strcmp(cmd->args[0], "cd") == 0)
+	else if(ft_strcmp(cmd->args[0], "cd") == 0 && lstsize(cmd) == 1)
 		ft_cd(cmd);
 	else if(ft_strcmp(cmd->args[0], "pwd") == 0)
 		ft_pwd();
 	else if(ft_strcmp(cmd->args[0], "export") == 0)
 	{
 		if(cmd->args[1] != NULL)
-			ft_export(cmd, envp, env_list);
+			ft_export(cmd, envp);
 		else
-			print_export(env_list);
+			print_export(envp);
+		
 	}
 	else if(ft_strcmp(cmd->args[0], "env") == 0)
 		ft_env(cmd, envp);
@@ -542,6 +553,8 @@ void signal_handler(int signal) {
 	{
 
 	}
+	if(signal == SIGQUIT)
+	;
 }
 
 void handle_child_process(t_command *cmd, int *fd ,int old)
@@ -591,7 +604,7 @@ void protection(int *fd)
 }
 
 
-int execute_the_shOt(t_command* cmd,t_env **g_env, char **envp, t_env **env_list)
+int execute_the_shOt(t_command* cmd,t_env **g_env, char **envp)
 {
 	int old;
 	t_command *tmp = NULL;
@@ -605,17 +618,17 @@ int execute_the_shOt(t_command* cmd,t_env **g_env, char **envp, t_env **env_list
 		int a = checkfor_builtins(cmd);
 		old = fd[0]; // -1;
 		protection(fd);
-		if(lstsize(cmd) == 1)
-			execute_built_ins(cmd,g_env,env_list);
+		if(a == 44 || a == 77 )
+			execute_built_ins(cmd,g_env);
 		cmd->pid = fork();
 		if (cmd->pid == 0)
 		{
 			handle_child_process(cmd,fd,old);
-			if(lstsize(cmd)> 1)
-				execute_built_ins(cmd,g_env,env_list);
-			if(a == 0 && a != 77)
+			if(a == 44 || a == 88)
+				execute_built_ins(cmd,g_env);
+			if(a == 0)
 				execute_builtins(cmd, envp);
-				exit(0);
+			exit(0);
 		}
 		else if (cmd->pid > 0)
 		{
