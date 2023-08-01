@@ -342,15 +342,17 @@ void ft_exit(t_command *cmd)
 	{
 		if(ft_isdigit(cmd->args[1][0]) == 0)
 		{
+			printf("exit\n");
 			printf("minishell: exit: %s: numeric argument required\n", cmd->args[1]);
-			return ;
+			exit(255);
 		}
 		else if(ft_isdigit(cmd->args[1][0]) == 1)
 		{
 			if(cmd->args[2] != NULL)
 			{
+				printf("exit\n");
 				printf("minishell: exit: too many arguments\n");
-				return ;
+				exit(255);
 			}
 			else
 			{
@@ -506,7 +508,8 @@ int checkfor_builtins(t_command *cmd)
 	else if(ft_strcmp(cmd->args[0], "unset") == 0)
 		return(44);
 	else if(ft_strcmp(cmd->args[0], "exit") == 0)
-		return(44);	return(0);
+		return(77);	
+	return(0);
 
 }
 int execute_built_ins(t_command *cmd, t_env **envp)
