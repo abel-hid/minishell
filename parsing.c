@@ -252,7 +252,8 @@ int ambiguous_redirect(char *str, t_env **g_env, char *str_next)
 	}
 	return (0);
 }
-int	handel_redirout(char *str_next, int fd, t_env **g_env, int a)
+
+int	handel_append(char *str_next, int fd, t_env **g_env, int a)
 {
 	char	*str;
 
@@ -273,7 +274,34 @@ int	handel_redirout(char *str_next, int fd, t_env **g_env, int a)
 	}
 	else
 	{
+		printf("minishell: %s: ambiguous redirect\n", str_next);
+		return (-1);
+	}
+	free(str);
+	return (fd);
+}
 
+int	handel_redirout(char *str_next, int fd, t_env **g_env, int a)
+{
+	char	*str;
+
+	(void)a;
+	str = ft_strdup(str_next);
+	str = ft_expand(str, g_env);
+	if (ft_strcmp(str, ""))
+	{
+		if(ambiguous_redirect(str,g_env,str_next) == 1)
+			return (-1);
+		str = del_quote(str, '\'', '\"');
+		fd = open(str, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+		if (fd == -1)
+		{
+			printf("minishell: : No such file or directory\n");
+			return (free(str), -1);
+		}
+	}
+	else
+	{
 		printf("minishell: %s: ambiguous redirect\n", str_next);
 		return (-1);
 	}
@@ -324,7 +352,7 @@ int	parse_redir_out(int type, char *str_next, int fd, t_env **g_env)
 	}
 	else if (type == APPEND)
 	{
-		fd = handel_redirout(str_next, fd, g_env, a);
+		fd = handel_append(str_next, fd, g_env, a);
 		if (fd == -1)
 			return (-1);
 	}
