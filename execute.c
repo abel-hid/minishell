@@ -377,6 +377,23 @@ void ft_exit(t_command *cmd)
 	}
 }
 
+int parsing_unset(char *str)
+{
+	int i = 0;
+	while(str[i])
+	{
+		if(ft_isalnum(str[i]) == 0 && str[i] != '_')
+		{
+			ft_putstr_fd("minishell: unset: `", 2);
+			ft_putstr_fd(str, 2);
+			ft_putendl_fd("': not a valid identifier", 2);
+			exit_status = 1;
+			return (1);
+		}
+		i++;
+	}
+	return (0);
+}
 
 void ft_unset(t_command *cmd, t_env **g_env)
 {
@@ -385,6 +402,8 @@ void ft_unset(t_command *cmd, t_env **g_env)
 	int i = 1;
 	while (cmd->args[i])
 	{
+		if(parsing_unset(cmd->args[i]) == 1)
+			return ;
 		tmp = *g_env;
 		while (tmp)
 		{
@@ -502,11 +521,11 @@ void execute_builtins(t_command *cmd ,char **envi)
 			ft_putstr_fd(": command not found\n", 2);
 			exit(exit_status);
 		}
-		// else
-		// {
-		// 	exit_status = 0;
-		// 	exit(0);
-		// }
+		else
+		{
+			exit_status = 0;
+			exit(0);
+		}
 }
 int checkfor_builtins(t_command *cmd)
 {
@@ -530,7 +549,6 @@ int checkfor_builtins(t_command *cmd)
 int execute_built_ins(t_command *cmd, t_env **envp)
 {
 	int in, out;
-
 	if(cmd->fd.fd_in != 0)
 	{
 		in = dup(0);
@@ -559,19 +577,18 @@ int execute_built_ins(t_command *cmd, t_env **envp)
 		ft_exit(cmd);
 	else
 			return (0);
-	if (cmd->fd.fd_in != 0)
+	if(cmd->fd.fd_in != 0)
 	{
 		dup2(in, 0);
 		close(in);
 	}
-	if (cmd->fd.fd_out != 1)
+	if(cmd->fd.fd_out != 1)
 	{
 		dup2(out, 1);
 		close(out);
 	}
+
 	return (1);
-
-
 }
 
 int ft_lst_size(t_command *cmd)
@@ -596,7 +613,6 @@ void signal_handler(int signal) {
 
 void handle_child_process(t_command *cmd, int *fd ,int old)
 {
-		close(fd[0]);
 			if (cmd->next)
 			{
 				dup2(fd[1],1);
@@ -665,7 +681,7 @@ int execute_the_shOt(t_command* cmd,t_env **g_env, char **envp)
 		if (cmd->pid == 0)
 		{
 			handle_child_process(cmd,fd,old);
-			if(a == 0)
+			if(a == 0 && done == 0)
 				execute_builtins(cmd, envp);
 			exit(exit_status);
 		}

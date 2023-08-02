@@ -129,7 +129,7 @@ int main(int ac ,char **av , char **env)
 
 
 
-		// while(cmd != N
+		// while(cmd != NULL)
 		// {
 		// 	int i = 0;
 		// 	printf(" ----------cmd--------------\n");
