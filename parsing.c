@@ -129,11 +129,28 @@ char	**get_p(char *str)
 	return (p);
 }
 
+int norm(char *str, int i)
+{
+	int k;
+
+	i++;
+	k = 0;
+	while (str[i] && is_spaces(str[i]))
+	{
+		i++;
+		k++;
+	}
+	if (str[i] == '\"')
+		i++;
+	else
+		i -= k + 1;
+	return (i);
+}
+
 char *ft_delete(char *str)
 {
 	int i;
 	int j;
-	int k;
 
 	i = 0;
 	j = 0;
@@ -142,19 +159,7 @@ char *ft_delete(char *str)
 		if (str[i] == '\"' && str[i + 1] == '\"')
 			i += 2;
 		else if (str[i] == '\"' && is_spaces(str[i + 1]))
-		{
-			i++;
-			k = 0;
-			while (str[i] && is_spaces(str[i]))
-			{
-				i++;
-				k++;
-			}
-			if (str[i] == '\"')
-				i++;
-			else
-				i -= k + 1;
-		}
+		i = norm(str, i);
 		str[j++] = str[i++];
 	}
 	str[j] = '\0';
@@ -181,7 +186,6 @@ char	**is_word(char *str, char **args, t_env **g_env, int *i)
 
 	k = 0;
 	str = ft_delete(str);
-
 	s = ft_expand(str, g_env);
 	if (check_space(str) && !is_dquote(str) && is_env(g_env, s))
 	{
@@ -252,7 +256,8 @@ int ambiguous_redirect(char *str, t_env **g_env, char *str_next)
 	}
 	return (0);
 }
-int	handel_redirout(char *str_next, int fd, t_env **g_env, int a)
+
+int	handel_append(char *str_next, int fd, t_env **g_env, int a)
 {
 	char	*str;
 
@@ -273,7 +278,34 @@ int	handel_redirout(char *str_next, int fd, t_env **g_env, int a)
 	}
 	else
 	{
+		printf("minishell: %s: ambiguous redirect\n", str_next);
+		return (-1);
+	}
+	free(str);
+	return (fd);
+}
 
+int	handel_redirout(char *str_next, int fd, t_env **g_env, int a)
+{
+	char	*str;
+
+	(void)a;
+	str = ft_strdup(str_next);
+	str = ft_expand(str, g_env);
+	if (ft_strcmp(str, ""))
+	{
+		if(ambiguous_redirect(str,g_env,str_next) == 1)
+			return (-1);
+		str = del_quote(str, '\'', '\"');
+		fd = open(str, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+		if (fd == -1)
+		{
+			printf("minishell: : No such file or directory\n");
+			return (free(str), -1);
+		}
+	}
+	else
+	{
 		printf("minishell: %s: ambiguous redirect\n", str_next);
 		return (-1);
 	}
@@ -324,7 +356,7 @@ int	parse_redir_out(int type, char *str_next, int fd, t_env **g_env)
 	}
 	else if (type == APPEND)
 	{
-		fd = handel_redirout(str_next, fd, g_env, a);
+		fd = handel_append(str_next, fd, g_env, a);
 		if (fd == -1)
 			return (-1);
 	}
@@ -389,6 +421,14 @@ t_fd	ft_fd(int fd_in, int fd_out)
 	return (fd);
 }
 
+int is_redir(t_lexer *tmp)
+{
+	if (tmp->token == REDIR_OUT || tmp->token == APPEND
+		|| tmp->token == REDIR_IN || tmp->token == HEARDOC)
+		return (1);
+	return (0);
+}
+
 void	parsing1(t_lexer *tmp, char **args, t_env **g_env, t_command **cmd)
 {
 	int		i;
@@ -400,8 +440,7 @@ void	parsing1(t_lexer *tmp, char **args, t_env **g_env, t_command **cmd)
 	{
 		if (tmp->token == WORD && ft_strcmp(tmp->content, ""))
 			args = is_word(tmp->content, args, g_env, &i);
-		if (tmp->token == REDIR_OUT || tmp->token == APPEND
-			|| tmp->token == REDIR_IN || tmp->token == HEARDOC)
+		if (is_redir(tmp))
 		{
 			fd = parse_redirection(tmp->token, tmp->next->content, fd, g_env);
 			tmp = tmp->next;
@@ -410,7 +449,10 @@ void	parsing1(t_lexer *tmp, char **args, t_env **g_env, t_command **cmd)
 		{
 			i = create(args, cmd, fd, i);
 			if (tmp->next && tmp->token == PIPE_LINE)
+			{
 				args = realloc_args(args, calculate_args(tmp->next) + 1);
+				fd = ft_fd(0, 1);
+			}
 		}
 		tmp = tmp->next;
 	}

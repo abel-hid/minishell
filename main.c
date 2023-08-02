@@ -69,14 +69,12 @@ int main(int ac ,char **av , char **env)
 
 	struct sigaction sa;
 	t_env *p_env;
-	t_env *env_list;
 	p_env = NULL;
 	lexer = NULL;
-	env_list = NULL;
+
 
 
 	craete_env(env,	&p_env);
-	craete_env(env,	&env_list);
 	t_command *cmd;
 
     // sa.sa_handler = signal_handler;
@@ -112,7 +110,7 @@ int main(int ac ,char **av , char **env)
 				heredoc(&lexer, &p_env);
 				expand(&lexer, &p_env);
 				parse_args(&lexer, &cmd, &p_env);
-				execute_the_shOt(cmd,&p_env,env,&env_list);
+				execute_the_shOt(cmd,&p_env,env);
 			}
 
 
@@ -131,7 +129,7 @@ int main(int ac ,char **av , char **env)
 
 
 
-		// while(cmd != N
+		// while(cmd != NULL)
 		// {
 		// 	int i = 0;
 		// 	printf(" ----------cmd--------------\n");
@@ -158,7 +156,6 @@ int main(int ac ,char **av , char **env)
 
 	}
 		free_env(&p_env);
-		free_env(&env_list);
 }
 
 
