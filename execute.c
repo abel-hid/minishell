@@ -16,6 +16,42 @@ int	lstsize(t_command *lst)
 	}
 	return (i);
 }
+static int	check_overflow(unsigned long res, int n)
+{
+	if (n == 1)
+		if (res >= 92233720368547758)
+			return (-1);
+	if (n == -1)
+		if (res >= 92233720368547758)
+			return (0);
+	return (1);
+}
+
+int	ft_atoi(const char *str)
+{
+	int		i;
+	int		n;
+	long	result;
+	int		overflow;
+
+	i = 0;
+	n = 1;
+	result = 0;
+	while (str[i] == 32 || (str[i] >= 9 && str[i] <= 13))
+		i++;
+	if (str[i] == '-' || str[i] == '+')
+		if (str[i++] == '-')
+			n = -1;
+	while (str[i] != '\0' && str[i] >= '0' && str[i] <= '9')
+	{
+		overflow = check_overflow(result, n);
+		if (overflow != 1)
+			return (overflow);
+		result = (result * 10) + str[i] - 48;
+		i++;
+	}
+	return ((result * n));
+}
 
 void ft_echo(t_command *cmd)
 {
@@ -175,7 +211,10 @@ void create_key_value(char *arg, t_env **g_env)
 		j++;
 	key = ft_substr(arg, 0, j);
 	if(check_key(key,arg) == 45)
+	{
+		exit_st.status = 1;
 		return ;
+	}
 
 	value = NULL;
 	if (arg[j] == '+')
@@ -248,13 +287,13 @@ void ft_export(t_command *cmd, t_env **p_env)
 	if(cmd->args[1] == NULL)
 		print_export(p_env);
 }
-void ft_cd(t_command *cmd)
+void ft_cd(t_command *cmd , t_env **g_env)
 {
-	const char *home;
-	home = getenv("HOME");
+	const char *home = getenv("HOME");
+	char *path = getenv("PWD");
+	t_env *tmp;
+	tmp = *g_env;
 
-
-	char *path;
 	if (cmd->args[1] == NULL)
 	{
 		if (home == NULL)
@@ -271,7 +310,7 @@ void ft_cd(t_command *cmd)
 
 		if (home == NULL)
 		{
-			ft_putstr_fd("minishell: cd: HOME not set\n", 2);
+			home =  ft_strdup("");
 			return ;
 		}
 		if(cmd->args[2] == NULL)
@@ -284,7 +323,6 @@ void ft_cd(t_command *cmd)
 			ft_putstr_fd("minishell: cd: enviroment is unset \n", 2);
 			return ;
 		}
-		path = ft_strdup(getenv("OLDPWD"));
 		if (path == NULL)
 		{
 			ft_putstr_fd("minishell: cd: OLDPWD not set\n", 2);
@@ -305,8 +343,20 @@ void ft_cd(t_command *cmd)
 		exit_st.status = 1;
 		return ;
 	}
-	if(path)
-		free(path);
+		tmp = *g_env;
+	if (path)
+	{
+		while (tmp)
+		{
+			if(ft_strcmp(tmp->key, "PWD") == 0)
+			{
+				free(tmp->value);
+				tmp->value = ft_strdup(path);
+			}
+			tmp = tmp->next;
+		}
+	}
+
 }
 
 void ft_pwd()
@@ -370,8 +420,8 @@ void ft_exit(t_command *cmd)
 			else
 			{
 				ft_putstr_fd("exit\n", 1);
-				exit_st.status = atoi(cmd->args[1]);
-				exit(atoi(cmd->args[1]));
+				exit_st.status = ft_atoi(cmd->args[1]);
+				exit(ft_atoi(cmd->args[1]));
 			}
 		}
 	}
@@ -384,10 +434,14 @@ void ft_unset(t_command *cmd, t_env **g_env)
 	extern char **environ;
 	t_env *prev = NULL;
 	int i = 1;
+
+	if(cmd->args[1] && !ft_strcmp(cmd->args[1], "PATH"))
+	{
+		exit_st.path = ft_strdup("");
+		exit_st.is_unset = 1;
+	}
 	while (cmd->args[i])
 	{
-				// if(!ft_strcmp(tmp->key, "PATH") && !*environ)
-				// 	exit_st.path = ft_strdup(" ");
 		tmp = *g_env;
 		while (tmp)
 		{
@@ -417,14 +471,17 @@ char **path_splitted(t_env **g_env)
 	tmp = *g_env;
 
 	i = 0;
-	if(!*environ)
-		exit_st.path =("/usr/gnu/bin:/usr/local/bin:/bin:/usr/bin:.");
+	if(!*environ && !exit_st.is_unset)
+		exit_st.path =ft_strdup("/usr/gnu/bin:/usr/local/bin:/bin:/usr/bin:.");
 	while(tmp)
 	{
 		if(ft_strcmp(tmp->key, "PATH") == 0)
 			exit_st.path = ft_strdup(tmp->value);
 		tmp = tmp->next;
 	}
+	if(!exit_st.path)
+		exit_st.path = ft_strdup(" ");
+	// printf("%s\n", exit_st.path);
 	paths = ft_split(exit_st.path, ':');
 	return(paths);
 
@@ -443,14 +500,8 @@ void norm_help(t_command *cmd , int j ,int existance ,char c)
 				ft_putstr_fd(": No such file or directory\n", 2);
 				exit(127);
 			}
-			else
-			{
-				ft_putstr_fd("minishell: ", 2);
-				ft_putstr_fd(cmd->args[0], 2);
-				ft_putstr_fd(": is a directory\n", 2);
-				exit(126);
-			}
 		}
+
 	}
 }
 void _manipulate_files(int permission, int existance , t_command *cmd)
@@ -465,7 +516,7 @@ void _manipulate_files(int permission, int existance , t_command *cmd)
 			ft_putstr_fd("minishell: ", 2);
 			ft_putstr_fd(cmd->args[0], 2);
 			ft_putstr_fd(": Permission denied\n", 2);
-			exit(0);
+			exit(126);
 		}
 		norm_help(cmd,j,existance,'/');
 		norm_help(cmd,j,existance,'.');
@@ -473,7 +524,7 @@ void _manipulate_files(int permission, int existance , t_command *cmd)
 	}
 }
 
-void check_filepermission_ndexistance(t_command *cmd)
+int check_filepermission_ndexistance(t_command *cmd)
 {
 	int	file_existance;
 	int	file_permission;
@@ -482,42 +533,57 @@ void check_filepermission_ndexistance(t_command *cmd)
 	file_permission = access(cmd->args[0], X_OK);
 
 	if((cmd->args[0][0] == '.' || cmd->args[0][0] == '/'))
+	{
 		_manipulate_files(file_permission,file_existance,cmd);
+		return (1);
+	}
+	return (0);
 }
 
 void execute_bin(t_command *cmd ,char **envi, t_env **g_env)
 {
-	char	*lwa;
+	char	*lwa = ft_strdup("");
+	extern char **environ;
 	int		i;
 	char **paths;
 	i = 0;
 
 	paths = path_splitted(g_env);
-		while(paths[i] )
+		while(paths[i])
 		{
-			check_filepermission_ndexistance(cmd);
+			// printf("number %d of %s\n", i, paths[i]);
 			char *tmp = ft_strjoin(paths[i],"/");
 			tmp = ft_strjoin(tmp, cmd->args[0]);
-
-			if (access(tmp, F_OK ) == 0)
-				lwa = tmp;
+			if (access(tmp, F_OK| X_OK) == 0)
+				lwa = ft_strdup(tmp);
+			if(check_filepermission_ndexistance(cmd))
+				lwa = ft_strdup(cmd->args[0]);
 			i++;
 		}
+
 		if(execve(lwa, cmd->args,envi) == -1)
 		{
-			lwa = cmd->args[0];
-
-			ft_putstr_fd("minishell: ", 2);
 			exit_st.status = 127;
+			if(!*environ || !ft_strcmp(exit_st.path, " "))
+			{
+				ft_putstr_fd("minishell: ", 2);
+				ft_putstr_fd(cmd->args[0], 2);
+				ft_putstr_fd(": No such file or directory\n", 2);
+				exit(127);
+			}
+			if(check_filepermission_ndexistance(cmd) && access(cmd->args[0], F_OK | X_OK) == 0)
+			{
+				ft_putstr_fd("minishell: ", 2);
+				ft_putstr_fd(cmd->args[0], 2);
+				ft_putstr_fd(": No such file or directory\n", 2);
+				exit(126);
+			}
+			lwa = cmd->args[0];
+			ft_putstr_fd("minishell: ", 2);
 			ft_putstr_fd(lwa, 2);
 			ft_putstr_fd(": command not found\n", 2);
 			exit(exit_st.status);
 		}
-		// else
-		// {
-		// 	exit_st.status = 0;
-		// 	exit(0);
-		// }
 }
 int checkfor_builtins(t_command *cmd)
 {
@@ -541,14 +607,24 @@ int checkfor_builtins(t_command *cmd)
 int execute_built_ins(t_command *cmd, t_env **envp)
 {
 	int in, out;
-if(cmd->fd.fd_in != 0)
+		if(cmd->fd.fd_in != 0)
 		{
+			if(cmd->fd.fd_in == -1)
+			{
+				exit_st.status = 1;
+				return (1);
+			}
 			in = dup(0);
 			dup2(cmd->fd.fd_in, 0);
 			close(cmd->fd.fd_in);
 		}
 		if(cmd->fd.fd_out != 1)
 		{
+			if(cmd->fd.fd_in == -1)
+			{
+				exit_st.status = 1;
+				return (1);
+			}
 			out = dup(1);
 			dup2(cmd->fd.fd_out, 1);
 			close(cmd->fd.fd_out);
@@ -556,7 +632,7 @@ if(cmd->fd.fd_in != 0)
 	if(ft_strcmp(cmd->args[0], "echo") == 0)
 		ft_echo(cmd);
 	else if(ft_strcmp(cmd->args[0], "cd") == 0 && lstsize(cmd) == 1)
-		ft_cd(cmd);
+		ft_cd(cmd, envp);
 	else if(ft_strcmp(cmd->args[0], "pwd") == 0)
 		ft_pwd();
 	else if(ft_strcmp(cmd->args[0], "export") == 0)
@@ -577,10 +653,7 @@ if(cmd->fd.fd_in != 0)
 			dup2(out, 1);
 			close(out);
 		}
-
 	return (1);
-
-
 }
 
 int ft_lst_size(t_command *cmd)
@@ -664,7 +737,7 @@ int execute_the_shOt(t_command* cmd,t_env **g_env, char **envp)
 	if (!cmd->next)
 	{
 		a = checkfor_builtins(cmd);
-		if(a == 1)
+		if(a == 1 )
 			execute_built_ins(cmd,g_env);
 		if(a == 0)
 		{
@@ -693,7 +766,7 @@ int execute_the_shOt(t_command* cmd,t_env **g_env, char **envp)
 				}
 				execute_bin(cmd, envp, g_env);
 			}
-			else if(cmd->pid > 0)
+			if(cmd->pid > 0)
 			{
 				int a = 0;
 				waitpid(cmd->pid, &a, 0);
@@ -707,9 +780,8 @@ int execute_the_shOt(t_command* cmd,t_env **g_env, char **envp)
 				perror("fork() failed");
 				return (1);
 			}
-		}
+			}
 		return (0);
-		// cmd = cmd->next;
 	}
 	while (cmd)
 	{
@@ -720,7 +792,8 @@ int execute_the_shOt(t_command* cmd,t_env **g_env, char **envp)
 		cmd->pid = fork();
 		if (cmd->pid == 0)
 		{
-			handle_child_process(cmd,fd,old);
+				handle_child_process(cmd,fd,old);
+
 			if(a == 1)
 				execute_built_ins(cmd,g_env);
 			if(a == 0 )
@@ -749,7 +822,7 @@ int execute_the_shOt(t_command* cmd,t_env **g_env, char **envp)
 		tmp = tmp->next;
 	}
 	if(s != 0)
-		exit_st.status = s / 256;
+		exit_st.status =s / 256;
 	else
 		exit_st.status = 0;
 	return (0);

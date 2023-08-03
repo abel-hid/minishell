@@ -272,13 +272,17 @@ int	handel_append(char *str_next, int fd, t_env **g_env, int a)
 		fd = open(str, O_CREAT | O_WRONLY | O_APPEND, 0644);
 		if (fd == -1)
 		{
-			printf("minishell: : No such file or directory\n");
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(str, 2);
+			ft_putstr_fd(": No such file or directory\n", 2);
 			return (free(str), -1);
 		}
 	}
 	else
 	{
-		printf("minishell: %s: ambiguous redirect\n", str_next);
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(str_next, 2);
+		ft_putstr_fd(": ambiguous redirect\n", 2);
 		return (-1);
 	}
 	free(str);
@@ -450,7 +454,8 @@ void	parsing1(t_lexer *tmp, char **args, t_env **g_env, t_command **cmd)
 			args = is_word(tmp->content, args, g_env, &i);
 		if (is_redir(tmp))
 		{
-			fd = parse_redirection(tmp->token, tmp->next->content, fd, g_env);
+			if(fd.fd_in != -1 && fd.fd_out != -1)
+				fd = parse_redirection(tmp->token, tmp->next->content, fd, g_env);
 			tmp = tmp->next;
 		}
 		if (!tmp->next || tmp->token == PIPE_LINE)
