@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: abel-hid <abel-hid@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 16:47:00 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/08/01 15:06:30 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/03 12:18:45 by abel-hid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,13 +61,13 @@ typedef struct s_env
 	struct s_env	*next;
 }	t_env;
 
-//  typedef struct s_exit
-// {
-// 	int		status;
-// }	t_exit;
+typedef struct s_exit
+{
+	int		status;
+	char *path;
+}	t_exit;
 
-// t_exit  *exit_st;
-int   exit_status;
+t_exit  exit_st;
 int lexing(t_lexer **list, char *line);
 void craete_env(char **env_list, t_env **g_env);
 char **ft_split(char const *s, char c);
@@ -126,4 +126,5 @@ void parse_args(t_lexer **list,t_command **cmd,  t_env **g_env);
 int execute_the_shOt(t_command* cmd,t_env **g_env, char **envp);
 int execute(t_command* cmd, t_env* g_env);
 int	ft_isalnum(int c);
+int check_key(char *str, char *arg);
 #endif

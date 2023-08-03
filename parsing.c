@@ -300,13 +300,17 @@ int	handel_redirout(char *str_next, int fd, t_env **g_env, int a)
 		fd = open(str, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 		if (fd == -1)
 		{
-			printf("minishell: : No such file or directory\n");
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(str, 2);
+			ft_putstr_fd(": No such file or directory\n", 2);
 			return (free(str), -1);
 		}
 	}
 	else
 	{
-		printf("minishell: %s: ambiguous redirect\n", str_next);
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(str_next, 2);
+		ft_putstr_fd(": ambiguous redirect\n", 2);
 		return (-1);
 	}
 	free(str);
@@ -328,13 +332,17 @@ int	handel_redirin(char *str_next, int fd, t_env **g_env, int a)
 		fd = open(str, O_RDONLY, 0644);
 		if (fd == -1)
 		{
-			printf("minishell: : No such file or directory\n");
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(str, 2);
+			ft_putstr_fd(": No such file or directory\n", 2);
 			return (free(str), -1);
 		}
 	}
 	else
 	{
-		printf("minishell: %s: ambiguous redirect\n", str_next);
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(str_next, 2);
+		ft_putstr_fd(": ambiguous redirect\n", 2);
 		return (-1);
 	}
 	free(str);

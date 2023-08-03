@@ -124,7 +124,7 @@ int check_key(char *str, char *arg)
 		ft_putstr_fd("minishell: export: `", 2);
 		ft_putstr_fd(str, 2);
 		ft_putendl_fd("': not a valid identifier", 2);
-		exit_status = 1;
+		exit_st.status = 1;
 		return(45);
 	}
 	p = ft_strdup(str);
@@ -135,7 +135,7 @@ int check_key(char *str, char *arg)
 			ft_putstr_fd("minishell: export: `", 2);
 			ft_putstr_fd(arg, 2);
 			ft_putendl_fd("': not a valid identifier", 2);
-			exit_status = 1;
+			exit_st.status = 1;
 			free(p);
 			return (45);
 		}
@@ -167,7 +167,7 @@ void create_key_value(char *arg, t_env **g_env)
 	{
 		ft_putstr_fd("minishell: export: `", 2);
 		ft_putstr_fd(arg, 2);
-		exit_status = 1;
+		exit_st.status = 1;
 		ft_putendl_fd("': not a valid identifier", 2);
 		return ;
 	}
@@ -233,7 +233,7 @@ void ft_export(t_command *cmd, t_env **p_env)
 	{
 		if(check_key(cmd->args[1], cmd->args[1]) == 45)
 		{
-			exit_status = 1;
+			exit_st.status = 1;
 			return ;
 		}
 	}
@@ -302,7 +302,7 @@ void ft_cd(t_command *cmd)
 		ft_putstr_fd("minishell: cd: ", 2);
 		ft_putstr_fd(cmd->args[1], 2);
 		ft_putstr_fd(": No such file or directory\n", 2);
-		exit_status = 1;
+		exit_st.status = 1;
 		return ;
 	}
 	if(path)
@@ -353,7 +353,7 @@ void ft_exit(t_command *cmd)
 				ft_putstr_fd("exit\n", 1);
 				ft_putstr_fd("minishell: exit: ", 2);
 				ft_putstr_fd(cmd->args[1], 2);
-				exit_status = 255;
+				exit_st.status = 255;
 				ft_putstr_fd(": numeric argument required\n", 2);
 				exit(255);
 		}
@@ -362,7 +362,7 @@ void ft_exit(t_command *cmd)
 			if(cmd->args[2] != NULL)
 			{
 				ft_putstr_fd("exit\n", 1);
-				exit_status = 1;
+				exit_st.status = 1;
 				ft_putstr_fd("minishell: exit: too many arguments\n", 2);
 				exit(1);
 
@@ -370,40 +370,24 @@ void ft_exit(t_command *cmd)
 			else
 			{
 				ft_putstr_fd("exit\n", 1);
-				exit_status = atoi(cmd->args[1]);
+				exit_st.status = atoi(cmd->args[1]);
 				exit(atoi(cmd->args[1]));
 			}
 		}
 	}
 }
 
-int parsing_unset(char *str)
-{
-	int i = 0;
-	while(str[i])
-	{
-		if(ft_isalnum(str[i]) == 0 && str[i] != '_')
-		{
-			ft_putstr_fd("minishell: unset: `", 2);
-			ft_putstr_fd(str, 2);
-			ft_putendl_fd("': not a valid identifier", 2);
-			exit_status = 1;
-			return (1);
-		}
-		i++;
-	}
-	return (0);
-}
 
 void ft_unset(t_command *cmd, t_env **g_env)
 {
 	t_env *tmp = *g_env;
+	extern char **environ;
 	t_env *prev = NULL;
 	int i = 1;
 	while (cmd->args[i])
 	{
-		if(parsing_unset(cmd->args[i]) == 1)
-			return ;
+				// if(!ft_strcmp(tmp->key, "PATH") && !*environ)
+				// 	exit_st.path = ft_strdup(" ");
 		tmp = *g_env;
 		while (tmp)
 		{
@@ -424,23 +408,24 @@ void ft_unset(t_command *cmd, t_env **g_env)
 		i++;
 	}
 }
-char **path_splitted()
+char **path_splitted(t_env **g_env)
 {
 	extern char **environ;
 	int		i;
-	char	*path;
 	char	**paths;
+	t_env	*tmp;
+	tmp = *g_env;
 
 	i = 0;
 	if(!*environ)
-		path = ft_strdup("/usr/gnu/bin:/usr/local/bin:/bin:/usr/bin:");
-	while (environ[i])
+		exit_st.path =("/usr/gnu/bin:/usr/local/bin:/bin:/usr/bin:.");
+	while(tmp)
 	{
-		if (ft_strncmp(environ[i], "PATH=", 5) == 0)
-			path = ft_strdup(environ[i] + 5);
-		i++;
+		if(ft_strcmp(tmp->key, "PATH") == 0)
+			exit_st.path = ft_strdup(tmp->value);
+		tmp = tmp->next;
 	}
-	paths = ft_split(path, ':');
+	paths = ft_split(exit_st.path, ':');
 	return(paths);
 
 }
@@ -453,13 +438,17 @@ void norm_help(t_command *cmd , int j ,int existance ,char c)
 		{
 			if(existance == -1)
 			{
-				printf("minishell: %s: No such file or directory\n", cmd->args[0]);
-				exit(1);
+				ft_putstr_fd("minishell: ", 2);
+				ft_putstr_fd(cmd->args[0], 2);
+				ft_putstr_fd(": No such file or directory\n", 2);
+				exit(127);
 			}
 			else
 			{
-				printf("minishell : %s is a directory\n", cmd->args[0]);
-				exit(1);
+				ft_putstr_fd("minishell: ", 2);
+				ft_putstr_fd(cmd->args[0], 2);
+				ft_putstr_fd(": is a directory\n", 2);
+				exit(126);
 			}
 		}
 	}
@@ -473,7 +462,9 @@ void _manipulate_files(int permission, int existance , t_command *cmd)
 	{
 		if(!existance && permission == -1)
 		{
-			printf("minishell: %s: Permission denied\n", cmd->args[0]);
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(cmd->args[0], 2);
+			ft_putstr_fd(": Permission denied\n", 2);
 			exit(0);
 		}
 		norm_help(cmd,j,existance,'/');
@@ -494,14 +485,14 @@ void check_filepermission_ndexistance(t_command *cmd)
 		_manipulate_files(file_permission,file_existance,cmd);
 }
 
-void execute_builtins(t_command *cmd ,char **envi)
+void execute_bin(t_command *cmd ,char **envi, t_env **g_env)
 {
 	char	*lwa;
 	int		i;
 	char **paths;
 	i = 0;
 
-	paths = path_splitted();
+	paths = path_splitted(g_env);
 		while(paths[i] )
 		{
 			check_filepermission_ndexistance(cmd);
@@ -515,22 +506,23 @@ void execute_builtins(t_command *cmd ,char **envi)
 		if(execve(lwa, cmd->args,envi) == -1)
 		{
 			lwa = cmd->args[0];
+
 			ft_putstr_fd("minishell: ", 2);
-			exit_status = 127;
+			exit_st.status = 127;
 			ft_putstr_fd(lwa, 2);
 			ft_putstr_fd(": command not found\n", 2);
-			exit(exit_status);
+			exit(exit_st.status);
 		}
-		else
-		{
-			exit_status = 0;
-			exit(0);
-		}
+		// else
+		// {
+		// 	exit_st.status = 0;
+		// 	exit(0);
+		// }
 }
 int checkfor_builtins(t_command *cmd)
 {
 	if(ft_strcmp(cmd->args[0], "echo") == 0)
-		return(44);
+		return(1);
 	else if(ft_strcmp(cmd->args[0], "cd") == 0)
 		return(1);
 	else if(ft_strcmp(cmd->args[0], "export") == 0)
@@ -549,18 +541,18 @@ int checkfor_builtins(t_command *cmd)
 int execute_built_ins(t_command *cmd, t_env **envp)
 {
 	int in, out;
-	if(cmd->fd.fd_in != 0)
-	{
-		in = dup(0);
-		dup2(cmd->fd.fd_in, 0);
-		close(cmd->fd.fd_in);
-	}
-	if(cmd->fd.fd_out != 1)
-	{
-		out = dup(1);
-		dup2(cmd->fd.fd_out, 1);
-		close(cmd->fd.fd_out);
-	}
+if(cmd->fd.fd_in != 0)
+		{
+			in = dup(0);
+			dup2(cmd->fd.fd_in, 0);
+			close(cmd->fd.fd_in);
+		}
+		if(cmd->fd.fd_out != 1)
+		{
+			out = dup(1);
+			dup2(cmd->fd.fd_out, 1);
+			close(cmd->fd.fd_out);
+		}
 	if(ft_strcmp(cmd->args[0], "echo") == 0)
 		ft_echo(cmd);
 	else if(ft_strcmp(cmd->args[0], "cd") == 0 && lstsize(cmd) == 1)
@@ -575,20 +567,20 @@ int execute_built_ins(t_command *cmd, t_env **envp)
 		ft_unset(cmd, envp);
 	else if(ft_strcmp(cmd->args[0], "exit") == 0)
 		ft_exit(cmd);
-	else
-			return (0);
-	if(cmd->fd.fd_in != 0)
-	{
-		dup2(in, 0);
-		close(in);
-	}
-	if(cmd->fd.fd_out != 1)
-	{
-		dup2(out, 1);
-		close(out);
-	}
+	if (cmd->fd.fd_in != 0)
+		{
+			dup2(in, 0);
+			close(in);
+		}
+		if (cmd->fd.fd_out != 1)
+		{
+			dup2(out, 1);
+			close(out);
+		}
 
 	return (1);
+
+
 }
 
 int ft_lst_size(t_command *cmd)
@@ -613,36 +605,37 @@ void signal_handler(int signal) {
 
 void handle_child_process(t_command *cmd, int *fd ,int old)
 {
-			if (cmd->next)
+		close(fd[0]);
+		if (cmd->next)
+		{
+			dup2(fd[1],1);
+			close(fd[1]);
+		}
+		if(cmd->fd.fd_out != 1)
+		{
+			if(cmd->fd.fd_out == -1)
 			{
-				dup2(fd[1],1);
-				close(fd[1]);
+				exit_st.status = 1;
+				exit(1);
 			}
-			if(cmd->fd.fd_out != 1)
+			dup2(cmd->fd.fd_out,1);
+			close(cmd->fd.fd_out);
+		}
+		if (old != -1)
+		{
+			dup2(old, 0);
+			close(old);
+		}
+		if(cmd->fd.fd_in != 0)
+		{
+			if(cmd->fd.fd_in == -1)
 			{
-				if(cmd->fd.fd_out == -1)
-				{
-					exit_status = 1;
-					exit(1);
-				}
-				dup2(cmd->fd.fd_out,1);
-				close(cmd->fd.fd_out);
+				exit_st.status = 1;
+				exit(1);
 			}
-			if (old != -1)
-			{
-				dup2(old, 0);
-				close(old);
-			}
-			if(cmd->fd.fd_in != 0)
-			{
-				if(cmd->fd.fd_in == -1)
-				{
-					exit_status = 1;
-					exit(1);
-				}
-				dup2(cmd->fd.fd_in,0);
-				close(cmd->fd.fd_in);
-			}
+			dup2(cmd->fd.fd_in,0);
+			close(cmd->fd.fd_in);
+		}
 
 
 }
@@ -663,36 +656,79 @@ int execute_the_shOt(t_command* cmd,t_env **g_env, char **envp)
 	t_command *tmp = NULL;
 	tmp = cmd;
 	int fd[2] = {-1,-1};
-
-			if(!cmd)
-				return (77);
-	int done = 0;
-	while (cmd && cmd->args[0])
+	if(!cmd->args[0])
+	{
+		if(!cmd->next)
+			return (0);
+	}
+	if (!cmd->next)
 	{
 		a = checkfor_builtins(cmd);
+		if(a == 1)
+			execute_built_ins(cmd,g_env);
+		if(a == 0)
+		{
+			cmd->pid = fork();
+			if(cmd->pid == 0)
+			{
+				if(cmd->fd.fd_out != 1)
+				{
+					if(cmd->fd.fd_out == -1)
+					{
+						exit_st.status = 1;
+						exit(1);
+					}
+					dup2(cmd->fd.fd_out,1);
+					close(cmd->fd.fd_out);
+				}
+				if(cmd->fd.fd_in != 0)
+				{
+					if(cmd->fd.fd_in == -1)
+					{
+						exit_st.status = 1;
+						exit(1);
+					}
+					dup2(cmd->fd.fd_in,0);
+					close(cmd->fd.fd_in);
+				}
+				execute_bin(cmd, envp, g_env);
+			}
+			else if(cmd->pid > 0)
+			{
+				int a = 0;
+				waitpid(cmd->pid, &a, 0);
+				if(a != 0)
+					exit_st.status = a / 256;
+				else
+					exit_st.status = 0;
+			}
+			else
+			{
+				perror("fork() failed");
+				return (1);
+			}
+		}
+		return (0);
+		// cmd = cmd->next;
+	}
+	while (cmd)
+	{
+		if(cmd->args[0])
+			a = checkfor_builtins(cmd);
 		old = fd[0]; // -1;
 		protection(fd);
-		if(a)
-		{
-			execute_built_ins(cmd,g_env);
-			done = 1;
-		}
 		cmd->pid = fork();
 		if (cmd->pid == 0)
 		{
 			handle_child_process(cmd,fd,old);
-			if(a == 0 && done == 0)
-				execute_builtins(cmd, envp);
-			exit(exit_status);
+			if(a == 1)
+				execute_built_ins(cmd,g_env);
+			if(a == 0 )
+				execute_bin(cmd, envp, g_env);
+			exit(exit_st.status);
 		}
 		else if (cmd->pid > 0)
 		{
-			waitpid(cmd->pid, &exit_status, 0);
-			int a = 0;
-			if(a != 0)
-				exit_status = a / 256;
-			else
-				exit_status = 0;
 			close(fd[1]);
 			if (old != -1)
 				close(old);
@@ -706,14 +742,18 @@ int execute_the_shOt(t_command* cmd,t_env **g_env, char **envp)
 		cmd = cmd->next;
 	}
 	close(fd[1]);
+	int s = 0;
 	while(tmp)
 	{
-		waitpid(tmp->pid, &exit_status, 0);
+		waitpid(tmp->pid, &s, 0);
 		tmp = tmp->next;
 	}
+	if(s != 0)
+		exit_st.status = s / 256;
+	else
+		exit_st.status = 0;
 	return (0);
 }
-
 
 
 
