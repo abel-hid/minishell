@@ -175,7 +175,10 @@ void create_key_value(char *arg, t_env **g_env)
 		j++;
 	key = ft_substr(arg, 0, j);
 	if(check_key(key,arg) == 45)
+	{
+		exit_st.status = 1;
 		return ;
+	}
 
 	value = NULL;
 	if (arg[j] == '+')
@@ -248,13 +251,13 @@ void ft_export(t_command *cmd, t_env **p_env)
 	if(cmd->args[1] == NULL)
 		print_export(p_env);
 }
-void ft_cd(t_command *cmd)
+void ft_cd(t_command *cmd , t_env **g_env)
 {
-	const char *home;
-	home = getenv("HOME");
-
-
-	char *path;
+	const char *home = getenv("HOME");
+	char *path = getenv("PWD");
+	t_env *tmp;
+	tmp = *g_env;
+	
 	if (cmd->args[1] == NULL)
 	{
 		if (home == NULL)
@@ -262,7 +265,7 @@ void ft_cd(t_command *cmd)
 			ft_putstr_fd("minishell: cd: HOME not set\n", 2);
 			return ;
 		}
-		path = ft_strdup(home);
+		path = ft_strdup(home);	
 	}
 	else if (ft_strcmp(cmd->args[1], "~") == 0)
 	{
@@ -271,7 +274,7 @@ void ft_cd(t_command *cmd)
 
 		if (home == NULL)
 		{
-			ft_putstr_fd("minishell: cd: HOME not set\n", 2);
+			home =  ft_strdup("");
 			return ;
 		}
 		if(cmd->args[2] == NULL)
@@ -284,7 +287,6 @@ void ft_cd(t_command *cmd)
 			ft_putstr_fd("minishell: cd: enviroment is unset \n", 2);
 			return ;
 		}
-		path = ft_strdup(getenv("OLDPWD"));
 		if (path == NULL)
 		{
 			ft_putstr_fd("minishell: cd: OLDPWD not set\n", 2);
@@ -305,8 +307,20 @@ void ft_cd(t_command *cmd)
 		exit_st.status = 1;
 		return ;
 	}
-	if(path)
-		free(path);
+		tmp = *g_env;
+	if (path)
+	{
+		while (tmp)
+		{
+			if(ft_strcmp(tmp->key, "PWD") == 0)
+			{
+				free(tmp->value);
+				tmp->value = ft_strdup(path);
+			}
+			tmp = tmp->next;
+		}
+	}
+	
 }
 
 void ft_pwd()
@@ -384,10 +398,14 @@ void ft_unset(t_command *cmd, t_env **g_env)
 	extern char **environ;
 	t_env *prev = NULL;
 	int i = 1;
+
+	if(cmd->args[1] && !ft_strcmp(cmd->args[1], "PATH"))
+	{
+		exit_st.path = ft_strdup("");
+		exit_st.is_unset = 1;
+	}
 	while (cmd->args[i])
 	{
-				if(!ft_strcmp(tmp->key, "PATH") && ! environ)
-					exit_st.path = ft_strdup(" ");
 		tmp = *g_env;
 		while (tmp)
 		{
@@ -417,14 +435,17 @@ char **path_splitted(t_env **g_env)
 	tmp = *g_env;
 
 	i = 0;
-	if(!*environ)
-		exit_st.path =("/usr/gnu/bin:/usr/local/bin:/bin:/usr/bin:.");
+	if(!*environ && !exit_st.is_unset)
+		exit_st.path =ft_strdup("/usr/gnu/bin:/usr/local/bin:/bin:/usr/bin:.");
 	while(tmp)
 	{
 		if(ft_strcmp(tmp->key, "PATH") == 0)
 			exit_st.path = ft_strdup(tmp->value);
 		tmp = tmp->next;
 	}
+	if(!exit_st.path)
+		exit_st.path = ft_strdup(" ");
+	// printf("%s\n", exit_st.path);
 	paths = ft_split(exit_st.path, ':');
 	return(paths);
 
@@ -438,13 +459,10 @@ void norm_help(t_command *cmd , int j ,int existance ,char c)
 		{
 			if(existance == -1)
 			{
-				printf("minishell: %s: No such file or directory\n", cmd->args[0]);
-				exit(1);
-			}
-			else
-			{
-				printf("minishell : %s is a directory\n", cmd->args[0]);
-				exit(1);
+				ft_putstr_fd("minishell: ", 2);
+				ft_putstr_fd(cmd->args[0], 2);
+				ft_putstr_fd(": No such file or directory\n", 2);
+				exit(127);
 			}
 		}
 	}
@@ -467,7 +485,7 @@ void _manipulate_files(int permission, int existance , t_command *cmd)
 	}
 }
 
-void check_filepermission_ndexistance(t_command *cmd)
+int check_filepermission_ndexistance(t_command *cmd)
 {
 	int	file_existance;
 	int	file_permission;
@@ -476,42 +494,57 @@ void check_filepermission_ndexistance(t_command *cmd)
 	file_permission = access(cmd->args[0], X_OK);
 
 	if((cmd->args[0][0] == '.' || cmd->args[0][0] == '/'))
+	{
 		_manipulate_files(file_permission,file_existance,cmd);
+		return (1);
+	}
+	return (0);
 }
 
 void execute_bin(t_command *cmd ,char **envi, t_env **g_env)
 {
-	char	*lwa;
+	char	*lwa = ft_strdup("");
+	extern char **environ;
 	int		i;
 	char **paths;
 	i = 0;
 
 	paths = path_splitted(g_env);
-		while(paths[i] )
+		while(paths[i])
 		{
-			check_filepermission_ndexistance(cmd);
+			// printf("number %d of %s\n", i, paths[i]);
 			char *tmp = ft_strjoin(paths[i],"/");
 			tmp = ft_strjoin(tmp, cmd->args[0]);
-
-			if (access(tmp, F_OK ) == 0)
-				lwa = tmp;
+			if (access(tmp, F_OK| X_OK) == 0)
+				lwa = ft_strdup(tmp);
+			if(check_filepermission_ndexistance(cmd))
+				lwa = ft_strdup(cmd->args[0]);
 			i++;
 		}
+			
 		if(execve(lwa, cmd->args,envi) == -1)
 		{
-			lwa = cmd->args[0];
-
-			ft_putstr_fd("minishell: ", 2);
 			exit_st.status = 127;
+			if(!*environ || !ft_strcmp(exit_st.path, " "))
+			{
+				ft_putstr_fd("minishell: ", 2);
+				ft_putstr_fd(cmd->args[0], 2);
+				ft_putstr_fd(": No such file or directory\n", 2);
+				exit(127);
+			}
+			if(check_filepermission_ndexistance(cmd))
+			{
+				ft_putstr_fd("minishell: ", 2);
+				ft_putstr_fd(cmd->args[0], 2);
+				ft_putstr_fd(": is a directory \n", 2);
+				exit(126);
+			}
+			lwa = cmd->args[0];
+			ft_putstr_fd("minishell: ", 2);
 			ft_putstr_fd(lwa, 2);
 			ft_putstr_fd(": command not found\n", 2);
 			exit(exit_st.status);
 		}
-		// else
-		// {
-		// 	exit_st.status = 0;
-		// 	exit(0);
-		// }
 }
 int checkfor_builtins(t_command *cmd)
 {
@@ -535,7 +568,7 @@ int checkfor_builtins(t_command *cmd)
 int execute_built_ins(t_command *cmd, t_env **envp)
 {
 	int in, out;
-if(cmd->fd.fd_in != 0)
+		if(cmd->fd.fd_in != 0)
 		{
 			in = dup(0);
 			dup2(cmd->fd.fd_in, 0);
@@ -550,7 +583,7 @@ if(cmd->fd.fd_in != 0)
 	if(ft_strcmp(cmd->args[0], "echo") == 0)
 		ft_echo(cmd);
 	else if(ft_strcmp(cmd->args[0], "cd") == 0 && lstsize(cmd) == 1)
-		ft_cd(cmd);
+		ft_cd(cmd, envp);
 	else if(ft_strcmp(cmd->args[0], "pwd") == 0)
 		ft_pwd();
 	else if(ft_strcmp(cmd->args[0], "export") == 0)
@@ -658,7 +691,6 @@ int execute_the_shOt(t_command* cmd,t_env **g_env, char **envp)
 	if (!cmd->next)
 	{
 		a = checkfor_builtins(cmd);
-		printf("ssgdfsa");
 		if(a == 1)
 			execute_built_ins(cmd,g_env);
 		if(a == 0)
@@ -688,8 +720,22 @@ int execute_the_shOt(t_command* cmd,t_env **g_env, char **envp)
 				}
 				execute_bin(cmd, envp, g_env);
 			}
+		else if(cmd->pid > 0)
+		{
+			int a = 0;
+			waitpid(cmd->pid, &a, 0);
+			if(a != 0)
+				exit_st.status = a / 256;
+			else
+				exit_st.status = 0;
 		}
-		cmd = cmd->next;
+		else
+		{
+			perror("fork() failed");
+			return (1);
+		}
+		}
+		return (0);
 	}
 	while (cmd)
 	{

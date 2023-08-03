@@ -221,11 +221,13 @@ int	pipe_line_syntax(t_lexer **list)
 			if (tmp->prev == NULL || tmp->next == NULL)
 			{
 				printf("syntax error near unexpected token `|'\n");
+				exit_st.status = 2;
 				return (1);
 			}
 			if (help_token(&tmp->prev) == 0 || help_token(&tmp->next) == 0)
 			{
 				printf("syntax error near unexpected token `|'\n");
+				exit_st.status = 2;
 				return (1);
 			}
 		}
@@ -252,6 +254,7 @@ int	redir_syntax(t_lexer **list)
 			if (tmp->next == NULL || tmp->next->token != WORD)
 			{
 				printf("syntax error near unexpected token `newline'\n");
+				exit_st.status = 2;
 				return (1);
 			}
 		}
@@ -277,6 +280,7 @@ int	quote_error(char *str)
 			if (str[i] == '\0')
 			{
 				printf("syntax error near unexpected token `%c'\n", str[i - 1]);
+				exit_st.status = 2;
 				return (1);
 			}
 		}

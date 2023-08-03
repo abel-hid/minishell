@@ -79,6 +79,9 @@ int main(int ac ,char **av , char **env)
 
     // sa.sa_handler = signal_handler;
     sigemptyset(&sa.sa_mask);
+	exit_st.status = 0;
+	exit_st.path = NULL;
+	exit_st.is_unset = 0;
     sa.sa_flags = 0;
 	cmd = NULL;
 	(void)ac;

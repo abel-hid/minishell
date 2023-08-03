@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 16:47:00 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/08/02 18:11:20 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/03 09:12:14 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ typedef struct s_env
 {
 	int		status;
 	char *path;
+	int is_unset;
 }	t_exit;
 
 t_exit  exit_st;
