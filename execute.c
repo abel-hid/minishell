@@ -16,15 +16,30 @@ int	lstsize(t_command *lst)
 	}
 	return (i);
 }
-static int	check_overflow(unsigned long res, int n)
+int check_overflow(unsigned long long res, int n)
 {
 	if (n == 1)
-		if (res >= 92233720368547758)
-			return (-1);
+	{
+		if (res >= 9223372036854775808ULL)
+		{
+			exit_st.status = 255;
+			return(exit_st.status);
+		}
+	}
 	if (n == -1)
-		if (res >= 92233720368547758)
-			return (0);
-	return (1);
+	{
+		if(res == 9223372036854775808ULL)
+		{
+			exit_st.status = 0;
+			return(exit_st.status);
+		}
+		if (res >= 9223372036854775809ULL)
+		{
+			exit_st.status = 255;
+			return(exit_st.status);
+		}
+	}
+	return 1;
 }
 
 int	ft_atoi(const char *str)
@@ -44,10 +59,10 @@ int	ft_atoi(const char *str)
 			n = -1;
 	while (str[i] != '\0' && str[i] >= '0' && str[i] <= '9')
 	{
+		result = (result * 10) + str[i] - 48;
 		overflow = check_overflow(result, n);
 		if (overflow != 1)
-			return (overflow);
-		result = (result * 10) + str[i] - 48;
+			return overflow;
 		i++;
 	}
 	return ((result * n));
@@ -419,10 +434,24 @@ void ft_exit(t_command *cmd)
 			}
 			else
 			{
-				ft_putstr_fd("exit\n", 1);
-				exit_st.status = ft_atoi(cmd->args[1]);
-				exit(ft_atoi(cmd->args[1]));
+				int a = ft_atoi(cmd->args[1]);
+				if( a == 255)
+				{
+					ft_putstr_fd("exit\n", 1);
+					ft_putstr_fd("minishell: exit: ", 2);
+					ft_putstr_fd(cmd->args[1], 2);
+					ft_putstr_fd(": numeric argument required\n", 2);
+					exit_st.status = a;
+					exit(a);
+				}
+				else
+				{
+					ft_putstr_fd("exit\n", 1);
+					exit_st.status = a;
+					exit(a);
+				}
 			}
+
 		}
 	}
 }
@@ -518,6 +547,19 @@ void _manipulate_files(int permission, int existance , t_command *cmd)
 			ft_putstr_fd(": Permission denied\n", 2);
 			exit(126);
 		}
+		else
+		{
+			if(cmd->args[0][0] == '/')
+			{
+				if(permission == -1)
+				{
+					ft_putstr_fd("minishell: ", 2);
+					ft_putstr_fd(cmd->args[0], 2);
+					ft_putstr_fd(": No such file or directory\n", 2);
+					exit(127);
+				}
+			}
+		}
 		norm_help(cmd,j,existance,'/');
 		norm_help(cmd,j,existance,'.');
 		j++;
@@ -575,7 +617,7 @@ void execute_bin(t_command *cmd ,char **envi, t_env **g_env)
 			{
 				ft_putstr_fd("minishell: ", 2);
 				ft_putstr_fd(cmd->args[0], 2);
-				ft_putstr_fd(": No such file or directory\n", 2);
+				ft_putstr_fd(": is a directory\n", 2);
 				exit(126);
 			}
 			lwa = cmd->args[0];
@@ -667,13 +709,20 @@ int ft_lst_size(t_command *cmd)
 	return i;
 }
 
-void signal_handler(int signal) {
+void signal_handler(int signal)
+{
     if(signal == SIGINT)
 	{
-
+		ft_putstr_fd("\n", 1);
+		rl_on_new_line();
+		rl_replace_line("", 0);
+		rl_redisplay();
 	}
 	if(signal == SIGQUIT)
-	;
+	{
+		rl_redisplay();
+
+	}
 }
 
 void handle_child_process(t_command *cmd, int *fd ,int old)
