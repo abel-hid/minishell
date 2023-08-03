@@ -438,7 +438,11 @@ void	parsing1(t_lexer *tmp, char **args, t_env **g_env, t_command **cmd)
 		{
 			i = create(args, cmd, fd, i);
 			if (tmp->next && tmp->token == PIPE_LINE)
+			{
 				args = realloc_args(args, calculate_args(tmp->next) + 1);
+				fd = ft_fd(0, 1);
+			}
+	
 		}
 		tmp = tmp->next;
 	}
@@ -527,7 +531,6 @@ int	here_doc(char *str, char *line, t_env **g_env, int *i)
 		if (ft_strcmp(line, str) == 0)
 		{
 			free(line);
-			return (1);
 			break ;
 		}
 		if (!check)

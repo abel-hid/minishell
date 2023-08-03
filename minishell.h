@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 16:47:00 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/08/01 15:06:30 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/02 18:11:20 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,13 +61,13 @@ typedef struct s_env
 	struct s_env	*next;
 }	t_env;
 
-//  typedef struct s_exit
-// {
-// 	int		status;
-// }	t_exit;
+ typedef struct s_exit
+{
+	int		status;
+	char *path;
+}	t_exit;
 
-// t_exit  *exit_st;
-int   exit_status;
+t_exit  exit_st;
 int lexing(t_lexer **list, char *line);
 void craete_env(char **env_list, t_env **g_env);
 char **ft_split(char const *s, char c);

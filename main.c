@@ -80,7 +80,6 @@ int main(int ac ,char **av , char **env)
     // sa.sa_handler = signal_handler;
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
-	exit_status = 0;
 	cmd = NULL;
 	(void)ac;
 	(void)av;
@@ -112,7 +111,7 @@ int main(int ac ,char **av , char **env)
 				parse_args(&lexer, &cmd, &p_env);
 				execute_the_shOt(cmd,&p_env,env);
 			}
-
+   
 
 			// while(lexer != NULL)
 			// {
@@ -129,7 +128,7 @@ int main(int ac ,char **av , char **env)
 
 
 
-		// while(cmd != N
+		// while(cmd != NULL)
 		// {
 		// 	int i = 0;
 		// 	printf(" ----------cmd--------------\n");
