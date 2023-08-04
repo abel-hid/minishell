@@ -3,15 +3,29 @@ NAME = minishell
 
 SRCS =	main.c\
 		expander.c\
+		expander_utils.c\
+		expand_value.c\
 		lexing.c\
+		quote.c\
 		test.c\
 		list.c\
 		parsing.c\
+		parsing_utils.c\
+		parsing_error.c\
+		parsing_redirction.c\
+		parse_args.c\
 		execute.c\
 		env.c\
 		libft.c\
+		libft2.c\
 		t.c\
+		dollar.c\
 		exit.c\
+		create_lexer.c\
+		syntax.c\
+		syntax_utils.c\
+		cmd.c\
+		heredoc.c\
 
 OBJS = $(SRCS:.c=.o)
 
