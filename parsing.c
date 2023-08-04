@@ -1,5 +1,16 @@
-#include "minishell.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parsing.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: abel-hid <abel-hid@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/08/04 21:52:30 by abel-hid          #+#    #+#             */
+/*   Updated: 2023/08/04 21:54:37 by abel-hid         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
+#include "minishell.h"
 
 char	**is_word(char *str, char **args, t_env **g_env, int *i)
 {
@@ -35,24 +46,6 @@ int	create(char **args, t_command **cmd, t_fd fd, int i)
 	args[i] = NULL;
 	my_lstadd_back(cmd, ft_new(args, fd));
 	return (0);
-}
-
-char	**realloc_args(char **args, int count)
-{
-	args = malloc(sizeof(char *) * (count + 1));
-	if (!args)
-		return (NULL);
-	return (args);
-}
-
-
-t_fd	ft_fd(int fd_in, int fd_out)
-{
-	t_fd	fd;
-
-	fd.fd_in = fd_in;
-	fd.fd_out = fd_out;
-	return (fd);
 }
 
 int	is_redir(t_lexer *tmp)
@@ -106,4 +99,3 @@ void	parse_args(t_lexer **list, t_command **cmd, t_env **g_env)
 		return ;
 	parsing1(tmp, args, g_env, cmd);
 }
-

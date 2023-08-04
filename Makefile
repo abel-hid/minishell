@@ -13,6 +13,7 @@ SRCS =	main.c\
 		parsing_utils.c\
 		parsing_error.c\
 		parsing_redirction.c\
+		parsing_utils2.c\
 		parse_args.c\
 		execute.c\
 		env.c\
@@ -38,7 +39,7 @@ all: $(NAME)
 
 $(NAME):$(OBJS)
 	$(CC) $(CFLAGS) -L $(READLINE)/lib $(OBJS) -o $(NAME) -lreadline
-%.o: %.c
+%.o: %.c minishell.h
 	$(CC) $(CFLAGS) -I $(READLINE)/include -c $< -o $@
 
 clean:

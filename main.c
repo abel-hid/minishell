@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: abel-hid <abel-hid@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/08/04 22:08:21 by abel-hid          #+#    #+#             */
+/*   Updated: 2023/08/04 22:45:29 by abel-hid         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 void free_lexer_list(t_lexer **lst)
@@ -77,7 +89,7 @@ int main(int ac ,char **av , char **env)
 	craete_env(env,	&p_env);
 	t_command *cmd;
 
-    // sa.sa_handler = signal_handler;
+    sa.sa_handler = signal_handler;
     sigemptyset(&sa.sa_mask);
 	exit_st.status = 0;
 	exit_st.path = NULL;
@@ -91,10 +103,8 @@ int main(int ac ,char **av , char **env)
 
 	while (1)
 	{
-		signal(SIGINT, signal_handler);
-		signal(SIGQUIT, signal_handler);
-		signal(SIGTERM, signal_handler);
-
+		sigaction(SIGINT, &sa, NULL);
+		sigaction(SIGQUIT, &sa, NULL);
 		line = readline("minishell-> ");
 			if (line == NULL)
 			{

@@ -6,7 +6,7 @@
 /*   By: abel-hid <abel-hid@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 16:47:00 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/08/04 21:37:19 by abel-hid         ###   ########.fr       */
+/*   Updated: 2023/08/04 21:57:53 by abel-hid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,4 +161,7 @@ int	is_env(t_env **g_env, char *str);
 char	*add_args(char *str);
 char	**get_p(char *str);
 int	calculate_args(t_lexer *tmp);
+char	**realloc_args(char **args, int count);
+t_fd	ft_fd(int fd_in, int fd_out);
+int	handel_append(char *str_next, int fd, t_env **g_env);
 #endif

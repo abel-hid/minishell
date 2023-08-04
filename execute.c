@@ -871,7 +871,7 @@ int execute_the_shOt(t_command* cmd,t_env **g_env, char **envp)
 		tmp = tmp->next;
 	}
 	if(s != 0)
-		exit_st.status =s / 256;
+		exit_st.status = s / 256;
 	else
 		exit_st.status = 0;
 	return (0);
