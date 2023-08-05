@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abel-hid <abel-hid@student.42.fr>          +#+  +:+       +#+        */
+/*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/04 22:08:21 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/08/04 22:45:29 by abel-hid         ###   ########.fr       */
+/*   Updated: 2023/08/05 19:52:49 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,7 @@ int main(int ac ,char **av , char **env)
 				heredoc(&lexer, &p_env);
 				expand(&lexer, &p_env);
 				parse_args(&lexer, &cmd, &p_env);
-				execute_the_shOt(cmd,&p_env,env);
+				execute_the_shot(cmd,&p_env,env);
 			}
 
 

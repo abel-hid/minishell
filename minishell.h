@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abel-hid <abel-hid@student.42.fr>          +#+  +:+       +#+        */
+/*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 16:47:00 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/08/04 21:57:53 by abel-hid         ###   ########.fr       */
+/*   Updated: 2023/08/05 19:54:20 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,7 +151,7 @@ char	*ft_itoa(int n);
 int is_dquote(char *str);
 char *ft_delete(char *str);
 void parse_args(t_lexer **list,t_command **cmd,  t_env **g_env);
-int execute_the_shOt(t_command* cmd,t_env **g_env, char **envp);
+int execute_the_shot(t_command* cmd,t_env **g_env, char **envp);
 int execute(t_command* cmd, t_env* g_env);
 void	error(char *str);
 void	error_ambiguous(char *str);
@@ -164,4 +164,59 @@ int	calculate_args(t_lexer *tmp);
 char	**realloc_args(char **args, int count);
 t_fd	ft_fd(int fd_in, int fd_out);
 int	handel_append(char *str_next, int fd, t_env **g_env);
+//
+char	*ft_strcpy(char *dest, char *src);
+void	ft_export(t_command *cmd, t_env **p_env);
+void	ft_unset(t_command *cmd, t_env **p_env);
+void	ft_echo(t_command *cmd);
+void	ft_pwd(void);
+void	ft_env(t_env **p_env);
+void	ft_cd(t_command *cmd, t_env **p_env);
+void	print_export(t_env **env_list);
+int		check_for_equal(char *str);
+void	create_key_value(char *arg, t_env **g_env);
+void	export_norm(char *key, char *value, t_env **g_env);
+void	reset_this(char *key);
+void	check_key2(char *key,char *arg);
+int		check_if_existant(char *key, t_env **g_env);
+int		check_key(char *str, char *arg);
+int		_check(char *key,t_env **g_env);
+void	check_args(char *arg);
+void	ft_error(char *str,char *str2, char *str3);
+void	update_or_add_env_var(t_env **g_env, char *key, char *value);
+void	add_env_var(t_env **g_env, char *key, char *value);
+void	ft_cd(t_command *cmd , t_env **g_env);
+void	handle_the_path(char *path,  char *home);
+void	change_directory(char *path, char *args);
+void	handle_tilde(char *path,char *home, t_command *cmd);
+void	ft_exit(t_command *cmd);
+int		parsing_unset(char *str);
+void	check_for_path(t_command *cmd);
+void	unset_thedummy(t_env **g_env,t_command *cmd, int i, t_env *prev);
+void	ft_unset(t_command *cmd, t_env **g_env);
+int		ft_atoi(const char *str);
+int		ft_isdigit(int c);
+char **path_splitted(t_env **g_env);
+void norm_help(t_command *cmd , int j ,int existance ,char c);
+void _manipulate_files(int permission, int existance , t_command *cmd);
+int check_filepermission_ndexistance(t_command *cmd);
+void ft_exec_ve(t_command *cmd,char *lwa,char  **envi);
+void execute_bin(t_command *cmd ,char **envi, t_env **g_env);
+int checkfor_builtins(t_command *cmd);
+void check_and_execute_builtins(t_command *cmd ,t_env **envp);
+int dup_andclose(int in , int out, t_command *cmd);
+void close_everything(int in , int out, t_command *cmd);
+int execute_built_ins(t_command *cmd, t_env **envp);
+int lstsize(t_command *lst);
+void handle_child_process(t_command *cmd, int *fd ,int old);
+void protection(int *fd);
+void wait_for_all(t_command *cmd);
+void close_old(int old , int *fd);
+void handle_one_command(t_command *cmd);
+void execute_all(t_command *cmd,t_env **g_env, char **envp , int a);
+void execute_on_pipes(t_command *cmd, t_env **g_env,char **envp);
+void srfak_lbn(t_command *cmd,t_env **g_env,char **envp);
+void norminette_bnt_l9hba(t_command *cmd ,t_env **g_env,char **envp);
+t_env	*ft_lst_new( char *key, char *value);
+void	update_path(t_env **g_env, char *path);
 #endif

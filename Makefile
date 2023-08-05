@@ -27,6 +27,25 @@ SRCS =	main.c\
 		syntax_utils.c\
 		cmd.c\
 		heredoc.c\
+		export.c\
+		export2.c\
+		export_tools.c\
+		ft_error.c\
+		update_oradd_env.c\
+		cd.c\
+		cd2.c\
+		echo.c\
+		pwd.c\
+		ft_env.c\
+		unset.c\
+		execute_bin.c\
+		execute_bin2.c\
+		check_builtins.c\
+		exec_builtins.c\
+		exec_utils.c\
+		exec_utils2.c\
+		pipe_execution.c\
+		execution_utils.c\
 
 OBJS = $(SRCS:.c=.o)
 
