@@ -42,9 +42,9 @@ To get started with Minishell, follow these steps:
 ```bash
 git clone https://github.com/your-username/minishell.git
 ```
+
     Change directory:
-```
-bash
+``1bash
 
 cd minishell
 ```
