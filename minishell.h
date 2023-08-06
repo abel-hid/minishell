@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 16:47:00 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/08/06 15:41:35 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/06 19:31:39 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,8 @@ typedef struct s_exit
 	int		is_unset;
 	int		in_here_doc;
 	int		in_cmd;
+	int		in;
+	int		out;
 }	t_exit;
 
 t_exit	g_exit_st;
@@ -208,8 +210,8 @@ void		ft_exec_ve(t_command *cmd, char *lwa, char **envi);
 void		execute_bin(t_command *cmd, char **envi, t_env **g_env);
 int			checkfor_builtins(t_command *cmd);
 void		check_and_execute_builtins(t_command *cmd, t_env **envp);
-int			dup_andclose(int in, int out, t_command *cmd);
-void		close_everything(int in, int out, t_command *cmd);
+int			dup_andclose(t_command *cmd);
+void		close_everything(t_command *cmd);
 int			execute_built_ins(t_command *cmd, t_env **envp);
 int			lstsize(t_command *lst);
 void		handle_child_process(t_command *cmd, int *fd, int old);
