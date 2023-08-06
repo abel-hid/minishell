@@ -39,22 +39,22 @@ To get started with Minishell, follow these steps:
 
 1. Clone the repository:
 
-```bash
+```
+bash
 git clone https://github.com/your-username/minishell.git
 ```
 
     Change directory:
-``1bash
+```bash
 
 cd minishell
 ```
-    Build the project:
+Build the project:
 ```
 bash
-
 make
 ```
-    Run Minishell:
+Run Minishell:
 ```
 bash
 
