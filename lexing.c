@@ -6,7 +6,7 @@
 /*   By: abel-hid <abel-hid@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/04 20:11:23 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/08/04 20:13:13 by abel-hid         ###   ########.fr       */
+/*   Updated: 2023/08/05 21:10:43 by abel-hid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,9 @@ int	lexing(t_lexer **list, char *line)
 {
 	create_lexer(line, list);
 	if (syntax_check(list))
+	{
+		exit_st.status = 2;
 		return (1);
+	}
 	return (0);
 }

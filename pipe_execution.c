@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe_execution.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: abel-hid <abel-hid@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/05 15:37:34 by heddahbi          #+#    #+#             */
-/*   Updated: 2023/08/05 15:42:12 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/05 22:34:01 by abel-hid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ void	execute_on_pipes(t_command *cmd, t_env **g_env, char **envp)
 		cmd->pid = fork();
 		if (cmd->pid == 0)
 		{
+			printf("1 %d\n", exit_st.in_cmd);
 			handle_child_process(cmd, fd, old);
 			execute_all(cmd, g_env, envp, a);
 		}
@@ -66,11 +67,13 @@ int	execute_the_shot(t_command	*cmd, t_env **g_env, char **envp)
 		return (0);
 	if (!cmd->next)
 	{
+		exit_st.in_cmd = 1;
 		a = checkfor_builtins(cmd);
 		if (a == 1)
 			execute_built_ins(cmd, g_env);
 		if (a == 0)
 			norminette_bnt_l9hba(cmd, g_env, envp);
+		exit_st.in_cmd = 0;
 		return (0);
 	}
 	execute_on_pipes(cmd, g_env, envp);

@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: abel-hid <abel-hid@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/04 22:08:21 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/08/05 19:52:49 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/05 21:44:30 by abel-hid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
 
 void free_lexer_list(t_lexer **lst)
 {
@@ -94,7 +95,8 @@ int main(int ac ,char **av , char **env)
 	exit_st.status = 0;
 	exit_st.path = NULL;
 	exit_st.is_unset = 0;
-	exit_st.ambigous = 0;
+	rl_catch_signals = 0;
+ 
     sa.sa_flags = 0;
 	cmd = NULL;
 	(void)ac;
@@ -163,8 +165,8 @@ int main(int ac ,char **av , char **env)
 		free_cmd_list(&cmd);
 
 		free_lexer_list(&lexer);
-
-		add_history(line);
+		if(line && *line)
+			add_history(line);
 		free(line);
 
 	}
