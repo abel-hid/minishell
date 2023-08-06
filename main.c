@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/04 22:08:21 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/08/06 14:46:12 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/06 15:43:08 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ int	main(int ac, char **av, char **env)
 	while (1)
 	{
 		action(&sa);
-		line = readline("minishell-> ");
+		line = readline(ANSI_COLOR_BLUE "srfak_lban" ANSI_COLOR_GREEN " $ " ANSI_COLOR_RESET);
 		if (minishell_prime(line))
 			continue ;
 		if (lexing(&lexer, line) == 0)
