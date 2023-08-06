@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/05 14:46:14 by heddahbi          #+#    #+#             */
-/*   Updated: 2023/08/05 20:56:28 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/06 13:11:12 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,10 +36,10 @@ void	update_path(t_env **g_env, char *path)
 
 void	change_directory(char *path, char *args)
 {
-	if (chdir(path) == -1 && exit_st.status != 1)
+	if (chdir(path) == -1 && g_exit_st.status != 1)
 	{
 		ft_error("minishell: cd: ", args, ": No such file or directory\n");
-		exit_st.status = 1;
+		g_exit_st.status = 1;
 		return ;
 	}
 }

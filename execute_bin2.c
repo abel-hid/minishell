@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/05 15:16:10 by heddahbi          #+#    #+#             */
-/*   Updated: 2023/08/05 20:52:01 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/06 13:12:19 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@ void	ft_exec_ve(t_command *cmd, char *lwa, char	**envi)
 {
 	if (execve(lwa, cmd->args, envi) == -1)
 	{
-		exit_st.status = 127;
-		if (!ft_strcmp(lwa, "") && exit_st.is_unset == 1)
+		g_exit_st.status = 127;
+		if (!ft_strcmp(lwa, "") && g_exit_st.is_unset == 1)
 		{
 			ft_error("minishell: ", cmd->args[0],
 				": No such file or directory\n");
@@ -31,7 +31,7 @@ void	ft_exec_ve(t_command *cmd, char *lwa, char	**envi)
 		}
 		lwa = cmd->args[0];
 		ft_error("minishell: ", cmd->args[0], ": command not found\n");
-		exit(exit_st.status);
+		exit(g_exit_st.status);
 	}
 }
 

@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/05 15:03:50 by heddahbi          #+#    #+#             */
-/*   Updated: 2023/08/05 15:04:42 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/06 13:12:10 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	handle_one_command(t_command *cmd)
 	{
 		if (cmd->fd.fd_out == -1)
 		{
-			exit_st.status = 1;
+			g_exit_st.status = 1;
 			exit(1);
 		}
 		dup2(cmd->fd.fd_out, 1);
@@ -28,7 +28,7 @@ void	handle_one_command(t_command *cmd)
 	{
 		if (cmd->fd.fd_in == -1)
 		{
-			exit_st.status = 1;
+			g_exit_st.status = 1;
 			exit(1);
 		}
 		dup2(cmd->fd.fd_in, 0);
@@ -42,5 +42,5 @@ void	execute_all(t_command *cmd, t_env **g_env, char **envp, int a)
 		execute_built_ins(cmd, g_env);
 	if (a == 0)
 		execute_bin(cmd, envp, g_env);
-	exit(exit_st.status);
+	exit(g_exit_st.status);
 }

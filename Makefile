@@ -46,6 +46,10 @@ SRCS =	main.c\
 		exec_utils2.c\
 		pipe_execution.c\
 		execution_utils.c\
+		t2.c\
+		lexing_utils.c\
+		free.c\
+		main_helper.c\
 
 OBJS = $(SRCS:.c=.o)
 

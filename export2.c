@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/05 15:32:12 by heddahbi          #+#    #+#             */
-/*   Updated: 2023/08/05 19:33:49 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/06 13:12:51 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ void	check_key2(char *key, char	*arg)
 {
 	if (check_key(key, arg) == 45)
 	{
-		exit_st.status = 1;
+		g_exit_st.status = 1;
 		return ;
 	}
 }
@@ -52,11 +52,11 @@ void	export_norm(char *key, char *value, t_env **g_env)
 
 void	reset_this(char *key)
 {
-	if (ft_strcmp(key, "PATH") == 0 && !exit_st.is_unset)
+	if (ft_strcmp(key, "PATH") == 0 && !g_exit_st.is_unset)
 	{
-		exit_st.is_unset = 81;
-		free(exit_st.path);
-		exit_st.path 
+		g_exit_st.is_unset = 81;
+		free(g_exit_st.path);
+		g_exit_st.path 
 			= ft_strdup("/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin");
 	}
 }

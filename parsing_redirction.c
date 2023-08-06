@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing_redirction.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abel-hid <abel-hid@student.42.fr>          +#+  +:+       +#+        */
+/*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/04 21:25:55 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/08/04 21:57:29 by abel-hid         ###   ########.fr       */
+/*   Updated: 2023/08/06 11:44:22 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,6 @@ int	parse_redir_out(int type, char *str_next, int fd, t_env **g_env)
 
 int	parse_redir_in(int type, char *str_next, int fd, t_env **g_env)
 {
-
 	if (type == REDIR_IN)
 	{
 		fd = handel_redirin(str_next, fd, g_env);

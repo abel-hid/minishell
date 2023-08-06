@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expander.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abel-hid <abel-hid@student.42.fr>          +#+  +:+       +#+        */
+/*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/04 20:34:34 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/08/04 20:36:16 by abel-hid         ###   ########.fr       */
+/*   Updated: 2023/08/06 13:12:36 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ char	*ft_expand(char *str, t_env **g_env)
 		i = skip_squote(str, i);
 		if (str[i] == '$' && str[i + 1] == '?')
 		{
-			p = ft_itoa(exit_st.status);
+			p = ft_itoa(g_exit_st.status);
 			str = handler_value(str, &i, 1, p);
 			free(p);
 			continue ;

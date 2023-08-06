@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   quote.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abel-hid <abel-hid@student.42.fr>          +#+  +:+       +#+        */
+/*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/04 19:58:06 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/08/04 19:58:07 by abel-hid         ###   ########.fr       */
+/*   Updated: 2023/08/06 11:45:17 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,4 +51,3 @@ int	skip_spaces(char *line, int i)
 		j++;
 	return (j);
 }
-

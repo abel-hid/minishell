@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   test.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/08/06 13:06:49 by heddahbi          #+#    #+#             */
+/*   Updated: 2023/08/06 13:15:25 by heddahbi         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 static int	ft_len(char const *s, char c)
@@ -89,55 +101,4 @@ char	*ft_strdup(const char *s1)
 	}
 	p[i] = '\0';
 	return (p);
-}
-
-size_t	ft_strlen(const char *s)
-{
-	size_t	i;
-
-	i = 0;
-	while (s[i])
-		i++;
-	return (i);
-}
-
-char	*ft_substr(char const *s, unsigned int start, size_t len)
-{
-	size_t			i;
-	unsigned int	l_len;
-	char			*p;
-
-	if (!s)
-		return (NULL);
-	l_len = ft_strlen(s);
-	i = 0;
-	if (start > l_len)
-		return (ft_strdup(""));
-	if (ft_strlen(s + start) < len)
-		len = ft_strlen(s + start);
-	p = malloc(sizeof(char) * (len + 1));
-	if (!p)
-		return (NULL);
-	while (i < len)
-	{
-		p[i] = s[start];
-		start++;
-		i++;
-	}
-	p[i] = '\0';
-	return (p);
-}
-
-char	*ft_strncpy(char *s1, char *s2, int n)
-{
-	int	i;
-
-	i = 0;
-	while (s2[i] && i < n)
-	{
-		s1[i] = s2[i];
-		i++;
-	}
-	s1[i] = '\0';
-	return (s1);
 }

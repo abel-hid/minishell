@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/05 15:22:40 by heddahbi          #+#    #+#             */
-/*   Updated: 2023/08/05 15:24:09 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/06 13:12:24 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,21 +18,21 @@ int	check_overflow(unsigned long long res, int n)
 	{
 		if (res >= 9223372036854775808ULL)
 		{
-			exit_st.status = 255;
-			return (exit_st.status);
+			g_exit_st.status = 255;
+			return (g_exit_st.status);
 		}
 	}
 	if (n == -1)
 	{
 		if (res == 9223372036854775808ULL)
 		{
-			exit_st.status = 0;
-			return (exit_st.status);
+			g_exit_st.status = 0;
+			return (g_exit_st.status);
 		}
 		if (res >= 9223372036854775809ULL)
 		{
-			exit_st.status = 255;
-			return (exit_st.status);
+			g_exit_st.status = 255;
+			return (g_exit_st.status);
 		}
 	}
 	return (1);

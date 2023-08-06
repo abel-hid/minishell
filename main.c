@@ -3,173 +3,58 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abel-hid <abel-hid@student.42.fr>          +#+  +:+       +#+        */
+/*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/04 22:08:21 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/08/05 21:44:30 by abel-hid         ###   ########.fr       */
+/*   Updated: 2023/08/06 14:46:12 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-
-void free_lexer_list(t_lexer **lst)
+void	initialize_data(struct sigaction *sa)
 {
-	t_lexer *tmp;
-
-	while (*lst != NULL)
-	{
-		tmp = (*lst)->next;
-		if((*lst)->token == WORD)
-		{
-			free((*lst)->content);
-		}
-		free(*lst);
-		*lst = tmp;
-	}
-	*lst = NULL;
+	g_exit_st.status = 0;
+	g_exit_st.path = NULL;
+	g_exit_st.is_unset = 0;
+	rl_catch_signals = 0;
+	sa->sa_handler = signal_handler;
+	sigemptyset(&sa->sa_mask);
+	sa->sa_flags = 0;
 }
 
-void	free_args(char **s)
+void	minishell(t_lexer **lexer, t_env **p_env, t_command **cmd, char **env)
 {
-	int	i;
-	i = 0;
-	while (s[i] != NULL)
-	{
-		free(s[i]);
-		i++;
-	}
-	free(s);
-}
-void free_cmd_list(t_command **lst)
-{
-	t_command *tmp;
-
-
-	while (*lst != NULL)
-	{
-		tmp = (*lst)->next;
-		free_args((*lst)->args);
-		free(*lst);
-		*lst = tmp;
-	}
-	*lst = NULL;
-
+	heredoc(lexer, p_env);
+	expand(lexer, p_env);
+	parse_args(lexer, cmd, p_env);
+	execute_the_shot(*cmd, p_env, env);
 }
 
-void free_env(t_env **lst)
+int	main(int ac, char **av, char **env)
 {
-	t_env *tmp;
+	char				*line;
+	t_lexer				*lexer;
+	struct sigaction	sa;
+	t_command			*cmd;
+	t_env				*p_env;
 
-	while (*lst != NULL)
-	{
-		tmp = (*lst)->next;
-		if((*lst)->key != NULL)
-		free((*lst)->key);
-		if((*lst)->value != NULL)
-		free((*lst)->value);
-		free(*lst);
-		*lst = tmp;
-	}
-	*lst = NULL;
-}
-
-
-int main(int ac ,char **av , char **env)
-{
-	char *line;
-	t_lexer *lexer;
-
-	struct sigaction sa;
-	t_env *p_env;
 	p_env = NULL;
 	lexer = NULL;
-
-
-
-	craete_env(env,	&p_env);
-	t_command *cmd;
-
-    sa.sa_handler = signal_handler;
-    sigemptyset(&sa.sa_mask);
-	exit_st.status = 0;
-	exit_st.path = NULL;
-	exit_st.is_unset = 0;
-	rl_catch_signals = 0;
- 
-    sa.sa_flags = 0;
+	craete_env(env, &p_env);
+	initialize_data(&sa);
 	cmd = NULL;
 	(void)ac;
 	(void)av;
-	// char *token[] = {"WORD", "PIPE_LINE", "REDIR_IN", "REDIR_OUT", "HEARDOC", "APPEND"};
-
 	while (1)
 	{
-		sigaction(SIGINT, &sa, NULL);
-		sigaction(SIGQUIT, &sa, NULL);
+		action(&sa);
 		line = readline("minishell-> ");
-			if (line == NULL)
-			{
-				printf("exit\n");
-				exit(0);
-			}
-			if (ft_strlen(line) == 0)
-			{
-				free(line);
-				continue ;
-			}
-
-
-			if(lexing(&lexer,line) == 0)
-			{
-				heredoc(&lexer, &p_env);
-				expand(&lexer, &p_env);
-				parse_args(&lexer, &cmd, &p_env);
-				execute_the_shot(cmd,&p_env,env);
-			}
-
-
-			// while(lexer != NULL)
-			// {
-			// 	printf(" ----------lexer--------------\n");
-			// 	printf("content = %s\n", lexer->content);
-			// 	lexer = lexer->next;
-			// }
-
-
-
-
-
-
-
-
-
-		// while(cmd != NULL)
-		// {
-		// 	int i = 0;
-		// 	printf(" ----------cmd--------------\n");
-		// 	while(cmd->args[i] != NULL)
-		// 	{
-		// 		printf("args[%d] = '%s'\n", i, cmd->args[i]);
-		// 		i++;
-		// 	}
-		// 	printf("fd_in %d\n", cmd->fd.fd_in);
-		// 	printf("fd_out %d\n", cmd->fd.fd_out);
-		// 	cmd = cmd->next;
-		// }
-
-
-
-
-
-		free_cmd_list(&cmd);
-
-		free_lexer_list(&lexer);
-		if(line && *line)
-			add_history(line);
-		free(line);
-
+		if (minishell_prime(line))
+			continue ;
+		if (lexing(&lexer, line) == 0)
+			minishell(&lexer, &p_env, &cmd, env);
+		free_stuff(line, &lexer, &cmd);
 	}
-		free_env(&p_env);
+	free_env(&p_env);
 }
-

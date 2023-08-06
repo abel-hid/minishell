@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/05 15:29:27 by heddahbi          #+#    #+#             */
-/*   Updated: 2023/08/05 15:31:50 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/06 13:12:47 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ void	ft_export(t_command *cmd, t_env **p_env)
 		{
 			if (check_key(cmd->args[i], cmd->args[i]) == 45)
 			{
-				exit_st.status = 1;
+				g_exit_st.status = 1;
 				return ;
 			}
 		}

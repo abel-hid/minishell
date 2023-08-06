@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/05 15:04:52 by heddahbi          #+#    #+#             */
-/*   Updated: 2023/08/05 15:13:01 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/06 13:12:13 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,21 +20,21 @@ char	**path_splitted(t_env **g_env)
 
 	tmp = *g_env;
 	i = 0;
-	if (!exit_st.path)
+	if (!g_exit_st.path)
 	{
-		if (!*g_env && (!exit_st.is_unset))
-			exit_st.path 
+		if (!*g_env && (!g_exit_st.is_unset))
+			g_exit_st.path 
 				= ft_strdup("/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin");
 		else
-			exit_st.path = ft_strdup("");
+			g_exit_st.path = ft_strdup("");
 	}
 	while (tmp)
 	{
 		if (ft_strcmp(tmp->key, "PATH") == 0 && tmp->value != NULL)
-			exit_st.path = ft_strdup(tmp->value);
+			g_exit_st.path = ft_strdup(tmp->value);
 		tmp = tmp->next;
 	}
-	paths = ft_split(exit_st.path, ':');
+	paths = ft_split(g_exit_st.path, ':');
 	return (paths);
 }
 
@@ -58,7 +58,7 @@ void	norm_help(t_command *cmd, int j, int existance, char c)
 void	print_err(char *str)
 {
 	ft_error("minishell: ", str, ": Permission denied\n");
-	exit_st.status = 126;
+	g_exit_st.status = 126;
 	exit(126);
 }
 
@@ -79,7 +79,7 @@ void	_manipulate_files(int permission, int existance, t_command *cmd)
 				{
 					ft_error("minishell: ", cmd->args[0], 
 						": No such file or directory\n");
-					exit_st.status = 127;
+					g_exit_st.status = 127;
 					exit(127);
 				}
 			}

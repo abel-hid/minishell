@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/05 15:01:21 by heddahbi          #+#    #+#             */
-/*   Updated: 2023/08/05 15:01:45 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/06 13:11:52 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ int	dup_andclose(int in, int out, t_command *cmd)
 	{
 		if (cmd->fd.fd_in == -1)
 		{
-			exit_st.status = 1;
+			g_exit_st.status = 1;
 			return (1);
 		}
 		in = dup(0);
@@ -29,7 +29,7 @@ int	dup_andclose(int in, int out, t_command *cmd)
 	{
 		if (cmd->fd.fd_in == -1)
 		{
-			exit_st.status = 1;
+			g_exit_st.status = 1;
 			return (1);
 		}
 		out = dup(1);

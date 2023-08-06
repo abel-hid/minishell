@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/05 15:01:56 by heddahbi          #+#    #+#             */
-/*   Updated: 2023/08/05 15:03:40 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/06 13:12:05 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,9 +48,9 @@ void	wait_for_all(t_command *cmd)
 		cmd = cmd->next;
 	}
 	if (s != 0)
-		exit_st.status = s / 256;
+		g_exit_st.status = s / 256;
 	else
-		exit_st.status = 0;
+		g_exit_st.status = 0;
 }
 
 void	close_old(int old, int *fd)

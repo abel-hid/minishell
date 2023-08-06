@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/05 15:24:39 by heddahbi          #+#    #+#             */
-/*   Updated: 2023/08/05 15:27:12 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/06 13:12:27 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ void	print_exit_error(char *str, int a)
 {
 	ft_putstr_fd("exit\n", 1);
 	ft_error("minishell: exit: ", str, ": numeric argument required\n");
-	exit_st.status = a;
+	g_exit_st.status = a;
 	exit(a);
 }
 
@@ -28,7 +28,7 @@ void	handle_digit_exit(t_command *cmd)
 	if (cmd->args[2] != NULL)
 	{
 		ft_putstr_fd("exit\n", 1);
-		exit_st.status = 1;
+		g_exit_st.status = 1;
 		ft_putstr_fd("minishell: exit: too many arguments\n", 2);
 		exit (1);
 	}
@@ -39,7 +39,7 @@ void	handle_digit_exit(t_command *cmd)
 		else
 		{
 			ft_putstr_fd("exit\n", 1);
-			exit_st.status = a;
+			g_exit_st.status = a;
 			exit(a);
 		}
 	}
@@ -57,7 +57,7 @@ void	ft_exit(t_command *cmd)
 			ft_putstr_fd("exit\n", 1);
 			ft_error("minishell: exit: ", cmd->args[1],
 				": numeric argument required\n");
-			exit_st.status = 255;
+			g_exit_st.status = 255;
 			exit(255);
 		}
 		else if (ft_isdigit(cmd->args[1][0]) == 1 

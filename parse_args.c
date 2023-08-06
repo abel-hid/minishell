@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_args.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abel-hid <abel-hid@student.42.fr>          +#+  +:+       +#+        */
+/*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/04 21:35:14 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/08/04 21:39:05 by abel-hid         ###   ########.fr       */
+/*   Updated: 2023/08/06 11:44:11 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ int	calculate_args(t_lexer *tmp)
 	}
 	return (i);
 }
-
 
 int	parse_env(t_env **g_env, char *str)
 {
