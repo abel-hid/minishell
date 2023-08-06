@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/04 22:08:21 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/08/06 20:26:35 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/06 21:03:21 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,8 @@ void	minishell_exec(char **env, t_lexer *lexer)
 	while (1)
 	{
 		action(&sa);
-		line = readline(ANSI_COLOR_BLUE "srfak_lban"
-				ANSI_COLOR_GREEN " $ " ANSI_COLOR_RESET);
+		line = readline("minishell$ ");
+		rl_callback_handler_install(line, NULL);
 		if (minishell_prime(line))
 			continue ;
 		if (lexing(&lexer, line) == 0)

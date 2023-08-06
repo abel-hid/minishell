@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 16:47:00 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/08/06 19:31:39 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/06 20:54:53 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,11 @@
 # include <readline/history.h>
 # include <fcntl.h>
 # include <signal.h>
-# define ANSI_COLOR_RED     "\x1b[31m"
-# define ANSI_COLOR_GREEN   "\x1b[32m"
-# define ANSI_COLOR_YELLOW  "\x1b[33m"
-# define ANSI_COLOR_BLUE    "\x1b[34m"
-# define ANSI_COLOR_RESET   "\x1b[0m"
+# define ANSI_COLOR_RED     "[31m"
+# define ANSI_COLOR_GREEN   "[32m"
+# define ANSI_COLOR_YELLOW  "[33m"
+# define ANSI_COLOR_BLUE    "[34m"
+# define ANSI_COLOR_RESET   "[0m"
 
 typedef enum e_tokens
 {
