@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 16:47:00 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/08/06 20:54:53 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/07 13:59:50 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,7 +143,6 @@ char		*get_env_value(t_env *env, const char *key);
 void		ft_putendl_fd(char *s, int fd);
 void		ft_putstr_fd(char *s, int fd);
 void		signal_handler(int sig);
-int			hh(char *str);
 int			detect_dollar(char *str);
 char		**ft_split1(char *str, char *charset);
 void		free_args(char **s);
@@ -172,7 +171,7 @@ char		**realloc_args(char **args, int count);
 t_fd		ft_fd(int fd_in, int fd_out);
 int			handel_append(char *str_next, int fd, t_env **g_env);
 char		*ft_strcpy(char *dest, char *src);
-void		ft_export(t_command *cmd, t_env **p_env);
+int			ft_export(t_command *cmd, t_env **p_env);
 void		ft_unset(t_command *cmd, t_env **p_env);
 void		ft_echo(t_command *cmd);
 void		ft_pwd(void);
@@ -180,14 +179,14 @@ void		ft_env(t_env **p_env);
 void		ft_cd(t_command *cmd, t_env **p_env);
 void		print_export(t_env **env_list);
 int			check_for_equal(char *str);
-void		create_key_value(char *arg, t_env **g_env);
+int			create_key_value(char *arg, t_env **g_env);
 void		export_norm(char *key, char *value, t_env **g_env);
 void		reset_this(char *key);
 void		check_key2(char *key, char *arg);
 int			check_if_existant(char *key, t_env **g_env);
 int			check_key(char *str, char *arg);
 int			_check(char *key, t_env **g_env);
-void		check_args(char *arg);
+int			check_args(char *arg);
 void		ft_error(char *str, char *str2, char *str3);
 void		update_or_add_env_var(t_env **g_env, char *key, char *value);
 void		add_env_var(t_env **g_env, char *key, char *value);

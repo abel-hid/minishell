@@ -6,13 +6,32 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/05 15:29:27 by heddahbi          #+#    #+#             */
-/*   Updated: 2023/08/06 13:12:47 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/07 14:04:08 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	create_key_value(char *arg, t_env **g_env)
+
+int	check_for_second(char *arg)
+{
+	int i;
+
+	i = 0;
+	while(arg[i] && arg[i] != '=' && arg[i] != '+')
+		i++;
+	return (i);
+}
+int	hah(char c, char *arg)
+{
+	if (c != '=')
+	{
+		ft_error("minishell: export: `", arg, "': not a valid identifier\n");
+		return (1);
+	}
+	return (0);
+}
+int	create_key_value(char *arg, t_env **g_env)
 {
 	int		j;
 	t_env	*tmp;
@@ -20,15 +39,17 @@ void	create_key_value(char *arg, t_env **g_env)
 	char	*value;
 
 	tmp = *g_env;
-	j = 0;
-	check_args(arg);
-	while (arg[j] && (arg[j] != '=' && (arg[j] != '+')))
-		j++;
+	if (check_args(arg))
+		return (1);
+	j = check_for_second(arg);
 	key = ft_substr(arg, 0, j);
-	check_key2(key, arg);
+	if(check_key(key, arg) == 45)
+		return (free(key), 1);
 	value = NULL;
 	if (arg[j] == '+')
 	{
+		if(hah(arg[j + 1], arg))
+			return (free(key), 1);
 		value = ft_substr(arg, j + 2, ft_strlen(arg) - j - 2);
 		update_or_add_env_var(g_env, key, value);
 	}
@@ -37,7 +58,8 @@ void	create_key_value(char *arg, t_env **g_env)
 		value = ft_substr(arg, j + 1, ft_strlen(arg) - j - 1);
 		add_env_var(g_env, key, value);
 	}
-	export_norm(key, value, g_env);
+	// export_norm(key, value, g_env);
+	return (export_norm(key, value, g_env), 0);
 }
 
 int	check_for_equal(char *str)
@@ -74,7 +96,7 @@ void	print_export(t_env **env_list)
 	}
 }
 
-void	ft_export(t_command *cmd, t_env **p_env)
+int	ft_export(t_command *cmd, t_env **p_env)
 {
 	int	i;
 
@@ -84,14 +106,13 @@ void	ft_export(t_command *cmd, t_env **p_env)
 		if (cmd->args[i] != NULL && !check_for_equal(cmd->args[i]))
 		{
 			if (check_key(cmd->args[i], cmd->args[i]) == 45)
-			{
-				g_exit_st.status = 1;
-				return ;
-			}
+				return (1);
 		}
-		create_key_value(cmd->args[i], p_env);
+		if(create_key_value(cmd->args[i], p_env))
+			return (1);
 		i++;
 	}
 	if (cmd->args[1] == NULL)
 		print_export(p_env);
+	return (0);
 }

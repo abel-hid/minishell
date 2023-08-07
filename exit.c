@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/05 15:24:39 by heddahbi          #+#    #+#             */
-/*   Updated: 2023/08/06 13:12:27 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/07 12:23:13 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,10 @@
 void	print_exit_error(char *str, int a)
 {
 	ft_putstr_fd("exit\n", 1);
-	ft_error("minishell: exit: ", str, ": numeric argument required\n");
+	if (a == 255)
+		ft_error("minishell: exit: ", str, ": numeric argument required\n");
 	g_exit_st.status = a;
-	exit(a);
+	exit (a);
 }
 
 void	handle_digit_exit(t_command *cmd)
@@ -33,16 +34,7 @@ void	handle_digit_exit(t_command *cmd)
 		exit (1);
 	}
 	else
-	{
-		if (a == 255)
-			print_exit_error(cmd->args[1], a);
-		else
-		{
-			ft_putstr_fd("exit\n", 1);
-			g_exit_st.status = a;
-			exit(a);
-		}
-	}
+		print_exit_error(cmd->args[1], a);
 }
 
 void	ft_exit(t_command *cmd)

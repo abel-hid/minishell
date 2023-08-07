@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/05 14:46:14 by heddahbi          #+#    #+#             */
-/*   Updated: 2023/08/06 15:35:37 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/07 12:02:05 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,4 +42,6 @@ void	change_directory(char *path, char *args)
 		g_exit_st.status = 1;
 		return ;
 	}
+	else
+		g_exit_st.status = 0;
 }

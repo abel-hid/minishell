@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/05 04:57:59 by heddahbi          #+#    #+#             */
-/*   Updated: 2023/08/05 15:35:58 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/07 12:16:27 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ void	ft_env(t_env **g_env)
 			ft_putstr_fd(tmp->value, 1);
 			ft_putstr_fd("\n", 1);
 		}
+		g_exit_st.status = 0;
 		tmp = tmp->next;
 	}
 }

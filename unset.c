@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/06 13:15:41 by heddahbi          #+#    #+#             */
-/*   Updated: 2023/08/06 13:20:18 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/07 12:11:16 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,17 @@ int	parsing_unset(char *str)
 	int	i;
 
 	i = 0;
+	if(*str <= '9' && *str >= '0')
+	{
+		ft_error("minishell: unset: `", str, "': not a valid identifier\n");
+		g_exit_st.status = 1;
+		return (1);
+	}
 	while (str[i])
 	{
-		if (ft_isalnum(str[i]) == 0 && str[i] != '_')
+		if (!ft_isalnum(str[i]) && str[i] != '_')
 		{
-			ft_putstr_fd("minishell: unset: `", 2);
-			ft_putstr_fd(str, 2);
-			ft_putendl_fd("': not a valid identifier", 2);
+			ft_error("minishell: unset: `", str, "': not a valid identifier\n");
 			g_exit_st.status = 1;
 			return (1);
 		}
@@ -59,6 +63,7 @@ void	unset_thedummy(t_env **g_env, t_command *cmd, int i, t_env	*prev)
 			free(tmp);
 			break ;
 		}
+		g_exit_st.status = 0;
 		prev = tmp;
 		tmp = tmp->next;
 	}
