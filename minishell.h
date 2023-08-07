@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 16:47:00 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/08/07 16:41:50 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/07 19:16:13 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -234,4 +234,5 @@ void		free_stuff(char *line, t_lexer **lexer, t_command **cmd);
 void		action(struct sigaction *sa);
 int			minishell_prime(char *line);
 int			check_for_equal(char *str);
+int			close_here_doc(void);
 #endif

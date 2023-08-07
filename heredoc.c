@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/04 21:33:04 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/08/07 16:11:59 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/07 19:14:14 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,16 +56,6 @@ int	ft_create_fd(int fd)
 	g_exit_st.in_here_doc = 1;
 	return (fd);
 }
-int close_here_doc()
-{
-	if (open("/dev/stdin", O_RDONLY) == -1)
-	{
-		dup2(STDOUT_FILENO,STDIN_FILENO);
-		g_exit_st.in_here_doc = 0;
-		return (1);
-	}
-	return (0);
-}
 
 int	here_doc(char *str, char *line, t_env **g_env)
 {
@@ -79,8 +69,8 @@ int	here_doc(char *str, char *line, t_env **g_env)
 	while (1)
 	{
 		line = readline(">");
-		if(close_here_doc() == 1 || !line)
-			break;
+		if (close_here_doc() == 1 || !line)
+			break ;
 		if (ft_strcmp(line, str) == 0)
 		{
 			free(line);

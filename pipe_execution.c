@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/05 15:37:34 by heddahbi          #+#    #+#             */
-/*   Updated: 2023/08/07 16:41:31 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/07 19:07:11 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ void	execute_on_pipes(t_command *cmd, t_env **g_env, char **envp)
 		cmd = cmd->next;
 	}
 	close(fd[1]);
+	close(fd[0]);
 }
 
 void	srfak_lbn(t_command *cmd, t_env **g_env, char **envp)

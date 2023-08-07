@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/04 19:54:34 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/08/06 13:42:29 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/07 19:15:49 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,4 +47,15 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 	}
 	p[i] = '\0';
 	return (p);
+}
+
+int	close_here_doc(void)
+{
+	if (open("/dev/stdin", O_RDONLY) == -1)
+	{
+		dup2(STDOUT_FILENO, STDIN_FILENO);
+		g_exit_st.in_here_doc = 0;
+		return (1);
+	}
+	return (0);
 }
