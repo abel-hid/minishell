@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/05 15:28:01 by heddahbi          #+#    #+#             */
-/*   Updated: 2023/08/07 13:59:23 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/07 14:10:10 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,21 @@ int	check_args(char *arg)
 	{
 		ft_error("minishell: export: `", arg, "': not a valid identifier\n");
 		g_exit_st.status = 1;
-		return(1);
+		return (1);
+	}
+	return (0);
+}
+
+int	check_for_equal(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == '=')
+			return (1);
+		i++;
 	}
 	return (0);
 }

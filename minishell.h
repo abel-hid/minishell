@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 16:47:00 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/08/07 13:59:50 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/07 16:41:50 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -221,7 +221,7 @@ void		handle_one_command(t_command *cmd);
 void		execute_all(t_command *cmd, t_env **g_env, char **envp, int a);
 void		execute_on_pipes(t_command *cmd, t_env **g_env, char **envp);
 void		srfak_lbn(t_command *cmd, t_env **g_env, char **envp);
-void		norminette_bnt_l9hba(t_command *cmd, t_env **g_env, char **envp);
+void		norminette_help(t_command *cmd, t_env **g_env, char **envp);
 t_env		*ft_lst_new( char *key, char *value);
 void		update_path(t_env **g_env, char *path);
 char		*ft_itoa(int n);
@@ -233,4 +233,5 @@ void		line_managment(char *line);
 void		free_stuff(char *line, t_lexer **lexer, t_command **cmd);
 void		action(struct sigaction *sa);
 int			minishell_prime(char *line);
+int			check_for_equal(char *str);
 #endif

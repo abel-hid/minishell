@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/05 15:37:34 by heddahbi          #+#    #+#             */
-/*   Updated: 2023/08/06 20:02:29 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/07 16:41:31 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ void	srfak_lbn(t_command *cmd, t_env **g_env, char **envp)
 	execute_bin(cmd, envp, g_env);
 }
 
-void	norminette_bnt_l9hba(t_command	*cmd, t_env	**g_env, char	**envp)
+void	norminette_help(t_command	*cmd, t_env	**g_env, char	**envp)
 {
 	cmd->pid = fork();
 	if (cmd->pid == 0)
@@ -71,7 +71,7 @@ int	execute_the_shot(t_command	*cmd, t_env **g_env, char **envp)
 		if (a == 1)
 			execute_built_ins(cmd, g_env);
 		if (a == 0)
-			norminette_bnt_l9hba(cmd, g_env, envp);
+			norminette_help(cmd, g_env, envp);
 		g_exit_st.in_cmd = 0;
 		return (0);
 	}

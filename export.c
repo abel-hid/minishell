@@ -6,22 +6,22 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/05 15:29:27 by heddahbi          #+#    #+#             */
-/*   Updated: 2023/08/07 14:04:08 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/07 14:09:45 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-
 int	check_for_second(char *arg)
 {
-	int i;
+	int	i;
 
 	i = 0;
-	while(arg[i] && arg[i] != '=' && arg[i] != '+')
+	while (arg[i] && arg[i] != '=' && arg[i] != '+')
 		i++;
 	return (i);
 }
+
 int	hah(char c, char *arg)
 {
 	if (c != '=')
@@ -31,24 +31,23 @@ int	hah(char c, char *arg)
 	}
 	return (0);
 }
+
 int	create_key_value(char *arg, t_env **g_env)
 {
 	int		j;
-	t_env	*tmp;
 	char	*key;
 	char	*value;
 
-	tmp = *g_env;
 	if (check_args(arg))
 		return (1);
 	j = check_for_second(arg);
 	key = ft_substr(arg, 0, j);
-	if(check_key(key, arg) == 45)
+	if (check_key(key, arg) == 45)
 		return (free(key), 1);
 	value = NULL;
 	if (arg[j] == '+')
 	{
-		if(hah(arg[j + 1], arg))
+		if (hah(arg[j + 1], arg))
 			return (free(key), 1);
 		value = ft_substr(arg, j + 2, ft_strlen(arg) - j - 2);
 		update_or_add_env_var(g_env, key, value);
@@ -58,22 +57,7 @@ int	create_key_value(char *arg, t_env **g_env)
 		value = ft_substr(arg, j + 1, ft_strlen(arg) - j - 1);
 		add_env_var(g_env, key, value);
 	}
-	// export_norm(key, value, g_env);
 	return (export_norm(key, value, g_env), 0);
-}
-
-int	check_for_equal(char *str)
-{
-	int	i;
-
-	i = 0;
-	while (str[i])
-	{
-		if (str[i] == '=')
-			return (1);
-		i++;
-	}
-	return (0);
 }
 
 void	print_export(t_env **env_list)
@@ -108,7 +92,7 @@ int	ft_export(t_command *cmd, t_env **p_env)
 			if (check_key(cmd->args[i], cmd->args[i]) == 45)
 				return (1);
 		}
-		if(create_key_value(cmd->args[i], p_env))
+		if (create_key_value(cmd->args[i], p_env))
 			return (1);
 		i++;
 	}

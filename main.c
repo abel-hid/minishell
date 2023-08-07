@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/04 22:08:21 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/08/07 11:50:26 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/07 16:37:12 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,23 @@ void	minishell(t_lexer *lexer, t_env *p_env)
 	heredoc(&lexer, &p_env);
 	expand(&lexer, &p_env);
 }
+int haha(char *line)
+{
+	int i;
+	int j;
 
+	i = 0;
+	j = 0;
+	while (line[i])
+	{
+		if (is_space(line[i]))
+			j++;
+		i++;
+	}
+	if (j == i)
+		return (1);
+	return (0);
+}
 void	minishell_exec(char **env, t_lexer *lexer, char *str)
 {
 	char				*line;
@@ -44,6 +60,9 @@ void	minishell_exec(char **env, t_lexer *lexer, char *str)
 	{
 		action(&sa);
 		line = readline(str);
+		line_managment(line);
+		if(haha(line))
+			continue ;
 		if (minishell_prime(line))
 			continue ;
 		if (lexing(&lexer, line) == 0)

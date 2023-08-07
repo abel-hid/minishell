@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/05 14:51:22 by heddahbi          #+#    #+#             */
-/*   Updated: 2023/08/07 13:45:43 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/07 14:10:45 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void	check_and_execute_builtins(t_command *cmd, t_env **envp)
 		ft_pwd();
 	else if (ft_strcmp(cmd->args[0], "export") == 0)
 	{
-		if(ft_export(cmd, envp) == 1)
+		if (ft_export(cmd, envp) == 1)
 			g_exit_st.status = 1;
 		else
 			g_exit_st.status = 0;

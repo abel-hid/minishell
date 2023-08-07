@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/06 13:15:41 by heddahbi          #+#    #+#             */
-/*   Updated: 2023/08/07 12:11:16 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/07 14:10:19 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ int	parsing_unset(char *str)
 	int	i;
 
 	i = 0;
-	if(*str <= '9' && *str >= '0')
+	if (*str <= '9' && *str >= '0')
 	{
 		ft_error("minishell: unset: `", str, "': not a valid identifier\n");
 		g_exit_st.status = 1;

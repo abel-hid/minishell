@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/05 15:32:12 by heddahbi          #+#    #+#             */
-/*   Updated: 2023/08/07 13:47:56 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/07 14:10:34 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@ void	check_key2(char *key, char	*arg)
 {
 	if (check_key(key, arg) == 45)
 		return ;
-
 }
 
 int	check_if_existant(char *key, t_env **g_env)

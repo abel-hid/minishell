@@ -6,7 +6,7 @@
 /*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/06 14:41:50 by heddahbi          #+#    #+#             */
-/*   Updated: 2023/08/07 10:51:11 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/07 16:37:17 by heddahbi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,6 @@ void	action(struct sigaction *sa)
 
 int	minishell_prime(char *line)
 {
-	line_managment(line);
 	if (ft_strlen(line) == 0)
 	{
 		free(line);
