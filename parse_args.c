@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_args.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: abel-hid <abel-hid@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/04 21:35:14 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/08/06 11:44:11 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/11 01:35:17 by abel-hid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,8 @@ int	is_env(t_env **g_env, char *str)
 	env = *g_env;
 	while (env)
 	{
+		if(!env->value)
+			return (0);
 		if (ft_strcmp(env->value, str) == 0)
 			return (1);
 		env = env->next;

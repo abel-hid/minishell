@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe_execution.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: abel-hid <abel-hid@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/05 15:37:34 by heddahbi          #+#    #+#             */
-/*   Updated: 2023/08/07 19:07:11 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/10 00:33:08 by abel-hid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,13 +67,11 @@ int	execute_the_shot(t_command	*cmd, t_env **g_env, char **envp)
 		return (0);
 	if (!cmd->next)
 	{
-		g_exit_st.in_cmd = 1;
 		a = checkfor_builtins(cmd);
 		if (a == 1)
 			execute_built_ins(cmd, g_env);
 		if (a == 0)
 			norminette_help(cmd, g_env, envp);
-		g_exit_st.in_cmd = 0;
 		return (0);
 	}
 	execute_on_pipes(cmd, g_env, envp);

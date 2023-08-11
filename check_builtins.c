@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   check_builtins.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: abel-hid <abel-hid@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/05 14:51:22 by heddahbi          #+#    #+#             */
-/*   Updated: 2023/08/07 14:10:45 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/11 03:04:02 by abel-hid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,6 @@ void	check_and_execute_builtins(t_command *cmd, t_env **envp)
 	{
 		if (ft_export(cmd, envp) == 1)
 			g_exit_st.status = 1;
-		else
-			g_exit_st.status = 0;
 	}
 	else if (ft_strcmp(cmd->args[0], "env") == 0)
 		ft_env(envp);

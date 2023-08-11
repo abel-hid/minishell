@@ -3,14 +3,28 @@
 /*                                                        :::      ::::::::   */
 /*   parsing.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: abel-hid <abel-hid@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/04 21:52:30 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/08/06 18:35:26 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/11 03:11:42 by abel-hid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+int is_squote(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == '\'')
+			return (1);
+		i++;
+	}
+	return (0);
+}
 
 char	**is_word(char *str, char **args, t_env **g_env, int *i)
 {
@@ -21,7 +35,7 @@ char	**is_word(char *str, char **args, t_env **g_env, int *i)
 	k = 0;
 	str = ft_delete(str);
 	s = ft_expand(str, g_env);
-	if (check_space(str) && !is_dquote(str) && is_env(g_env, s))
+	if (check_space(str) && !is_dquote(str) && !is_squote(str))
 	{
 		p = get_p(s);
 		k = 0;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: abel-hid <abel-hid@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/04 22:08:21 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/08/07 19:13:06 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/11 02:56:43 by abel-hid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,13 @@ void	initialize_data(struct sigaction *sa)
 	sa->sa_flags = 0;
 }
 
-void	minishell(t_lexer *lexer, t_env *p_env)
+int	minishell(t_lexer *lexer, t_env *p_env)
 {
 	heredoc(&lexer, &p_env);
+	if(g_exit_st.done == 1)
+		return (1);
 	expand(&lexer, &p_env);
+	return (0);
 }
 
 int	haha(char *line)
@@ -43,8 +46,16 @@ int	haha(char *line)
 		i++;
 	}
 	if (j == i)
-		return (1);
+		return(free(line),1);
 	return (0);
+}
+void parsing_all(t_lexer **lexer, t_command **cmd, t_env **p_env, char **env)
+{
+	parse_args(lexer, cmd, p_env);
+	g_exit_st.in_cmd = 1;
+	execute_the_shot(*cmd, p_env, env);
+	g_exit_st.in_cmd = 0;
+
 }
 
 void	minishell_exec(char **env, t_lexer *lexer, char *str)
@@ -62,14 +73,14 @@ void	minishell_exec(char **env, t_lexer *lexer, char *str)
 	{
 		action(&sa);
 		line = readline(str);
+		g_exit_st.done = 0;
 		line_managment(line);
 		if (minishell_prime(line) || haha(line))
 			continue ;
 		if (lexing(&lexer, line) == 0)
 		{
-			minishell(lexer, p_env);
-			parse_args(&lexer, &cmd, &p_env);
-			execute_the_shot(cmd, &p_env, env);
+			if(minishell(lexer, p_env) == 0)
+				parsing_all(&lexer, &cmd, &p_env, env);
 		}
 		free_stuff(line, &lexer, &cmd);
 	}

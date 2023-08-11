@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: abel-hid <abel-hid@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/05 15:29:27 by heddahbi          #+#    #+#             */
-/*   Updated: 2023/08/07 14:09:45 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/08/11 02:17:32 by abel-hid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,10 +90,12 @@ int	ft_export(t_command *cmd, t_env **p_env)
 		if (cmd->args[i] != NULL && !check_for_equal(cmd->args[i]))
 		{
 			if (check_key(cmd->args[i], cmd->args[i]) == 45)
-				return (1);
+			{
+				i++;
+				continue ;
+			}
 		}
-		if (create_key_value(cmd->args[i], p_env))
-			return (1);
+		create_key_value(cmd->args[i], p_env);
 		i++;
 	}
 	if (cmd->args[1] == NULL)
