@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: heddahbi <heddahbi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: abel-hid <abel-hid@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/05 14:53:31 by heddahbi          #+#    #+#             */
-/*   Updated: 2023/08/05 14:54:41 by heddahbi         ###   ########.fr       */
+/*   Updated: 2023/09/16 12:02:48 by abel-hid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,21 @@ void	ft_echo(t_command *cmd)
 
 	i = 1;
 	n = 0;
-	if (cmd->args[i] && ft_strcmp(cmd->args[i], "-n") == 0)
+
+	size_t j ;
+
+
+	while (cmd->args[i] && cmd->args[i][0] == '-' && cmd->args[i][1] == 'n')
 	{
-		n = 1;
+		j = 1;
+		while(cmd->args[i][j] && cmd->args[i][j] == 'n')
+			j++;
+		if (cmd->args[i][j] == '\0')
+			n = 1;
+		else
+			break;
 		i++;
+
 	}
 	while (cmd->args[i])
 	{
