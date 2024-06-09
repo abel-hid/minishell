@@ -1,96 +1,80 @@
 
-# Minishell Project
+# Minishell 42 Project
 
-![Minishell Logo](minishell_logo.png)
-
-Minishell is a simple UNIX shell implementation developed as part of the [Your University/Institution Name]'s computer science curriculum. It provides a basic command-line interface to interact with the operating system, execute commands, and manage processes.
+Welcome to the Minishell project! This project is part of the 42 school curriculum, where you will create a simple shell program that mimics some basic functionalities of the Unix shell.
 
 ## Table of Contents
 
 - [Introduction](#introduction)
 - [Features](#features)
-- [Getting Started](#getting-started)
+- [Installation](#installation)
 - [Usage](#usage)
-- [Supported Commands](#supported-commands)
-- [Contributing](#contributing)
-- [License](#license)
-
+- [Built-in Commands](#built-in-commands)
 ## Introduction
 
-Minishell is designed to be a learning project that introduces students to systems programming, process management, and command-line interfaces. It aims to mimic the behavior of a standard UNIX shell while providing an opportunity for students to explore and implement various shell functionalities.
+The Minishell project aims to help you understand how a shell works by implementing your own version. This will deepen your understanding of process creation and synchronization, as well as input/output redirection.
 
 ## Features
 
-- **Simple Interface**: Minishell offers an intuitive and straightforward command-line interface for users to interact with.
+- Display a prompt and wait for user input
+- Execute commands with their arguments
+- Handle basic error messages
+- Implement a history feature
+- Support input and output redirection (`<`, `>`, `>>`)
+- Handle pipes (`|`)
+- Support environment variables
+- Handle signals (like `Ctrl-C`,`Ctrl-\`)
+- Handle end of file (EOF)
+- Handle $?
+- Implement a built-in command (`echo`, `cd`, `pwd`, `export`, `unset`, `env`, `exit`)
 
-- **Command Execution**: Users can execute common commands like `ls`, `cd`, `echo`, and more.
 
-- **Piping and Redirection**: Minishell supports basic command chaining using pipes and redirection.
-
-- **Environment Variables**: Users can set and manage environment variables within the shell.
-
-- **Signal Handling**: Minishell handles signals to ensure proper process management and termination.
-
-- **History**: The shell keeps track of command history, allowing users to recall and execute previous commands.
-
-## Getting Started
+## Installation
 
 To get started with Minishell, follow these steps:
 
 1. Clone the repository:
+    \`\`\`bash
+    git clone https://github.com/yourusername/minishell.git
+    cd minishell
+    \`\`\`
 
-```
-bash
-git clone https://github.com/your-username/minishell.git
-```
+2. Build the project:
+    \`\`\`bash
+    make
+    \`\`\`
 
-    Change directory:
-```bash
+## Usage
 
-cd minishell
-```
-Build the project:
-```
-bash
-make
-```
-Run Minishell:
-```
-bash
+After building the project, you can run the shell with:
 
+\`\`\`bash
 ./minishell
-```
-Usage
+\`\`\`
 
-Once Minishell is running, you can use it like a regular UNIX shell. Here are some examples:
-```
-bash
+You will be greeted with a prompt where you can start typing commands.
 
+### Example
+
+\`\`\`sh
 $ ls -l
-$ echo "Hello, Minishell!"
-$ cd /path/to/directory
-$ cat file.txt | grep "pattern"
-```
-For more detailed information about supported commands and features, consult the project documentation or help section within the shell.
-Supported Commands
+total 8
+-rwxr-xr-x 1 user group 20736 Jun  1 12:34 minishell
+$ echo "Hello, World!"
+Hello, World!
+$ cat file.txt
+Contents of the file.
+$ exit
+\`\`\`
 
-Minishell supports a range of basic UNIX commands, including but not limited to:
+## Built-in Commands
 
-    ls: List files and directories.
-    cd: Change the current directory.
-    echo: Display messages.
-    pwd: Show the current working directory.
-    cat: Concatenate and display file contents.
-    rm: Remove files or directories.
-    cp: Copy files and directories.
-    mv: Move or rename files and directories.
+Minishell supports the following built-in commands:
 
-For a complete list of supported commands and their options, please refer to the project documentation.
-Contributing
-
-Contributions to Minishell are welcome! If you wish to contribute, please follow the guidelines in the CONTRIBUTING.md file.
-License
-
-This project is licensed under the MIT License.
-
-Thank you for using Minishell! If you encounter any issues or have suggestions for improvement, please create an issue or pull request. Happy shell scripting!
+- \`echo [args]\` - Display arguments
+- \`cd [directory]\` - Change the current directory
+- \`pwd\` - Print the current working directory
+- \`export [name[=value] ...]\` - Set environment variables
+- \`unset [name ...]\` - Unset environment variables
+- \`env\` - Display all environment variables
+- \`exit [status]\` - Exit the shell

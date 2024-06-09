@@ -6,7 +6,7 @@
 /*   By: abel-hid <abel-hid@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/04 22:08:21 by abel-hid          #+#    #+#             */
-/*   Updated: 2023/08/11 02:56:43 by abel-hid         ###   ########.fr       */
+/*   Updated: 2024/06/09 09:44:24 by abel-hid         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ int	main(int ac, char **av, char **env)
 	t_lexer				*lexer;
 	char				*str;
 
-	str = ft_strdup("\x1b[31msrfak_lban \x1b[34m$ \x1b[0m");
+	str = ft_strdup("~minishell~$ ");
 	lexer = NULL;
 	(void)ac;
 	(void)av;
