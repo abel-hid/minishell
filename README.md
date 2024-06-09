@@ -34,29 +34,29 @@ The Minishell project aims to help you understand how a shell works by implement
 To get started with Minishell, follow these steps:
 
 1. Clone the repository:
-    \`\`\`bash
+    ```bash
     git clone https://github.com/abel-hid/minishell.git
     cd minishell
-    \`\`\`
+    ```
 
 2. Build the project:
-    \`\`\`bash
+    ```bash
     make
-    \`\`\`
+    ```
 
 ## Usage
 
 After building the project, you can run the shell with:
 
-\`\`\`bash
+```sh
 ./minishell
-\`\`\`
+```
 
 You will be greeted with a prompt where you can start typing commands.
 
 ### Example
 
-\`\`\`sh
+```sh
 $ ls -l
 total 8
 -rwxr-xr-x 1 user group 20736 Jun  1 12:34 minishell
@@ -65,7 +65,7 @@ Hello, World!
 $ cat file.txt
 Contents of the file.
 $ exit
-\`\`\`
+```
 
 ## Built-in Commands
 
