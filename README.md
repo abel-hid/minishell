@@ -35,7 +35,7 @@ To get started with Minishell, follow these steps:
 
 1. Clone the repository:
     \`\`\`bash
-    git clone https://github.com/yourusername/minishell.git
+    git clone https://github.com/abel-hid/minishell.git
     cd minishell
     \`\`\`
 
