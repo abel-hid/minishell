@@ -1,80 +1,159 @@
 
-# Minishell 42 Project
 
-Welcome to the Minishell project! This project is part of the 42 school curriculum, where you will create a simple shell program that mimics some basic functionalities of the Unix shell.
+# 🖥️ Minishell
 
-## Table of Contents
+## Overview
 
-- [Introduction](#introduction)
-- [Features](#features)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Built-in Commands](#built-in-commands)
-## Introduction
+**Minishell** is a lightweight Unix shell implementation that provides a basic command-line interface for executing commands and managing processes. This project is designed to help you understand shell concepts, process management, and command execution in Unix-like systems. 🌟
 
-The Minishell project aims to help you understand how a shell works by implementing your own version. This will deepen your understanding of process creation and synchronization, as well as input/output redirection.
+## 🚀 Project Objectives
 
-## Features
+- Implement a basic Unix shell that can interpret and execute commands.
+- Support built-in commands and external commands with arguments.
+- Manage processes, handle input/output redirection, and implement piping between commands.
 
-- Display a prompt and wait for user input
-- Execute commands with their arguments
-- Handle basic error messages
-- Implement a history feature
-- Support input and output redirection (`<`, `>`, `>>`)
-- Handle pipes (`|`)
-- Support environment variables
-- Handle signals (like `Ctrl-C`,`Ctrl-\`)
-- Handle end of file (EOF)
-- Handle $?
-- Implement a built-in command (`echo`, `cd`, `pwd`, `export`, `unset`, `env`, `exit`)
+## 🛠️ Key Features
 
+### Command Execution
 
-## Installation
+- **Execute External Commands:** Run programs and scripts from the command line.
+- **Support for Arguments:** Pass arguments to commands and handle them appropriately.
 
-To get started with Minishell, follow these steps:
+### Built-in Commands
 
-1. Clone the repository:
-    ```bash
-    git clone https://github.com/abel-hid/minishell.git
-    cd minishell
-    ```
+- **`cd`:** Change the current working directory.
+- **`pwd`:** Print the current working directory.
+- **`echo`:** Display a line of text.
+- **`exit`:** Exit the shell with a specified exit status.
 
-2. Build the project:
-    ```bash
-    make
-    ```
+### Input/Output Redirection
 
-## Usage
+- **Redirect Input:** Use `<` to redirect input from a file.
+- **Redirect Output:** Use `>` to redirect output to a file.
+- **Append Output:** Use `>>` to append output to a file.
 
-After building the project, you can run the shell with:
+### Piping
 
-```sh
+- **Pipe Commands:** Use `|` to pass the output of one command as input to another.
+
+## 📋 Project Structure
+
+```plaintext
+.
+├── LICENSE
+├── Makefile
+├── README.md
+├── en.subject.pdf
+└── srcs
+    ├── cd.c
+    ├── cd2.c
+    ├── check_builtins.c
+    ├── cmd.c
+    ├── create_lexer.c
+    ├── dollar.c
+    ├── echo.c
+    ├── env.c
+    ├── exec_builtins.c
+    ├── exec_utils.c
+    ├── exec_utils2.c
+    ├── execute.c
+    ├── execute_bin.c
+    ├── execute_bin2.c
+    ├── execution_utils.c
+    ├── exit.c
+    ├── expand_value.c
+    ├── expander.c
+    ├── expander_utils.c
+    ├── export.c
+    ├── export2.c
+    ├── export_tools.c
+    ├── free.c
+    ├── ft_env.c
+    ├── ft_error.c
+    ├── heredoc.c
+    ├── lexing.c
+    ├── lexing_utils.c
+    ├── libft.c
+    ├── libft2.c
+    ├── list.c
+    ├── main.c
+    ├── main_helper.c
+    ├── minishell.h
+    ├── parse_args.c
+    ├── parsing.c
+    ├── parsing_error.c
+    ├── parsing_redirction.c
+    ├── parsing_utils.c
+    ├── parsing_utils2.c
+    ├── pipe_execution.c
+    ├── pwd.c
+    ├── quote.c
+    ├── syntax.c
+    ├── syntax_utils.c
+    ├── t.c
+    ├── t2.c
+    ├── test.c
+    ├── unset.c
+    └── update_oradd_env.c
+
+2 directories, 54 files
+
+```
+
+## 🔧 Compilation
+
+To compile the project, use the provided `Makefile`:
+
+```bash
+make
+```
+
+This will generate an executable called `minishell`.
+
+## 📈 Usage
+
+To run the shell, execute the `minishell` binary:
+
+```bash
 ./minishell
 ```
 
-You will be greeted with a prompt where you can start typing commands.
+You will enter the shell prompt where you can type commands and interact with the shell.
 
-### Example
+### Example Commands
 
-```sh
-$ ls -l
-total 8
--rwxr-xr-x 1 user group 20736 Jun  1 12:34 minishell
-$ echo "Hello, World!"
-Hello, World!
-$ cat file.txt
-Contents of the file.
-$ exit
-```
+- **List Files:** `ls -l`
+- **Change Directory:** `cd /path/to/directory`
+- **Print Working Directory:** `pwd`
+- **Redirect Output to a File:** `echo "Hello World" > output.txt`
+- **Pipe Commands:** `cat file.txt | grep "keyword"`
 
-## Built-in Commands
+## 🧪 Testing
 
-Minishell supports the following built-in commands:
+Test your shell by:
 
-- \`echo [args]\` - Display arguments
-- \`cd [directory]\` - Change the current directory
-- \`pwd\` - Print the current working directory
-- \`export [name[=value] ...]\` - Set environment variables
-- \`unset [name ...]\` - Unset environment variables
-- \`env\` - Display all environment variables
-- \`exit [status]\` - Exit the shell
+- Executing a variety of commands and built-in commands.
+- Using input/output redirection to handle files.
+- Testing piping between multiple commands.
+- Checking edge cases like invalid commands or syntax errors.
+
+## 📚 Learning Objectives
+
+By completing this project, you will:
+- Gain a solid understanding of how Unix shells work.
+- Learn about process creation, management, and synchronization.
+- Understand command parsing, redirection, and piping in a shell environment.
+
+## 🌟 Bonus Objectives
+
+For additional practice and enhancement, consider the following:
+
+- **Job Control:** Implement job control features like background processes and signal handling.
+- **Command History:** Add support for command history and navigation.
+- **Tab Completion:** Implement tab completion for commands and file paths.
+
+## 📜 License
+
+This project is open-source and available under the [MIT License](LICENSE). Feel free to fork, modify, and contribute!
+
+
