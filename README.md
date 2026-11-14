@@ -410,13 +410,6 @@ Also good to know:
 
 ---
 
-## 👥 Authors
-
-- **abel-hid**: [abel-hid@student.42.fr](mailto:abel-hid@student.42.fr)
-- **heddahbi**: [heddahbi@student.42.fr](mailto:heddahbi@student.42.fr)
-
----
-
 ## 📄 License
 
 MIT. See [LICENSE](LICENSE).
